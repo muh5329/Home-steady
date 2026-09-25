@@ -64,6 +64,18 @@ func wait_until(predicate: Callable, timeout: float) -> bool:
 	return predicate.call()
 
 
+## Like wait_until but bounded by wall-clock time: for work on background
+## threads (navmesh baking), which headless fixed-fps runs outpace.
+func wait_until_realtime(predicate: Callable, timeout_seconds: float) -> bool:
+	var deadline := Time.get_ticks_msec() + int(timeout_seconds * 1000.0)
+	while Time.get_ticks_msec() < deadline:
+		if predicate.call():
+			return true
+		await get_tree().physics_frame
+		OS.delay_msec(2)
+	return predicate.call()
+
+
 # --- scenes -------------------------------------------------------------------
 
 func spawn(scene_path: String, parent: Node = null) -> Node:
@@ -107,6 +119,17 @@ func hold(action: StringName, seconds: float) -> void:
 	press(action)
 	await wait_seconds(seconds)
 	release(action)
+
+
+## Press and release a physical key (for UI hotkeys like 1-9).
+func tap_key(keycode: Key) -> void:
+	for pressed in [true, false]:
+		var ev := InputEventKey.new()
+		ev.physical_keycode = keycode
+		ev.keycode = keycode
+		ev.pressed = pressed
+		Input.parse_input_event(ev)
+		await wait_physics_frames(1)
 
 
 func _send_action(action: StringName, pressed: bool) -> void:

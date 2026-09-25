@@ -14,6 +14,13 @@ signal combatant_died(combatant: Node)
 ## A storage's contents changed (HUD totals, production systems).
 signal storage_changed(storage: Node)
 
+## A construction site finished and became a Building.
+signal building_completed(building: Node)
+
+## Static world geometry changed (building placed/finished): navigation
+## should be rebaked.
+signal world_geometry_changed
+
 ## Save / load lifecycle.
 signal game_saved(slot: String)
 signal game_loaded(slot: String)

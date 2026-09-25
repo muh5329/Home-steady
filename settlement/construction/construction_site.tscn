@@ -1,0 +1,12 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://settlement/construction/construction_site.gd" id="1_site"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/neutral/building_stage_A.gltf" id="2_a"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/neutral/building_stage_B.gltf" id="3_b"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/neutral/building_stage_C.gltf" id="4_c"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/neutral/building_scaffolding.gltf" id="5_scaffold"]
+
+[node name="ConstructionSite" type="StaticBody3D"]
+script = ExtResource("1_site")
+stage_models = Array[PackedScene]([ExtResource("2_a"), ExtResource("3_b"), ExtResource("4_c")])
+scaffolding_model = ExtResource("5_scaffold")

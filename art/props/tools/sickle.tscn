@@ -1,0 +1,42 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="wood"]
+albedo_color = Color(0.55, 0.36, 0.2, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="iron"]
+albedo_color = Color(0.7, 0.72, 0.76, 1)
+metallic = 0.7
+roughness = 0.35
+
+[sub_resource type="CylinderMesh" id="handle"]
+top_radius = 0.045
+bottom_radius = 0.05
+height = 0.6
+radial_segments = 8
+
+[sub_resource type="BoxMesh" id="blade"]
+size = Vector3(0.32, 0.04, 0.07)
+
+[node name="Sickle" type="Node3D"]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+
+[node name="Handle" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+mesh = SubResource("handle")
+surface_material_override/0 = SubResource("wood")
+
+[node name="Blade1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.94, -0.34, 0, 0.34, 0.94, 0, 0, 0, 1, 0.13, 0.46, 0)
+mesh = SubResource("blade")
+surface_material_override/0 = SubResource("iron")
+
+[node name="Blade2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.5, -0.87, 0, 0.87, 0.5, 0, 0, 0, 1, 0.36, 0.62, 0)
+mesh = SubResource("blade")
+surface_material_override/0 = SubResource("iron")
+
+[node name="Blade3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.17, -0.98, 0, 0.98, -0.17, 0, 0, 0, 1, 0.46, 0.85, 0)
+mesh = SubResource("blade")
+surface_material_override/0 = SubResource("iron")

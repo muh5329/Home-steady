@@ -1,0 +1,173 @@
+[gd_scene load_steps=16 format=3]
+
+[ext_resource type="Script" path="res://settlement/props/campfire.gd" id="1_fire"]
+
+[sub_resource type="CylinderMesh" id="log_mesh"]
+top_radius = 0.09
+bottom_radius = 0.1
+height = 0.8
+radial_segments = 7
+rings = 1
+
+[sub_resource type="StandardMaterial3D" id="bark"]
+albedo_color = Color(0.42, 0.27, 0.16, 1)
+roughness = 0.9
+
+[sub_resource type="SphereMesh" id="stone_mesh"]
+radius = 0.16
+height = 0.3
+radial_segments = 6
+rings = 3
+
+[sub_resource type="StandardMaterial3D" id="stone_mat"]
+albedo_color = Color(0.55, 0.55, 0.58, 1)
+roughness = 1.0
+
+[sub_resource type="Gradient" id="fire_grad"]
+colors = PackedColorArray(1, 0.9, 0.4, 1, 1, 0.45, 0.1, 0.9, 0.4, 0.1, 0.05, 0)
+
+[sub_resource type="GradientTexture1D" id="fire_ramp"]
+gradient = SubResource("fire_grad")
+
+[sub_resource type="ParticleProcessMaterial" id="fire_proc"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 12.0
+initial_velocity_min = 0.8
+initial_velocity_max = 1.6
+gravity = Vector3(0, 0.6, 0)
+scale_min = 0.6
+scale_max = 1.2
+color_ramp = SubResource("fire_ramp")
+
+[sub_resource type="StandardMaterial3D" id="fire_mat"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+albedo_color = Color(2.2, 1.6, 1.0, 1)
+
+[sub_resource type="QuadMesh" id="fire_quad"]
+material = SubResource("fire_mat")
+size = Vector2(0.45, 0.45)
+
+[sub_resource type="Gradient" id="smoke_grad"]
+colors = PackedColorArray(0.5, 0.5, 0.5, 0.35, 0.6, 0.6, 0.6, 0)
+
+[sub_resource type="GradientTexture1D" id="smoke_ramp"]
+gradient = SubResource("smoke_grad")
+
+[sub_resource type="ParticleProcessMaterial" id="smoke_proc"]
+emission_shape = 1
+emission_sphere_radius = 0.15
+direction = Vector3(0, 1, 0)
+spread = 18.0
+initial_velocity_min = 0.6
+initial_velocity_max = 1.0
+gravity = Vector3(0.2, 0.3, 0)
+scale_min = 1.0
+scale_max = 2.2
+color_ramp = SubResource("smoke_ramp")
+
+[sub_resource type="StandardMaterial3D" id="smoke_mat"]
+transparency = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+
+[sub_resource type="QuadMesh" id="smoke_quad"]
+material = SubResource("smoke_mat")
+size = Vector2(0.6, 0.6)
+
+[node name="Campfire" type="Node3D" node_paths=PackedStringArray("light")]
+script = ExtResource("1_fire")
+light = NodePath("Light")
+
+[node name="Log0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, -0.000, 0.000, 0, 1, 0, -0.000, 0, 1.000, 0.350, 0.12, -0.000)
+mesh = SubResource("log_mesh")
+surface_material_override/0 = SubResource("bark")
+[node name="Log1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.500, -0.000, 0.866, 0, 1, 0, -0.866, 0, 0.500, 0.175, 0.12, -0.303)
+mesh = SubResource("log_mesh")
+surface_material_override/0 = SubResource("bark")
+[node name="Log2" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.500, -0.000, 0.866, 0, 1, 0, -0.866, 0, -0.500, -0.175, 0.12, -0.303)
+mesh = SubResource("log_mesh")
+surface_material_override/0 = SubResource("bark")
+[node name="Log3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1.000, -0.000, 0.000, 0, 1, 0, -0.000, 0, -1.000, -0.350, 0.12, -0.000)
+mesh = SubResource("log_mesh")
+surface_material_override/0 = SubResource("bark")
+[node name="Log4" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.500, 0.000, -0.866, 0, 1, 0, 0.866, 0, -0.500, -0.175, 0.12, 0.303)
+mesh = SubResource("log_mesh")
+surface_material_override/0 = SubResource("bark")
+[node name="Log5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.500, 0.000, -0.866, 0, 1, 0, 0.866, 0, 0.500, 0.175, 0.12, 0.303)
+mesh = SubResource("log_mesh")
+surface_material_override/0 = SubResource("bark")
+
+[node name="Stone0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0.850, 0.08, 0.000)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0.651, 0.08, 0.546)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0.148, 0.08, 0.837)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, -0.425, 0.08, 0.736)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, -0.799, 0.08, 0.291)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone5" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, -0.799, 0.08, -0.291)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, -0.425, 0.08, -0.736)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone7" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0.148, 0.08, -0.837)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+[node name="Stone8" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.6, 0, 0, 0, 1, 0.651, 0.08, -0.546)
+mesh = SubResource("stone_mesh")
+surface_material_override/0 = SubResource("stone_mat")
+
+[node name="Fire" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+amount = 40
+lifetime = 0.7
+process_material = SubResource("fire_proc")
+draw_pass_1 = SubResource("fire_quad")
+
+[node name="Smoke" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+amount = 20
+lifetime = 3.0
+process_material = SubResource("smoke_proc")
+draw_pass_1 = SubResource("smoke_quad")
+
+[node name="Light" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+light_color = Color(1, 0.62, 0.3, 1)
+light_energy = 2.2
+shadow_enabled = true
+omni_range = 9.0

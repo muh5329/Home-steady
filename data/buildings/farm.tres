@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BuildingDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://settlement/buildings/building_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://settlement/buildings/farm.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"building.farm"
+display_name = "Farm"
+description = "Six wheat plots. Farmers sow, reap and haul the harvest."
+scene = ExtResource("2_scene")
+footprint = Vector2(5.8, 5.8)
+cost = Dictionary[StringName, int]({&"item.log": 4})
+build_work = 36.0
+menu_order = 4

@@ -16,6 +16,10 @@ const SETTLE_SPEED := 1.2  # items must (nearly) stop moving to be stored
 @export var grid_size := Vector2i(3, 3)
 @export var cell_size := Vector2(1.05, 1.05)
 @export var max_layers := 3
+## Show stored units as piles (off for enclosed storehouses).
+@export var show_stacks := true
+## False when part of a Building (the Building persists it instead).
+@export var standalone_persistence := true
 
 var _candidates: Array[Carryable] = []
 var _visuals: Dictionary = {}  # item_id -> Array[Node3D]
@@ -24,7 +28,7 @@ var _check_timer := 0.0
 
 func _ready() -> void:
 	add_to_group(GROUP)
-	add_to_group(SaveManager.GROUP)
+	add_to_group(SaveManager.GROUP if standalone_persistence else Building.FEATURE_GROUP)
 	zone.body_entered.connect(_on_body_entered)
 	zone.body_exited.connect(func(b): _candidates.erase(b))
 	inventory.changed.connect(_on_inventory_changed)
@@ -32,6 +36,8 @@ func _ready() -> void:
 	interactable.item_filter = accepts
 	interactable.item_receiver = try_store
 	interactable.deposit_verb = "Store"
+	# Pallets and storehouse counters aren't walkable; use from the edge.
+	interactable.approach_radius = maxf(interactable.approach_radius, 3.0)
 	_update_prompt()
 
 
@@ -84,13 +90,25 @@ func _on_interacted(by: InteractionController) -> void:
 	var ids := inventory.item_ids()
 	if ids.is_empty() or by.is_carrying():
 		return
-	# Take whatever there is most of.
-	ids.sort_custom(func(a, b): return inventory.count(a) > inventory.count(b))
-	var body := take(ids[0])
+	var body := take(_best_item_to_take(ids))
 	if body:
 		# Keep it from being re-absorbed while it's handed over.
 		_candidates.erase(body)
 		by.pick_up(body)
+
+
+## Prefer what construction sites still need; otherwise what we have most of.
+func _best_item_to_take(ids: Array[StringName]) -> StringName:
+	var settlement := Settlement.of(self)
+	var demand := settlement.construction_demand() if settlement else {}
+	var best := ids[0]
+	var best_score := -1.0
+	for id in ids:
+		var score := float(inventory.count(id)) + (1000.0 if demand.get(id, 0) > 0 else 0.0)
+		if score > best_score:
+			best_score = score
+			best = id
+	return best
 
 
 func _on_inventory_changed(item_id: StringName, count: int) -> void:
@@ -115,6 +133,8 @@ func _update_prompt() -> void:
 # --- visuals: each stored unit is shown on the pile ---------------------------
 
 func _update_visuals(item_id: StringName, count: int) -> void:
+	if not show_stacks:
+		return
 	var data := _item_data(item_id)
 	if data == null or data.stack_visual == null:
 		return

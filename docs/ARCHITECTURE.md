@@ -48,9 +48,38 @@ What "use" means is decided by the owner connecting `interacted` — `Carryable`
 itself up; later doors, chests, resource nodes and NPCs do their own thing. Carrying applies a named
 speed modifier on the motor, a `CarryPoseModifier` (SkeletonModifier3D) for the arms, and stows weapons.
 
+## Settlement
+
+- `Settlement` (one per region): logistics service — storage lookup (`find_receiver_for`), loose items,
+  work targets, construction demand, totals, beds. Workers, stockpiles and the HUD query it.
+- `BuildingRegistry` / `Population`: containers for runtime-spawned buildings, construction sites and
+  settlers. They give each a stable `uid` and persist them as data (definition id + transform + state).
+- `Building` scenes get behaviour from feature nodes (storage, housing, crop plots) that persist via the
+  building; `ConstructionSite` consumes delivered items, then labour.
+- `Footprint` (physics layer 6) reserves ground for placement, including things without solid colliders.
+
+## Workers and jobs
+
+```
+Settler (CharacterBody3D) — same components as player/monsters + CarryComponent, NavSteering
+└─ WorkerController + StateMachine: Idle → GoToWork → Work → Collect → Deliver (+ Flee)
+```
+
+- A `JobDefinition` (woodcutter, miner, farmer) is data: produce it gathers, radius, work animation,
+  impact frame, amount, tags, tool. The states contain no job-specific code (a test enforces this).
+- A **WorkTarget** is anything in the `work_targets` group implementing `has_work_for(job)`,
+  `claim/release`, `work_position(from)`, `apply_work(amount, worker, tags) -> {produced_at?}`.
+  `ResourceNode` (trees, rocks, ore, crops) and `ConstructionSite` implement it.
+- `ResourceNode` lifecycle: ripe → (worked) depleted → [tend: labour to replant] → growing → ripe.
+  Crops need tending; trees and rocks regrow by themselves.
+- Robustness: claims are released on every state exit (including death via `StateMachine.stop()`);
+  progress-based stuck detection blacklists unreachable targets; recent threats are avoided; downed
+  settlers recover at home; swings are chained continuously (only decisions are distance-throttled);
+  async swings/pickups check `CombatController.action_serial` / state generations before acting.
+
 ## Physics layers
 
-1 world · 2 characters · 3 hurtboxes · 4 interactables · 5 props
+1 world · 2 characters · 3 hurtboxes · 4 interactables · 5 props · 6 footprints
 
 ## Testing
 

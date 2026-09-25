@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="JobDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://ai/jobs/job_definition.gd" id="1_job"]
+[ext_resource type="PackedScene" path="res://art/props/tools/pickaxe.tscn" id="2_tool"]
+
+[resource]
+script = ExtResource("1_job")
+id = &"job.miner"
+display_name = "Miner"
+description = "Breaks ore veins and boulders and hauls the ore and stone to storage."
+gather_items = Array[StringName]([&"item.iron_ore", &"item.stone"])
+work_animation = &"2H_Melee_Attack_Chop"
+work_speed = 1.15
+work_impact_time = 0.82
+work_amount = 10.0
+work_tags = PackedStringArray("mine")
+work_verb = "Mining"
+tool_scene = ExtResource("2_tool")

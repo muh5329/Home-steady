@@ -1,7 +1,7 @@
 # Gauntlet Progress
 
-Current phase: **Phase 3 — Building** (next)
-Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (38 passing)
+Current phase: **Phase 6 — Character classes** (next)
+Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (70 passing)
 
 ## Scoreboard
 
@@ -9,8 +9,99 @@ Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (38 passing)
 |---|---|---|---|---|---|---|---|
 | 1 (Phase 0–1) | 6 | – | 2 | 1 | 7 | 5 | 6 |
 | 2 (Phase 2) | 6 | 3 | 2 | 2 | 6 | 5 | 6 |
+| 3 (Phase 3) | 6 | 5 | 2 | 2 | 6 | 5 | 7 |
+| 4 (Phases 4–5) | 6 | 6 | 2 | 3 | 7 | 5 | 6 |
 
 Scores are 0–10 against the *final* target, so early rounds are low by design.
+
+---
+
+## Round 4 — Phase 4 Woodcutter + Phase 5 generic jobs (Farmer, Miner)
+
+**What changed**
+- Extracted shared components now that a second user exists: `CarryComponent` (player + settlers),
+  `NavSteering` (monsters + settlers), `AiLod` (distance-based think rates).
+- `Settlement` logistics service; `WorkTarget` contract (resource nodes, construction sites).
+- `Settler` scene (Barbarian rig) + `WorkerController` + states Idle/GoToWork/Work/Collect/Deliver/Flee;
+  `Population` registry persists settlers (job, home, health, carried item).
+- Phase 4: Woodcutter fells the nearest tree, collects the logs, hauls them to storage, repeats.
+- Phase 5: jobs became `JobDefinition` data; Miner (ore + stone, pickaxe) and Farmer (sickle) added with
+  **zero** job-specific state code. Farms have 6 wheat plots: reaped (yields a wheat sack), then need
+  sowing labour, then grow visibly before they can be reaped again. Players can reap/sow too.
+- Talking to a settler (E) cycles their job; nameplates show name, job and what they're doing (incl.
+  why they're idle).
+
+**Test performed** 20 new tests (70 total, 3 consecutive clean runs): full autonomous woodcutter loop
+with no input (2 trees, 4 logs in ~31 s), two workers reserving different trees, hauling player-felled
+logs, no-storage behaviour, flee, persistence mid-haul, miner hauling all ore, farmer reap→sow cycle,
+crop tending rules, player sowing, job change by talking, job + farm plot persistence, a static check
+that worker states contain no job names or concrete target types, downed workers releasing claims and
+recovering, unreachable targets blacklisted, distant workers working at full pace, drop placement.
+
+**Critic findings and resolution**
+| # | Finding | Status |
+|---|---|---|
+| 1 | Job states were a gatherer pipeline typed to ResourceNode/Stockpile | Fixed: WorkTarget contract, receivers with `approach_radius`; states type-free. Task board for storage→workshop hauling deferred to Phase 9 (its first consumer); companion brain to Phase 7 |
+| 2 | Dead settlers leak claims; flee has no memory | Fixed: `StateMachine.stop()` on death, downed → recover at home, threat memory used by searches |
+| 3 | Time-based stuck detection that never learns | Fixed: progress watchdog per goal + 60 s blacklist, in GoToWork/Collect/Deliver |
+| 4 | Intermittent miner failure | Root cause found: stuck check used the previous goal and blacklisted the stockpile. Fixed; drops also spawn clear of rubble and of the worker |
+| 5 | Distant workers slower (swings gated by think rate) | Fixed: continuous work loop; test compares near vs 100 m-away worker |
+| 6 | Async races in swing/pickup | Fixed: `action_serial` check at impact, captured job values, state generation counters |
+| 7 | Scans every think with ~50 workers | Partly: idle search backoff, per-frame navmap readiness cache. Spatial indexing deferred until profiling shows need |
+| 8 | No way to get settlers; blind job cycling | Idle reasons added. Recruitment + job UI are Phase 7 |
+
+**Known problems** All settlers share one model (job readable from nameplate + tool). Job assignment is
+a cycle on E. Wheat and ore have no consumers yet (Phase 9). Separation is O(N²) over combatants.
+
+**Highest-priority next task** Phase 6: Fighter / Ranger / Wizard as data (melee / ranged / magic),
+selectable at start.
+
+---
+
+## Round 3 — Phase 3 building
+
+**What changed**
+- `BuildingDefinition` resources (Stockpile, House, Storehouse, Blacksmith, Farm): scene, footprint (+offset),
+  cost, labour, menu order. Buildings are scenes whose behaviour comes from feature nodes
+  (`HousingComponent`, storage via the Stockpile script) persisted by the `Building` root.
+- Build mode (**B**): menu with hotkeys and costs, mesh-copy ghost (green/red with reason), **R** rotate,
+  **LMB** place, **X** cancel a site (materials drop back as physical items). Build mode owns the attack
+  and block buttons while open and closes on death.
+- `ConstructionSite`: dirt foundation → three KayKit construction stages → scaffolding as progress rises;
+  accepts only still-needed items via the same `Interactable` deposit path as stockpiles
+  (**[E] Deliver Logs**); after materials, labour by swinging (or E). Completion swaps in the Building.
+- `BuildingRegistry`: runtime buildings/sites get stable uids and persist as
+  {uid, definition, transform, state} — resolving Round 2's save-identity finding for runtime entities.
+- `Footprint` physics layer: buildings, sites, trees (incl. stumps), camp reserve ground so placement
+  can't overlap fields, stumps, deposit aprons or the campfire. Stumps keep a short collider.
+- Navigation rebakes asynchronously (debounced) after geometry changes; navmesh resources are per-scene.
+- Starting camp: campfire (flickering light, fire and smoke particles) and two A-frame tents.
+- Stockpiles hand out what construction sites still need first. HUD shows beds; a banner announces
+  completed buildings.
+
+**Test performed** 12 new scenario tests (50 total, stable over repeated runs): build mode via real keys,
+blocked placement (props, fields, stumps), labour needs materials, deliver-by-carrying → labour → House
+with housing, Storehouse storage, demand-aware stockpile, navmesh routes around new buildings,
+save/load of sites (delivered counts, rotation, uid) and buildings (storage contents), save in the
+completion frame, cancel with refund, build mode not throwing a carried log.
+
+**Critic findings and resolution**
+| # | Finding | Status |
+|---|---|---|
+| 1 | Placement ignores fields, campfire, stumps, aprons, canopies | Fixed: Footprint layer + `collide_with_areas`; storehouse apron in its footprint |
+| 2 | Build mode leaks input (throws carried log), no close on death | Fixed; regression test |
+| 3 | No logistics/reservation service | **First task of Phase 4** (Woodcutter is its first consumer) |
+| 4 | Labour routed through combat damage | **First task of Phase 4**: generic `WorkTarget` |
+| 5 | Site collider smaller than building; save in completion frame | Fixed: full-footprint site collider; load completes stuck sites; test |
+| 6 | No cancel/demolish | Fixed: X cancels with physical refund; throwing onto sites deferred |
+| 7 | Ghost via script stripping; camera-snapped yaw | Fixed: mesh-copy ghost, rotation only from R |
+| 8 | Full-map rebakes; camp not baked; stumps walkable | Camp/stumps fixed. Chunked baking deferred until regions grow |
+
+**Known problems** Farm and Blacksmith are placeable but inert until Phases 5 and 9. Whole-map navmesh
+rebake per change (fine at 160 m). Labour is quick (~5 swings for a house); hauling dominates until workers.
+
+**Highest-priority next task** Phase 4: Settlement logistics service (storage lookup, reservations,
+site demand) + WorkTarget, then one Woodcutter who chops, collects and delivers logs autonomously.
 
 ---
 

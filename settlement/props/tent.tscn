@@ -1,0 +1,53 @@
+[gd_scene load_steps=7 format=3]
+
+[sub_resource type="StandardMaterial3D" id="canvas"]
+albedo_color = Color(0.86, 0.8, 0.66, 1)
+roughness = 0.95
+
+[sub_resource type="StandardMaterial3D" id="trim"]
+albedo_color = Color(0.62, 0.22, 0.16, 1)
+roughness = 0.9
+
+[sub_resource type="PrismMesh" id="body"]
+size = Vector3(2.4, 1.7, 3.0)
+
+[sub_resource type="PrismMesh" id="flap"]
+size = Vector3(1.0, 1.1, 0.04)
+
+[sub_resource type="CylinderMesh" id="pole"]
+top_radius = 0.04
+bottom_radius = 0.05
+height = 2.0
+radial_segments = 6
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(2.4, 1.6, 3.0)
+
+[node name="Tent" type="StaticBody3D"]
+
+[node name="Body" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+mesh = SubResource("body")
+surface_material_override/0 = SubResource("canvas")
+
+[node name="Ridge" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.05, 0, 0, 0, 0.08, 0, 0, 0, 1.02, 0, 1.66, 0)
+mesh = SubResource("body")
+surface_material_override/0 = SubResource("trim")
+
+[node name="Door" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 1.51)
+mesh = SubResource("flap")
+surface_material_override/0 = SubResource("trim")
+
+[node name="PoleFront" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 1.55)
+mesh = SubResource("pole")
+
+[node name="PoleBack" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -1.55)
+mesh = SubResource("pole")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("shape")

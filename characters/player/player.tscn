@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://characters/player/player.gd" id="1_player"]
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_characters/Knight.glb" id="2_model"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://characters/shared/combat_sfx.gd" id="13_sfx"]
 [ext_resource type="Resource" path="res://data/combat/sounds_knight.tres" id="14_sounds"]
 [ext_resource type="Script" path="res://characters/player/camera_occlusion.gd" id="15_occl"]
+[ext_resource type="Script" path="res://characters/shared/carry_component.gd" id="16_carry"]
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.35
@@ -99,13 +100,19 @@ script = ExtResource("13_sfx")
 combat = NodePath("../CombatController")
 sounds = ExtResource("14_sounds")
 
-[node name="Interaction" type="Area3D" parent="." node_paths=PackedStringArray("body", "motor", "combat", "animator", "hold_point")]
+[node name="Carry" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "hold_point")]
+script = ExtResource("16_carry")
+body = NodePath("..")
+motor = NodePath("../CharacterMotor")
+combat = NodePath("../CombatController")
+hold_point = NodePath("../HoldPoint")
+
+[node name="Interaction" type="Area3D" parent="." node_paths=PackedStringArray("body", "motor", "combat", "carry")]
 script = ExtResource("10_interaction")
 body = NodePath("..")
 motor = NodePath("../CharacterMotor")
 combat = NodePath("../CombatController")
-animator = NodePath("../CharacterAnimator")
-hold_point = NodePath("../HoldPoint")
+carry = NodePath("../Carry")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Interaction"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -0.5)

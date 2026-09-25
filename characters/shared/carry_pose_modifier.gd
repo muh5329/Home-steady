@@ -22,6 +22,16 @@ func _ready() -> void:
 	influence = 0.0
 
 
+## Adds a modifier to `animator`'s skeleton and hands it to `carry`.
+static func install(animator: CharacterAnimator, carry: CarryComponent) -> CarryPoseModifier:
+	var modifier := CarryPoseModifier.new()
+	modifier.name = "CarryPose"
+	animator.skeleton.add_child(modifier)
+	modifier.setup(animator.player)
+	carry.carry_pose = modifier
+	return modifier
+
+
 ## Samples the pose from `player`'s clip. Call once after the model loads.
 func setup(anim_player: AnimationPlayer) -> void:
 	_pose.clear()

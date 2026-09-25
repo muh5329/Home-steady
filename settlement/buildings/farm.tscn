@@ -1,0 +1,43 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://settlement/buildings/building.gd" id="1_building"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/neutral/building_dirt.gltf" id="2_model"]
+[ext_resource type="Script" path="res://items/resources/resource_node.gd" id="3_node"]
+[ext_resource type="Resource" path="res://data/resource_nodes/wheat_crop.tres" id="4_crop"]
+
+[node name="Farm" type="StaticBody3D"]
+script = ExtResource("1_building")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+transform = Transform3D(3.4, 0, 0, 0, 1, 0, 0, 0, 3.4, 0, 0, 0)
+
+[node name="Plot0" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.05, -1.0)
+script = ExtResource("3_node")
+definition = ExtResource("4_crop")
+standalone_persistence = false
+[node name="Plot1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6, 0.05, 1.0)
+script = ExtResource("3_node")
+definition = ExtResource("4_crop")
+standalone_persistence = false
+[node name="Plot2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -1.0)
+script = ExtResource("3_node")
+definition = ExtResource("4_crop")
+standalone_persistence = false
+[node name="Plot3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 1.0)
+script = ExtResource("3_node")
+definition = ExtResource("4_crop")
+standalone_persistence = false
+[node name="Plot4" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.05, -1.0)
+script = ExtResource("3_node")
+definition = ExtResource("4_crop")
+standalone_persistence = false
+[node name="Plot5" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.05, 1.0)
+script = ExtResource("3_node")
+definition = ExtResource("4_crop")
+standalone_persistence = false

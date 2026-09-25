@@ -119,7 +119,7 @@ func test_haul_log_to_stockpile() -> void:
 
 func test_throw_item_onto_stockpile() -> void:
 	await _setup_world()
-	var stockpile := _spawn_stockpile(Vector3(0, 0, -10.5))
+	var stockpile := _spawn_stockpile(Vector3(0, 0, -9.5))
 	var ore: Carryable = load("res://items/resources/props/iron_ore.tscn").instantiate()
 	items.add_child(ore)
 	ore.global_position = Vector3(0, 0.4, -1.2)

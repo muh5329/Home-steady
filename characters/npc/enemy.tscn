@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=21 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy.gd" id="1_enemy"]
 [ext_resource type="Script" path="res://characters/shared/character_motor.gd" id="3_motor"]
@@ -15,6 +15,7 @@
 [ext_resource type="Script" path="res://ai/states/enemy_return_state.gd" id="14_return"]
 [ext_resource type="Script" path="res://ui/hud/world_health_bar.gd" id="15_bar"]
 [ext_resource type="Script" path="res://characters/shared/combat_sfx.gd" id="16_sfx"]
+[ext_resource type="Script" path="res://characters/shared/nav_steering.gd" id="17_steer"]
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.38
@@ -89,12 +90,19 @@ path_desired_distance = 0.6
 target_desired_distance = 0.6
 path_height_offset = 0.3
 
-[node name="EnemyController" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "agent", "state_machine")]
+[node name="Steering" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "agent", "combat")]
+script = ExtResource("17_steer")
+body = NodePath("..")
+motor = NodePath("../CharacterMotor")
+agent = NodePath("../NavigationAgent3D")
+combat = NodePath("../CombatController")
+
+[node name="EnemyController" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "steering", "state_machine")]
 script = ExtResource("9_controller")
 body = NodePath("..")
 motor = NodePath("../CharacterMotor")
 combat = NodePath("../CombatController")
-agent = NodePath("../NavigationAgent3D")
+steering = NodePath("../Steering")
 state_machine = NodePath("StateMachine")
 
 [node name="StateMachine" type="Node" parent="EnemyController" node_paths=PackedStringArray("initial_state")]

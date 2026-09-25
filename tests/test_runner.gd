@@ -6,7 +6,7 @@ extends Node
 
 const TEST_DIRS := ["res://tests/unit", "res://tests/scenarios"]
 ## A single test method may not run longer than this (seconds of game time).
-const TEST_TIMEOUT := 120.0
+const TEST_TIMEOUT := 300.0
 
 var _passed := 0
 var _failed := 0

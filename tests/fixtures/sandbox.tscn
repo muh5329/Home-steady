@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://world/regions/region.gd" id="1_region"]
 [ext_resource type="Environment" path="res://art/environments/default_environment.tres" id="2_env"]
@@ -8,7 +8,16 @@
 
 [ext_resource type="Script" path="res://world/world_items.gd" id="98_items"]
 
+[ext_resource type="Script" path="res://settlement/buildings/building_registry.gd" id="95_registry"]
+[ext_resource type="Script" path="res://settlement/construction/build_mode.gd" id="96_buildmode"]
+[ext_resource type="Script" path="res://ui/building/build_menu.gd" id="97_buildmenu"]
+
+[ext_resource type="Script" path="res://settlement/settlement.gd" id="94_settlement"]
+
+[ext_resource type="Script" path="res://settlement/population.gd" id="93_population"]
+
 [sub_resource type="NavigationMesh" id="navmesh"]
+resource_local_to_scene = true
 geometry_parsed_geometry_type = 1
 geometry_collision_mask = 1
 cell_size = 0.25
@@ -48,6 +57,24 @@ mesh = SubResource("ground_mesh")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("ground_shape")
+
+[node name="Buildings" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("95_registry")
+
+[node name="Population" type="Node3D" parent="."]
+script = ExtResource("93_population")
+
+[node name="Settlement" type="Node" parent="."]
+script = ExtResource("94_settlement")
+
+[node name="BuildMode" type="Node" parent="." node_paths=PackedStringArray("player", "registry")]
+script = ExtResource("96_buildmode")
+player = NodePath("../Player")
+registry = NodePath("../NavigationRegion3D/Buildings")
+
+[node name="BuildMenu" type="CanvasLayer" parent="." node_paths=PackedStringArray("build_mode")]
+script = ExtResource("97_buildmenu")
+build_mode = NodePath("../BuildMode")
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)

@@ -17,6 +17,8 @@ const LAYER := 1 << 3  # physics layer 4 "interactables"
 ## Higher wins when several are in reach at similar distance.
 @export var focus_priority := 0
 @export var deposit_verb := "Store"
+## How close an NPC must get (flat distance to this node) to use it.
+@export var approach_radius := 1.5
 
 ## (Carryable) -> bool: would the owner take this item right now?
 var item_filter: Callable

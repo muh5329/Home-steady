@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=42 format=3]
 
 [ext_resource type="Script" path="res://world/regions/region.gd" id="1_region"]
 [ext_resource type="Environment" path="res://art/environments/default_environment.tres" id="2_env"]
@@ -19,7 +19,26 @@
 [ext_resource type="Resource" path="res://data/resource_nodes/boulder.tres" id="22_boulder"]
 [ext_resource type="Resource" path="res://data/resource_nodes/iron_vein.tres" id="23_iron"]
 
+[ext_resource type="Script" path="res://settlement/buildings/building_registry.gd" id="95_registry"]
+[ext_resource type="Script" path="res://settlement/construction/build_mode.gd" id="96_buildmode"]
+[ext_resource type="Script" path="res://ui/building/build_menu.gd" id="97_buildmenu"]
+
+[ext_resource type="PackedScene" path="res://settlement/props/campfire.tscn" id="90_campfire"]
+[ext_resource type="PackedScene" path="res://settlement/props/tent.tscn" id="91_tent"]
+
+[ext_resource type="Script" path="res://core/utilities/footprint.gd" id="89_footprint"]
+
+[ext_resource type="Script" path="res://settlement/settlement.gd" id="94_settlement"]
+
+[ext_resource type="Script" path="res://settlement/population.gd" id="93_population"]
+
+[ext_resource type="PackedScene" path="res://characters/npc/settler.tscn" id="92_settler"]
+
+[ext_resource type="Resource" path="res://data/jobs/miner.tres" id="87_miner"]
+[ext_resource type="Resource" path="res://data/jobs/farmer.tres" id="88_farmer"]
+
 [sub_resource type="NavigationMesh" id="navmesh"]
+resource_local_to_scene = true
 geometry_parsed_geometry_type = 1
 geometry_collision_mask = 1
 cell_size = 0.25
@@ -33,6 +52,9 @@ size = Vector2(160, 160)
 
 [sub_resource type="BoxShape3D" id="ground_shape"]
 size = Vector3(160, 1, 160)
+
+[sub_resource type="BoxShape3D" id="camp_fp"]
+size = Vector3(9, 2, 7)
 
 [node name="TestArena" type="Node3D" node_paths=PackedStringArray("player", "spawn_point", "navigation_region")]
 script = ExtResource("1_region")
@@ -144,6 +166,63 @@ definition = ExtResource("23_iron")
 
 [node name="Stockpile" parent="NavigationRegion3D" instance=ExtResource("14_stockpile")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 9)
+
+[node name="Buildings" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("95_registry")
+
+[node name="Population" type="Node3D" parent="."]
+script = ExtResource("93_population")
+
+[node name="Bjorn" parent="Population" instance=ExtResource("92_settler")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.05, 11)
+settler_name = "Bjorn"
+
+[node name="Dain" parent="Population" instance=ExtResource("92_settler")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.05, 6)
+settler_name = "Dain"
+
+[node name="Worker" parent="Population/Dain"]
+job = ExtResource("87_miner")
+
+[node name="Mira" parent="Population" instance=ExtResource("92_settler")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0.05, 14)
+settler_name = "Mira"
+
+[node name="Worker" parent="Population/Mira"]
+job = ExtResource("88_farmer")
+
+[node name="Settlement" type="Node" parent="."]
+script = ExtResource("94_settlement")
+
+[node name="BuildMode" type="Node" parent="." node_paths=PackedStringArray("player", "registry")]
+script = ExtResource("96_buildmode")
+player = NodePath("../Player")
+registry = NodePath("../NavigationRegion3D/Buildings")
+
+[node name="BuildMenu" type="CanvasLayer" parent="." node_paths=PackedStringArray("build_mode")]
+script = ExtResource("97_buildmenu")
+build_mode = NodePath("../BuildMode")
+
+[node name="Camp" type="Node3D" parent="NavigationRegion3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 8)
+
+[node name="Campfire" parent="NavigationRegion3D/Camp" instance=ExtResource("90_campfire")]
+
+[node name="Footprint" type="Area3D" parent="NavigationRegion3D/Camp"]
+collision_layer = 32
+collision_mask = 0
+monitoring = false
+script = ExtResource("89_footprint")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Camp/Footprint"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1, 1.8)
+shape = SubResource("camp_fp")
+
+[node name="Tent1" parent="NavigationRegion3D/Camp" instance=ExtResource("91_tent")]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 3.6, 0, 2.2)
+
+[node name="Tent2" parent="NavigationRegion3D/Camp" instance=ExtResource("91_tent")]
+transform = Transform3D(0.87, 0, -0.5, 0, 1, 0, 0.5, 0, 0.87, -2.8, 0, 3.0)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)

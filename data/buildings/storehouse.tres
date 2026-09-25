@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BuildingDefinition" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://settlement/buildings/building_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://settlement/buildings/storehouse.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"building.storehouse"
+display_name = "Storehouse"
+description = "Large covered storage (120)."
+scene = ExtResource("2_scene")
+footprint = Vector2(5.8, 8.2)
+footprint_offset = Vector2(0, 1.2)
+cost = Dictionary[StringName, int]({&"item.log": 8, &"item.stone": 4})
+build_work = 72.0
+menu_order = 2

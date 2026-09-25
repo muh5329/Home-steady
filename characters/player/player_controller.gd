@@ -12,6 +12,8 @@ extends Node
 @export var aim_assist_min_dot := 0.35
 
 var input_enabled := true
+## Off while a tool (build mode) uses the attack/block buttons.
+var combat_input_enabled := true
 
 
 func _ready() -> void:
@@ -44,6 +46,10 @@ func _physics_process(_delta: float) -> void:
 		interaction.interact()
 	if Input.is_action_just_pressed(&"drop"):
 		interaction.drop()
+
+	if not combat_input_enabled:
+		combat.set_block(false)
+		return
 
 	if interaction.is_carrying():
 		combat.set_block(false)

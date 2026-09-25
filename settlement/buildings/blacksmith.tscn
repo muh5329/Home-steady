@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://settlement/buildings/building.gd" id="1_building"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/blue/building_blacksmith_blue.gltf" id="2_model"]
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(5.2, 4, 4.4)
+
+[node name="Blacksmith" type="StaticBody3D"]
+script = ExtResource("1_building")
+
+[node name="Model" parent="." instance=ExtResource("2_model")]
+transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("shape")
+

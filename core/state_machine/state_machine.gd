@@ -26,6 +26,13 @@ func start(ctx: Object) -> void:
 	current.enter({})
 
 
+## Exits the current state (releasing whatever it holds) and halts.
+func stop() -> void:
+	if current:
+		current.exit()
+	current = null
+
+
 func tick(delta: float) -> void:
 	if current:
 		current.tick(delta)

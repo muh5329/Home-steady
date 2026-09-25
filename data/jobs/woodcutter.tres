@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="JobDefinition" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://ai/jobs/job_definition.gd" id="1_job"]
+
+[resource]
+script = ExtResource("1_job")
+id = &"job.woodcutter"
+display_name = "Woodcutter"
+description = "Fells trees and hauls the logs to storage."
+gather_items = Array[StringName]([&"item.log"])
+work_animation = &"1H_Melee_Attack_Chop"
+work_impact_time = 0.6
+work_amount = 10.0
+work_tags = PackedStringArray("chop")
+work_verb = "Chopping"
+tool_part = &"1H_Axe"

@@ -11,7 +11,7 @@ extends RigidBody3D
 @export var hold_offset := Vector3.ZERO
 @export var hold_rotation_degrees := Vector3.ZERO
 
-var carrier: InteractionController = null
+var carrier: Node = null  # the CarryComponent holding it
 ## Someone is on their way to / in the middle of picking this up. Storage
 ## and other haulers leave claimed items alone.
 var claimed_by: Object = null
@@ -55,8 +55,13 @@ func is_available() -> bool:
 	return carrier == null and (claimed_by == null or not is_instance_valid(claimed_by))
 
 
+## Available to `by` specifically (free, or already reserved by `by`).
+func is_available_for(by: Object) -> bool:
+	return carrier == null and (claimed_by == null or claimed_by == by or not is_instance_valid(claimed_by))
+
+
 func claim(by: Object) -> bool:
-	if not is_available():
+	if not is_available_for(by):
 		return false
 	claimed_by = by
 	return true
@@ -86,7 +91,7 @@ func _on_interacted(by: InteractionController) -> void:
 
 
 ## Called by the InteractionController once the pickup animation lands.
-func attach_to(by: InteractionController, hold_point: Node3D) -> void:
+func attach_to(by: Node, hold_point: Node3D) -> void:
 	carrier = by
 	_saved_layer = collision_layer
 	_saved_mask = collision_mask

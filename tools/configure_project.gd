@@ -18,6 +18,7 @@ const PHYSICS_LAYERS := {
 	3: "hurtboxes",
 	4: "interactables",
 	5: "props",
+	6: "footprints",
 }
 
 # action -> [events]; events are ["key", KEY_*] / ["mouse", MOUSE_BUTTON_*] /
@@ -41,6 +42,9 @@ var ACTIONS := {
 	"attack_heavy": [["key", KEY_F], ["joy_axis", JOY_AXIS_TRIGGER_RIGHT, 1.0]],
 	"block": [["mouse", MOUSE_BUTTON_RIGHT], ["joy_button", JOY_BUTTON_LEFT_SHOULDER]],
 	"pause": [["key", KEY_ESCAPE], ["joy_button", JOY_BUTTON_START]],
+	"build_menu": [["key", KEY_B], ["joy_button", JOY_BUTTON_DPAD_UP]],
+	"rotate_building": [["key", KEY_R], ["joy_button", JOY_BUTTON_DPAD_RIGHT]],
+	"demolish": [["key", KEY_X], ["joy_button", JOY_BUTTON_DPAD_DOWN]],
 	"quick_save": [["key", KEY_F5]],
 	"quick_load": [["key", KEY_F9]],
 	"debug_toggle": [["key", KEY_F3]],

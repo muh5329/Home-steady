@@ -4,12 +4,13 @@ extends GameData
 ## combat: hitting the node with a melee attack wears it down; when
 ## depleted it drops physical items.
 
-enum DepleteStyle { FALL, CRUMBLE }
+enum DepleteStyle { FALL, CRUMBLE, HARVEST }
 
 @export var model: PackedScene
 @export var depleted_model: PackedScene
 @export var model_scale := 1.0
 @export var depleted_scale := 1.0
+## 0 = no solid collider (crops you can walk through).
 @export var collision_radius := 0.5
 @export var collision_height := 3.0
 ## Fade out when it blocks the camera's view of the player (0 = never).
@@ -27,5 +28,11 @@ enum DepleteStyle { FALL, CRUMBLE }
 @export var deplete_style := DepleteStyle.FALL
 ## Seconds until it regrows/refills; 0 = never.
 @export var respawn_seconds := 240.0
+## Labour needed after depletion before it regrows (sowing a field).
+## 0 = regrows by itself.
+@export var tend_work := 0.0
+@export var tend_verb := "Sow"
+## Show growth by scaling up over the regrow time (crops).
+@export var grow_visual := false
 @export var hit_sound: AudioStream
 @export var prompt := "Chop"

@@ -52,6 +52,9 @@ var aim_provider: Callable
 
 var state: CombatState = CombatState.READY
 var poise := 0.0
+## Increments whenever a new action/state starts; async callers compare it
+## to make sure "their" action is still the one playing.
+var action_serial := 0
 
 var _t := 0.0  # time in current state
 var _attack: AttackData
@@ -362,6 +365,7 @@ func _enter(new_state: CombatState) -> void:
 		receiver.invulnerable = false
 	state = new_state
 	_t = 0.0
+	action_serial += 1
 	if new_state == CombatState.READY:
 		motor.set_speed_modifier(&"combat", 1.0)
 		motor.turn_multiplier = 1.0

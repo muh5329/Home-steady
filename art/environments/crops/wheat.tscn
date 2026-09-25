@@ -1,0 +1,170 @@
+[gd_scene load_steps=5 format=3]
+
+[sub_resource type="StandardMaterial3D" id="straw"]
+albedo_color = Color(0.78, 0.68, 0.32, 1)
+roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="grain"]
+albedo_color = Color(0.93, 0.74, 0.3, 1)
+roughness = 0.8
+
+[sub_resource type="CylinderMesh" id="stalk"]
+top_radius = 0.012
+bottom_radius = 0.018
+height = 1.0
+radial_segments = 4
+rings = 1
+
+[sub_resource type="CapsuleMesh" id="ear"]
+radius = 0.035
+height = 0.24
+radial_segments = 6
+rings = 2
+
+[node name="Wheat" type="Node3D"]
+
+[node name="Stalk0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, -0.002, -0.000, 0.002, 1.000, 0.008, 0.000, -0.008, 1.000, -0.289, 0.517, -0.275)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, -0.070, 0.002, 0.070, 0.997, -0.031, 0.000, 0.031, 1.000, -0.299, 0.475, -0.316)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999, -0.046, 0.003, 0.046, 0.996, -0.074, 0.000, 0.074, 0.997, -0.365, 0.432, 0.001)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, -0.028, 0.001, 0.028, 0.999, -0.037, 0.000, 0.037, 0.999, -0.368, 0.521, 0.096)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, 0.074, 0.008, -0.074, 0.992, 0.105, 0.000, -0.106, 0.994, -0.300, 0.474, 0.152)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, -0.082, -0.001, 0.082, 0.997, 0.014, 0.000, -0.014, 1.000, -0.360, 0.470, 0.198)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, 0.010, -0.000, -0.010, 0.999, -0.039, 0.000, 0.039, 0.999, 0.008, 0.475, -0.239)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk7" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999, -0.050, 0.004, 0.050, 0.995, -0.081, 0.000, 0.082, 0.997, -0.062, 0.522, -0.158)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk8" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, -0.064, -0.007, 0.064, 0.993, 0.103, 0.000, -0.103, 0.995, -0.058, 0.451, -0.090)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk9" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, -0.083, 0.009, 0.083, 0.991, -0.109, 0.000, 0.110, 0.994, -0.054, 0.459, 0.106)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk10" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.993, -0.115, -0.001, 0.115, 0.993, 0.007, 0.000, -0.007, 1.000, -0.139, 0.513, 0.230)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk11" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, 0.055, -0.004, -0.055, 0.996, -0.067, 0.000, 0.067, 0.998, 0.010, 0.486, 0.244)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk12" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.996, 0.091, -0.006, -0.092, 0.994, -0.062, 0.000, 0.062, 0.998, 0.262, 0.518, -0.275)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk13" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, 0.077, -0.006, -0.077, 0.994, -0.071, 0.000, 0.071, 0.997, 0.273, 0.429, -0.313)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk14" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.996, 0.088, -0.005, -0.088, 0.995, -0.055, 0.000, 0.056, 0.998, 0.329, 0.442, 0.016)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk15" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, 0.055, 0.004, -0.055, 0.996, 0.069, 0.000, -0.069, 0.998, 0.329, 0.465, -0.094)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk16" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, 0.069, -0.006, -0.069, 0.993, -0.092, 0.000, 0.092, 0.996, 0.387, 0.452, 0.371)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+[node name="Stalk17" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.993, -0.117, -0.011, 0.117, 0.989, 0.095, 0.000, -0.096, 0.995, 0.206, 0.484, 0.290)
+mesh = SubResource("stalk")
+surface_material_override/0 = SubResource("straw")
+
+[node name="Ear0" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, -0.002, -0.000, 0.002, 1.000, 0.008, 0.000, -0.008, 1.000, -0.290, 1.135, -0.280)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, -0.070, 0.002, 0.070, 0.997, -0.031, 0.000, 0.031, 1.000, -0.340, 1.049, -0.298)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999, -0.046, 0.003, 0.046, 0.996, -0.074, 0.000, 0.074, 0.997, -0.390, 0.964, 0.040)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, -0.028, 0.001, 0.028, 0.999, -0.037, 0.000, 0.037, 0.999, -0.385, 1.142, 0.119)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear4" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, 0.074, 0.008, -0.074, 0.992, 0.105, 0.000, -0.106, 0.994, -0.257, 1.047, 0.091)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear5" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, -0.082, -0.001, 0.082, 0.997, 0.014, 0.000, -0.014, 1.000, -0.407, 1.039, 0.190)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear6" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.000, 0.010, -0.000, -0.010, 0.999, -0.039, 0.000, 0.039, 0.999, 0.014, 1.049, -0.217)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear7" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.999, -0.050, 0.004, 0.050, 0.995, -0.081, 0.000, 0.082, 0.997, -0.093, 1.144, -0.107)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear8" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, -0.064, -0.007, 0.064, 0.993, 0.103, 0.000, -0.103, 0.995, -0.094, 1.000, -0.147)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear9" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, -0.083, 0.009, 0.083, 0.991, -0.109, 0.000, 0.110, 0.994, -0.101, 1.018, 0.168)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear10" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.993, -0.115, -0.001, 0.115, 0.993, 0.007, 0.000, -0.007, 1.000, -0.210, 1.125, 0.225)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear11" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, 0.055, -0.004, -0.055, 0.996, -0.067, 0.000, 0.067, 0.998, 0.043, 1.072, 0.284)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear12" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.996, 0.091, -0.006, -0.092, 0.994, -0.062, 0.000, 0.062, 0.998, 0.318, 1.136, -0.236)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear13" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.997, 0.077, -0.006, -0.077, 0.994, -0.071, 0.000, 0.071, 0.997, 0.314, 0.957, -0.275)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear14" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.996, 0.088, -0.005, -0.088, 0.995, -0.055, 0.000, 0.056, 0.998, 0.377, 0.983, 0.047)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear15" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, 0.055, 0.004, -0.055, 0.996, 0.069, 0.000, -0.069, 0.998, 0.360, 1.030, -0.133)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear16" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.998, 0.069, -0.006, -0.069, 0.993, -0.092, 0.000, 0.092, 0.996, 0.425, 1.004, 0.422)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")
+[node name="Ear17" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.993, -0.117, -0.011, 0.117, 0.989, 0.095, 0.000, -0.096, 0.995, 0.137, 1.066, 0.233)
+mesh = SubResource("ear")
+surface_material_override/0 = SubResource("grain")

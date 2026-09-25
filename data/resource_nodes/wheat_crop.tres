@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="ResourceNodeDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://items/resources/resource_node_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://art/environments/crops/wheat.tscn" id="2_model"]
+[ext_resource type="Resource" path="res://data/items/resources/wheat.tres" id="4_item"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_1.wav" id="5_sound"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"node.wheat_crop"
+display_name = "Wheat"
+model = ExtResource("2_model")
+model_scale = 1.0
+collision_radius = 0.0
+collision_height = 1.0
+max_health = 20.0
+yield_item = ExtResource("4_item")
+yield_count = 1
+tag_multipliers = {"harvest": 1.0}
+deplete_style = 2
+respawn_seconds = 60.0
+tend_work = 20.0
+tend_verb = "Sow"
+grow_visual = true
+hit_sound = ExtResource("5_sound")
+prompt = "Reap"

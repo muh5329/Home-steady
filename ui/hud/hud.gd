@@ -21,6 +21,10 @@ func _ready() -> void:
 	if player:
 		bind_player(player)
 	EventBus.storage_changed.connect(func(_s): _refresh_resources())
+	EventBus.world_geometry_changed.connect(func(): _refresh_resources.call_deferred())
+	EventBus.building_completed.connect(func(b):
+		_refresh_resources()
+		show_banner("%s built!" % b.definition.display_name, 2.5, Color(1, 0.85, 0.4)))
 	_refresh_resources.call_deferred()
 
 
@@ -33,8 +37,9 @@ func bind_player(p: Player) -> void:
 	p.combat.died.connect(func(): show_banner("You have fallen", 3.0))
 
 
-func show_banner(text: String, seconds: float) -> void:
+func show_banner(text: String, seconds: float, color := Color(0.95, 0.3, 0.2)) -> void:
 	_banner.text = text
+	_banner.add_theme_color_override(&"font_color", color)
 	_banner.visible = true
 	await get_tree().create_timer(seconds).timeout
 	_banner.visible = false
@@ -42,12 +47,13 @@ func show_banner(text: String, seconds: float) -> void:
 
 ## Settlement-wide totals across every storage.
 func _refresh_resources() -> void:
-	var totals := {}
-	for storage in get_tree().get_nodes_in_group(Stockpile.GROUP):
-		var inv: InventoryComponent = storage.inventory
-		for id in inv.item_ids():
-			totals[id] = totals.get(id, 0) + inv.count(id)
-	var lines: PackedStringArray = ["Settlement stores"]
+	var settlement := Settlement.of(self)
+	if settlement == null:
+		return
+	var totals := settlement.totals()
+	var lines: PackedStringArray = ["Settlement",
+		"  Settlers  %d   Beds  %d" % [get_tree().get_nodes_in_group(&"settlers").size(), settlement.beds()],
+		"Stores"]
 	if totals.is_empty():
 		lines.append("  (nothing stored yet)")
 	for id in totals:
@@ -125,7 +131,7 @@ func _build() -> void:
 	_controls = _label(
 		"WASD move   Shift sprint   Alt walk   Space jump   Ctrl/C dodge\n" +
 		"LMB attack (combo)   F heavy   RMB block   E interact   G drop\n" +
-		"F5 save   F9 load   F3 debug   H hide help", 14, Color(0.92, 0.92, 0.88, 0.85))
+		"B build   R rotate   X cancel site (in build mode)   F5 save   F9 load   F3 debug   H hide help", 14, Color(0.92, 0.92, 0.88, 0.85))
 	_controls.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	_controls.position = Vector2(24, -86)
 	root.add_child(_controls)

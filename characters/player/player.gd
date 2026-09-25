@@ -16,6 +16,7 @@ const GROUP := &"player"
 @onready var health: HealthComponent = $HealthComponent
 @onready var combat: CombatController = $CombatController
 @onready var interaction: InteractionController = $Interaction
+@onready var carry: CarryComponent = $Carry
 @onready var controller: PlayerController = $PlayerController
 @onready var camera_rig: CameraRig = $CameraRig
 
@@ -25,15 +26,11 @@ func _ready() -> void:
 	add_to_group(SaveManager.GROUP)
 	ModelUtils.set_parts_visible(model_root, hidden_parts, false)
 	_setup_carry_pose()
-	interaction.carrying_changed.connect(func(item): ModelUtils.set_parts_visible(model_root, weapon_parts, item == null))
+	carry.carrying_changed.connect(func(item): ModelUtils.set_parts_visible(model_root, weapon_parts, item == null))
 
 
 func _setup_carry_pose() -> void:
-	var modifier := CarryPoseModifier.new()
-	modifier.name = "CarryPose"
-	animator.skeleton.add_child(modifier)
-	modifier.setup(animator.player)
-	interaction.carry_pose = modifier
+	CarryPoseModifier.install(animator, carry)
 
 
 func respawn(at: Vector3) -> void:
@@ -57,12 +54,12 @@ func save_state() -> Dictionary:
 		"position": SaveManager.vec3_to_array(global_position),
 		"yaw": rotation.y,
 		"health": health.current,
-		"carrying": String(interaction.carrying.item_id) if interaction.carrying else "",
+		"carrying": carry.save_state(),
 	}
 
 
 func load_state(state: Dictionary) -> void:
-	interaction.discard_carried()
+	carry.discard_carried()
 	global_position = SaveManager.array_to_vec3(state["position"])
 	velocity = Vector3.ZERO
 	var yaw := float(state.get("yaw", 0.0))
@@ -74,9 +71,4 @@ func load_state(state: Dictionary) -> void:
 		health.set_current(hp)
 	else:
 		combat.revive(hp)
-	var carried_id := StringName(state.get("carrying", ""))
-	if carried_id != &"" and DataRegistry.has_data(carried_id):
-		var data := DataRegistry.get_data(carried_id) as ItemData
-		var item: Carryable = data.carry_scene.instantiate()
-		add_child(item)
-		interaction.hold_immediately(item)
+	carry.load_state(state.get("carrying", ""))
