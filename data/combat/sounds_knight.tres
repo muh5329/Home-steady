@@ -1,0 +1,19 @@
+[gd_resource type="Resource" script_class="CombatSounds" load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://combat/combat_sounds.gd" id="1_s"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_1.wav" id="2_sw1"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_2.wav" id="3_sw2"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_3.wav" id="4_sw3"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_heavy.wav" id="5_swh"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit_1.wav" id="6_h1"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit_2.wav" id="7_h2"]
+[ext_resource type="AudioStream" path="res://audio/sfx/block.wav" id="8_b"]
+[ext_resource type="AudioStream" path="res://audio/sfx/dodge.wav" id="9_d"]
+
+[resource]
+script = ExtResource("1_s")
+swings = Array[AudioStream]([ExtResource("2_sw1"), ExtResource("3_sw2"), ExtResource("4_sw3")])
+heavy_swing = ExtResource("5_swh")
+hits_taken = Array[AudioStream]([ExtResource("6_h1"), ExtResource("7_h2")])
+block = ExtResource("8_b")
+dodge = ExtResource("9_d")

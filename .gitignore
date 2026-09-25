@@ -1,0 +1,5 @@
+.godot/
+.sync/
+/android/
+*.tmp
+tests/output/

@@ -1,0 +1,54 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://settlement/storage/stockpile.gd" id="1_stockpile"]
+[ext_resource type="Script" path="res://settlement/storage/inventory_component.gd" id="2_inv"]
+[ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/pallet.gltf" id="4_pallet"]
+
+[sub_resource type="BoxShape3D" id="zone_shape"]
+size = Vector3(4.2, 2.5, 3.6)
+
+[sub_resource type="BoxShape3D" id="floor_shape"]
+size = Vector3(3.2, 0.24, 3.2)
+
+[sub_resource type="SphereShape3D" id="interact_shape"]
+radius = 2.2
+
+[node name="Stockpile" type="Node3D" node_paths=PackedStringArray("inventory", "zone", "interactable", "stack_origin")]
+script = ExtResource("1_stockpile")
+inventory = NodePath("Inventory")
+zone = NodePath("Zone")
+interactable = NodePath("Interactable")
+stack_origin = NodePath("Stacks")
+
+[node name="Inventory" type="Node" parent="."]
+script = ExtResource("2_inv")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="Pallet" parent="Floor" instance=ExtResource("4_pallet")]
+transform = Transform3D(11, 0, 0, 0, 3, 0, 0, 0, 11, 0, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, 0)
+shape = SubResource("floor_shape")
+
+[node name="Stacks" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.24, 0)
+
+[node name="Zone" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 16
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Zone"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+shape = SubResource("zone_shape")
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interact")
+prompt = "Stockpile"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("interact_shape")

@@ -1,0 +1,57 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/nature/mountain_B.gltf" id="1_rock"]
+[ext_resource type="Material" path="res://art/props/ore_material.tres" id="2_ore"]
+
+[sub_resource type="CylinderMesh" id="c0"]
+top_radius = 0.008
+bottom_radius = 0.053
+height = 0.299
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="c1"]
+top_radius = 0.008
+bottom_radius = 0.051
+height = 0.285
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="c2"]
+top_radius = 0.010
+bottom_radius = 0.065
+height = 0.298
+radial_segments = 6
+rings = 1
+
+[sub_resource type="CylinderMesh" id="c3"]
+top_radius = 0.009
+bottom_radius = 0.062
+height = 0.204
+radial_segments = 6
+rings = 1
+
+[node name="OreModel" type="Node3D"]
+
+[node name="Rock" parent="." instance=ExtResource("1_rock")]
+transform = Transform3D(0.26, 0, 0, 0, 0.26, 0, 0, 0, 0.26, 0, 0, 0)
+
+[node name="Crystal0" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.911, -0.357, -0.206, 0.412, 0.789, 0.456, 0.000, -0.500, 0.866, -0.057, 0.490, -0.029)
+mesh = SubResource("c0")
+surface_material_override/0 = ExtResource("2_ore")
+
+[node name="Crystal1" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.948, -0.307, -0.078, 0.317, 0.920, 0.232, 0.000, -0.245, 0.970, -0.041, 0.456, 0.026)
+mesh = SubResource("c1")
+surface_material_override/0 = ExtResource("2_ore")
+
+[node name="Crystal2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.897, -0.432, -0.089, 0.441, 0.879, 0.181, 0.000, -0.201, 0.979, 0.112, 0.519, 0.032)
+mesh = SubResource("c2")
+surface_material_override/0 = ExtResource("2_ore")
+
+[node name="Crystal3" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.846, 0.529, -0.064, -0.533, 0.840, -0.101, 0.000, 0.119, 0.993, -0.014, 0.423, 0.037)
+mesh = SubResource("c3")
+surface_material_override/0 = ExtResource("2_ore")

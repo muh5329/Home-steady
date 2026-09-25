@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://items/item_data.gd" id="1_item"]
+[ext_resource type="PackedScene" path="res://items/resources/props/log.tscn" id="2_carry"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/resource_lumber.gltf" id="3_visual"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"item.log"
+display_name = "Logs"
+description = "Freshly felled timber. Heavy; carry it home."
+carry_scene = ExtResource("2_carry")
+heavy = true
+carry_speed = 0.75
+storable = true
+stack_visual = ExtResource("3_visual")
+stack_visual_scale = 1.35
+stack_height = 0.28

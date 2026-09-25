@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://items/resources/carryable.gd" id="1_carry"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/barrel.gltf" id="2_mesh"]
+[ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
+
+[sub_resource type="CylinderShape3D" id="shape"]
+height = 0.84
+radius = 0.4
+
+[sub_resource type="SphereShape3D" id="interact_shape"]
+radius = 0.7
+
+[node name="Barrel" type="RigidBody3D"]
+collision_layer = 16
+collision_mask = 19
+mass = 30.0
+script = ExtResource("1_carry")
+item_id = &"item.barrel"
+hold_offset = Vector3(0, 0.1, 0)
+
+[node name="Mesh" parent="." instance=ExtResource("2_mesh")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, -0.42, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("shape")
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interact")
+prompt = "Pick up Barrel (heavy)"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+shape = SubResource("interact_shape")

@@ -1,0 +1,39 @@
+[gd_resource type="Resource" script_class="MovesetData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://combat/moveset_data.gd" id="1_moveset"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2_attack"]
+
+[sub_resource type="Resource" id="slash"]
+script = ExtResource("2_attack")
+animation = &"1H_Melee_Attack_Slice_Diagonal"
+speed = 0.8
+active_start = 0.38
+active_end = 0.54
+combo_window = 0.6
+recovery_end = 0.95
+damage = 10.0
+poise_damage = 12.0
+knockback = 3.5
+tags = PackedStringArray("melee", "slash")
+lunge_distance = 0.7
+
+[sub_resource type="Resource" id="chop"]
+script = ExtResource("2_attack")
+animation = &"1H_Melee_Attack_Chop"
+speed = 0.85
+active_start = 0.56
+active_end = 0.72
+combo_window = 0.9
+recovery_end = 1.05
+damage = 14.0
+poise_damage = 20.0
+knockback = 4.5
+tags = PackedStringArray("melee")
+hitbox_size = Vector3(1.2, 1.5, 2.0)
+hitbox_offset = Vector3(0, 0.9, -1.0)
+lunge_distance = 0.8
+
+[resource]
+script = ExtResource("1_moveset")
+light_combo = Array[ExtResource("2_attack")]([SubResource("slash"), SubResource("chop")])
+can_block = false

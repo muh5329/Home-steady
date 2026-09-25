@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="CombatSounds" load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://combat/combat_sounds.gd" id="1_s"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_2.wav" id="2_sw2"]
+[ext_resource type="AudioStream" path="res://audio/sfx/swing_3.wav" id="3_sw3"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit_bone_1.wav" id="4_hb1"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit_bone_2.wav" id="5_hb2"]
+[ext_resource type="AudioStream" path="res://audio/sfx/hit_3.wav" id="6_h3"]
+
+[resource]
+script = ExtResource("1_s")
+swings = Array[AudioStream]([ExtResource("2_sw2"), ExtResource("3_sw3")])
+hits_taken = Array[AudioStream]([ExtResource("4_hb1"), ExtResource("5_hb2"), ExtResource("6_h3")])

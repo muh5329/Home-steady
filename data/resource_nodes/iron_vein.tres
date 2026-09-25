@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="ResourceNodeDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://items/resources/resource_node_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://art/environments/resource_nodes/iron_ore_vein.tscn" id="2_model"]
+[ext_resource type="Resource" path="res://data/items/resources/iron_ore.tres" id="4_item"]
+[ext_resource type="AudioStream" path="res://audio/sfx/block.wav" id="5_sound"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"node.iron_vein"
+display_name = "Iron Vein"
+model = ExtResource("2_model")
+model_scale = 1.0
+collision_radius = 1.0
+collision_height = 2.0
+max_health = 90
+yield_item = ExtResource("4_item")
+yield_count = 3
+tag_multipliers = {"mine": 2.5}
+deplete_style = 1
+respawn_seconds = 600
+hit_sound = ExtResource("5_sound")
+prompt = "Mine"

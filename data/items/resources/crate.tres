@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://items/item_data.gd" id="1_item"]
+[ext_resource type="PackedScene" path="res://items/resources/props/crate.tscn" id="2_carry"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"item.crate"
+display_name = "Crate"
+description = "A sturdy wooden crate."
+carry_scene = ExtResource("2_carry")
+heavy = false
+carry_speed = 0.88
+storable = false

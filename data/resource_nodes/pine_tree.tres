@@ -1,0 +1,28 @@
+[gd_resource type="Resource" script_class="ResourceNodeDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://items/resources/resource_node_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/nature/tree_single_A.gltf" id="2_model"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/nature/tree_single_A_cut.gltf" id="3_dep"]
+[ext_resource type="Resource" path="res://data/items/resources/log.tres" id="4_item"]
+[ext_resource type="AudioStream" path="res://audio/sfx/thud.wav" id="5_sound"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"node.pine_tree"
+display_name = "Pine"
+model = ExtResource("2_model")
+model_scale = 5.0
+depleted_model = ExtResource("3_dep")
+depleted_scale = 4.0
+collision_radius = 0.45
+collision_height = 4.0
+camera_fade_radius = 2.0
+camera_fade_height = 3.2
+max_health = 48
+yield_item = ExtResource("4_item")
+yield_count = 2
+tag_multipliers = {"chop": 2.5}
+deplete_style = 0
+respawn_seconds = 300
+hit_sound = ExtResource("5_sound")
+prompt = "Chop"

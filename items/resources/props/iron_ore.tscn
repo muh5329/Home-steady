@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://items/resources/carryable.gd" id="1_carry"]
+[ext_resource type="PackedScene" path="res://art/props/iron_ore_chunk.tscn" id="2_mesh"]
+[ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(0.5, 0.4, 0.5)
+
+[sub_resource type="SphereShape3D" id="interact_shape"]
+radius = 0.8
+
+[node name="IronOre" type="RigidBody3D"]
+collision_layer = 16
+collision_mask = 19
+mass = 15
+script = ExtResource("1_carry")
+item_id = &"item.iron_ore"
+hold_offset = Vector3(0, 0.1, 0)
+hold_rotation_degrees = Vector3(0, 0, 0)
+
+[node name="Mesh" parent="." instance=ExtResource("2_mesh")]
+transform = Transform3D(1.0, 0, 0, 0, 1.0, 0, 0, 0, 1.0, 0, -0.2, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("shape")
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interact")
+prompt = "Pick up Iron Ore"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+shape = SubResource("interact_shape")

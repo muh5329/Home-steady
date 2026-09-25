@@ -1,0 +1,181 @@
+[gd_scene load_steps=30 format=3]
+
+[ext_resource type="Script" path="res://world/regions/region.gd" id="1_region"]
+[ext_resource type="Environment" path="res://art/environments/default_environment.tres" id="2_env"]
+[ext_resource type="Material" path="res://art/environments/materials/stylized_ground.tres" id="3_ground"]
+[ext_resource type="PackedScene" path="res://characters/player/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://characters/npc/enemy.tscn" id="5_enemy"]
+[ext_resource type="Resource" path="res://data/enemies/skeleton_warrior.tres" id="6_skeleton"]
+[ext_resource type="PackedScene" path="res://items/resources/props/crate.tscn" id="7_crate"]
+[ext_resource type="PackedScene" path="res://items/resources/props/barrel.tscn" id="8_barrel"]
+[ext_resource type="Script" path="res://ui/hud/hud.gd" id="12_hud"]
+[ext_resource type="Script" path="res://items/resources/resource_node.gd" id="13_resnode"]
+[ext_resource type="PackedScene" path="res://settlement/storage/stockpile.tscn" id="14_stockpile"]
+[ext_resource type="Script" path="res://world/world_items.gd" id="98_items"]
+[ext_resource type="Script" path="res://art/VFX/hit_effects.gd" id="99_hitfx"]
+
+[ext_resource type="Resource" path="res://data/resource_nodes/pine_tree.tres" id="20_pine"]
+[ext_resource type="Resource" path="res://data/resource_nodes/fir_tree.tres" id="21_fir"]
+[ext_resource type="Resource" path="res://data/resource_nodes/boulder.tres" id="22_boulder"]
+[ext_resource type="Resource" path="res://data/resource_nodes/iron_vein.tres" id="23_iron"]
+
+[sub_resource type="NavigationMesh" id="navmesh"]
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+cell_size = 0.25
+cell_height = 0.25
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.5
+
+[sub_resource type="PlaneMesh" id="ground_mesh"]
+size = Vector2(160, 160)
+
+[sub_resource type="BoxShape3D" id="ground_shape"]
+size = Vector3(160, 1, 160)
+
+[node name="TestArena" type="Node3D" node_paths=PackedStringArray("player", "spawn_point", "navigation_region")]
+script = ExtResource("1_region")
+player = NodePath("Player")
+spawn_point = NodePath("SpawnPoint")
+navigation_region = NodePath("NavigationRegion3D")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, -0.40558, 0.40558, 0, 0.707107, 0.707107, -0.573576, -0.579228, 0.579228, 0, 20, 0)
+light_color = Color(1, 0.94, 0.84, 1)
+light_energy = 1.35
+shadow_enabled = true
+shadow_bias = 0.04
+shadow_blur = 1.5
+directional_shadow_max_distance = 90.0
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("navmesh")
+
+[node name="Ground" type="StaticBody3D" parent="NavigationRegion3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="NavigationRegion3D/Ground"]
+mesh = SubResource("ground_mesh")
+surface_material_override/0 = ExtResource("3_ground")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("ground_shape")
+
+[node name="ResourceNodes" type="Node3D" parent="NavigationRegion3D"]
+
+[node name="Pine1" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.9553, 0, 0.2955, 0, 1, 0, -0.2955, 0, 0.9553, -10, 0, -6)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Fir1" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.4536, 0, 0.8912, 0, 1, 0, -0.8912, 0, 0.4536, -13, 0, -2)
+script = ExtResource("13_resnode")
+definition = ExtResource("21_fir")
+
+[node name="Pine2" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.4161, 0, 0.9093, 0, 1, 0, -0.9093, 0, -0.4161, -9, 0, 2)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Fir2" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.7648, 0, 0.6442, 0, 1, 0, -0.6442, 0, 0.7648, -15, 0, 4)
+script = ExtResource("13_resnode")
+definition = ExtResource("21_fir")
+
+[node name="Pine3" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.8569, 0, 0.5155, 0, 1, 0, -0.5155, 0, -0.8569, -12, 0, 9)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Fir3" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.3233, 0, 0.9463, 0, 1, 0, -0.9463, 0, -0.3233, -17, 0, -5)
+script = ExtResource("13_resnode")
+definition = ExtResource("21_fir")
+
+[node name="Pine4" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.6216, 0, 0.7833, 0, 1, 0, -0.7833, 0, 0.6216, -7, 0, -11)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Fir4" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.5885, 0, 0.8085, 0, 1, 0, -0.8085, 0, -0.5885, -18, 0, 1)
+script = ExtResource("13_resnode")
+definition = ExtResource("21_fir")
+
+[node name="Pine5" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.1700, 0, 0.9854, 0, 1, 0, -0.9854, 0, 0.1700, -20, 0, 7)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Fir5" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.9801, 0, 0.1987, 0, 1, 0, -0.1987, 0, 0.9801, -6, 0, 12)
+script = ExtResource("13_resnode")
+definition = ExtResource("21_fir")
+
+[node name="Boulder1" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.9211, 0, 0.3894, 0, 1, 0, -0.3894, 0, 0.9211, 12, 0, 6)
+script = ExtResource("13_resnode")
+definition = ExtResource("22_boulder")
+
+[node name="Boulder2" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.1288, 0, 0.9917, 0, 1, 0, -0.9917, 0, -0.1288, 15, 0, 10)
+script = ExtResource("13_resnode")
+definition = ExtResource("22_boulder")
+
+[node name="Boulder3" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.9710, 0, 0.2392, 0, 1, 0, -0.2392, 0, -0.9710, 18, 0, 4)
+script = ExtResource("13_resnode")
+definition = ExtResource("22_boulder")
+
+[node name="IronVein1" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.6967, 0, 0.7174, 0, 1, 0, -0.7174, 0, 0.6967, 15, 0, -4)
+script = ExtResource("13_resnode")
+definition = ExtResource("23_iron")
+
+[node name="IronVein2" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.5048, 0, 0.8632, 0, 1, 0, -0.8632, 0, -0.5048, 19, 0, -8)
+script = ExtResource("13_resnode")
+definition = ExtResource("23_iron")
+
+[node name="Stockpile" parent="NavigationRegion3D" instance=ExtResource("14_stockpile")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 0, 9)
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)
+
+[node name="HitEffects" type="Node3D" parent="."]
+script = ExtResource("99_hitfx")
+
+[node name="Props" type="Node3D" parent="."]
+script = ExtResource("98_items")
+
+[node name="Crate1" parent="Props" instance=ExtResource("7_crate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.35, 3)
+
+[node name="Crate2" parent="Props" instance=ExtResource("7_crate")]
+transform = Transform3D(0.9, 0, 0.43, 0, 1, 0, -0.43, 0, 0.9, 3.3, 0.35, 3.6)
+
+[node name="Barrel1" parent="Props" instance=ExtResource("8_barrel")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0.45, 3.5)
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="Skeleton1" parent="Enemies" instance=ExtResource("5_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -14)
+definition = ExtResource("6_skeleton")
+
+[node name="Skeleton2" parent="Enemies" instance=ExtResource("5_enemy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.1, -18)
+definition = ExtResource("6_skeleton")
+
+[node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("player")]
+script = ExtResource("12_hud")
+player = NodePath("../Player")

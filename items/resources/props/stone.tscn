@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://items/resources/carryable.gd" id="1_carry"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/resource_stone.gltf" id="2_mesh"]
+[ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
+
+[sub_resource type="BoxShape3D" id="shape"]
+size = Vector3(0.84, 0.56, 0.72)
+
+[sub_resource type="SphereShape3D" id="interact_shape"]
+radius = 0.8
+
+[node name="Stone" type="RigidBody3D"]
+collision_layer = 16
+collision_mask = 19
+mass = 60
+script = ExtResource("1_carry")
+item_id = &"item.stone"
+hold_offset = Vector3(0, 0.05, 0)
+hold_rotation_degrees = Vector3(0, 0, 0)
+
+[node name="Mesh" parent="." instance=ExtResource("2_mesh")]
+transform = Transform3D(2.0, 0, 0, 0, 2.0, 0, 0, 0, 2.0, 0, -0.28, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("shape")
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interact")
+prompt = "Pick up Stone"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+shape = SubResource("interact_shape")

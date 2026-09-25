@@ -1,0 +1,119 @@
+[gd_scene load_steps=20 format=3]
+
+[ext_resource type="Script" path="res://characters/npc/enemy.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://characters/shared/character_motor.gd" id="3_motor"]
+[ext_resource type="Script" path="res://characters/shared/character_animator.gd" id="4_animator"]
+[ext_resource type="Script" path="res://characters/shared/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://combat/hitboxes/damage_receiver.gd" id="6_receiver"]
+[ext_resource type="Script" path="res://combat/hitboxes/hitbox.gd" id="7_hitbox"]
+[ext_resource type="Script" path="res://characters/shared/combat_controller.gd" id="8_combat"]
+[ext_resource type="Script" path="res://characters/npc/enemy_controller.gd" id="9_controller"]
+[ext_resource type="Script" path="res://core/state_machine/state_machine.gd" id="10_fsm"]
+[ext_resource type="Script" path="res://ai/states/enemy_idle_state.gd" id="11_idle"]
+[ext_resource type="Script" path="res://ai/states/enemy_chase_state.gd" id="12_chase"]
+[ext_resource type="Script" path="res://ai/states/enemy_attack_state.gd" id="13_attack"]
+[ext_resource type="Script" path="res://ai/states/enemy_return_state.gd" id="14_return"]
+[ext_resource type="Script" path="res://ui/hud/world_health_bar.gd" id="15_bar"]
+[ext_resource type="Script" path="res://characters/shared/combat_sfx.gd" id="16_sfx"]
+
+[sub_resource type="CapsuleShape3D" id="body_shape"]
+radius = 0.38
+height = 1.8
+
+[sub_resource type="CapsuleShape3D" id="hurt_shape"]
+radius = 0.5
+height = 1.8
+
+[sub_resource type="BoxShape3D" id="hit_shape"]
+size = Vector3(1.6, 1.5, 1.6)
+
+[node name="Enemy" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 19
+floor_snap_length = 0.3
+script = ExtResource("1_enemy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("body_shape")
+
+[node name="Model" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+
+[node name="CharacterMotor" type="Node" parent="." node_paths=PackedStringArray("body")]
+script = ExtResource("3_motor")
+body = NodePath("..")
+turn_speed = 9.0
+
+[node name="CharacterAnimator" type="Node" parent="." node_paths=PackedStringArray("motor")]
+script = ExtResource("4_animator")
+motor = NodePath("../CharacterMotor")
+walk_reference_speed = 1.8
+run_reference_speed = 3.8
+sprint_animation = &"Running_A"
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+
+[node name="Hurtbox" type="Area3D" parent="." node_paths=PackedStringArray("health")]
+script = ExtResource("6_receiver")
+health = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("hurt_shape")
+
+[node name="WeaponHitbox" type="Area3D" parent="."]
+script = ExtResource("7_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponHitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, -0.9)
+shape = SubResource("hit_shape")
+
+[node name="CombatController" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "animator", "health", "receiver", "hitbox")]
+script = ExtResource("8_combat")
+body = NodePath("..")
+motor = NodePath("../CharacterMotor")
+animator = NodePath("../CharacterAnimator")
+health = NodePath("../HealthComponent")
+receiver = NodePath("../Hurtbox")
+hitbox = NodePath("../WeaponHitbox")
+
+[node name="CombatSfx" type="Node3D" parent="." node_paths=PackedStringArray("combat")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("16_sfx")
+combat = NodePath("../CombatController")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.6
+target_desired_distance = 0.6
+path_height_offset = 0.3
+
+[node name="EnemyController" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "agent", "state_machine")]
+script = ExtResource("9_controller")
+body = NodePath("..")
+motor = NodePath("../CharacterMotor")
+combat = NodePath("../CombatController")
+agent = NodePath("../NavigationAgent3D")
+state_machine = NodePath("StateMachine")
+
+[node name="StateMachine" type="Node" parent="EnemyController" node_paths=PackedStringArray("initial_state")]
+script = ExtResource("10_fsm")
+initial_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="EnemyController/StateMachine"]
+script = ExtResource("11_idle")
+
+[node name="Chase" type="Node" parent="EnemyController/StateMachine"]
+script = ExtResource("12_chase")
+
+[node name="Attack" type="Node" parent="EnemyController/StateMachine"]
+script = ExtResource("13_attack")
+
+[node name="Return" type="Node" parent="EnemyController/StateMachine"]
+script = ExtResource("14_return")
+
+[node name="HealthBar" type="Node3D" parent="." node_paths=PackedStringArray("health")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.25, 0)
+script = ExtResource("15_bar")
+health = NodePath("../HealthComponent")
