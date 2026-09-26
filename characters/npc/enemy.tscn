@@ -19,6 +19,7 @@
 
 [ext_resource type="Script" path="res://combat/status_effects/status_effect_component.gd" id="40_status"]
 
+[ext_resource type="Script" path="res://ai/states/enemy_shoot_state.gd" id="41_shoot"]
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.38
 height = 1.8
@@ -126,6 +127,9 @@ script = ExtResource("12_chase")
 
 [node name="Attack" type="Node" parent="EnemyController/StateMachine"]
 script = ExtResource("13_attack")
+
+[node name="Shoot" type="Node" parent="EnemyController/StateMachine"]
+script = ExtResource("41_shoot")
 
 [node name="Return" type="Node" parent="EnemyController/StateMachine"]
 script = ExtResource("14_return")

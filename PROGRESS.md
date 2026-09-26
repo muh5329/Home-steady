@@ -1,7 +1,7 @@
 # Gauntlet Progress
 
-Current phase: **Phase 7 — Companions** (next)
-Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (89 passing)
+Current phase: **Phase 8 — First dungeon (Crypt)**, part 2 next (boss, reward, unlock)
+Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (123 passing)
 
 ## Scoreboard
 
@@ -12,8 +12,114 @@ Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (89 passing)
 | 3 (Phase 3) | 6 | 5 | 2 | 2 | 6 | 5 | 7 |
 | 4 (Phases 4–5) | 6 | 6 | 2 | 3 | 7 | 5 | 6 |
 | 5 (Phase 6) | 6 | 6 | 5 | 3 | 7 | 5 | 7 |
+| 6 (Phase 7) | 7 | 6 | 6 | 3 | 7 | 5 | 7 |
+| 7 (Phase 8a) | 7 | 6 | 6 | 5 | 7 | 6 | 7 |
 
 Scores are 0–10 against the *final* target, so early rounds are low by design.
+
+---
+
+## Round 7 — Phase 8 (part 1): the Abandoned Crypt
+
+**What changed**
+- **Dungeon generation from layouts**: `DungeonLayout` (ASCII grid + legend of prop scenes and monsters)
+  → `DungeonBuilder` (MultiMesh floors/walls/pillars from the KayKit dungeon kit at character scale, box
+  collision, flickering wall torches, props, spawns, own navmesh bake ~0.1 s).
+- **The crypt** follows the spec's structure: entrance hall → a room of skeletons clawing out of the
+  floor → a treasure room (chest spills 3 iron ore, guarded by an archer) → a spike hall (all spikes
+  share one rhythm: watch, then sprint) → the elite room (**Skeleton Champion** + two archers). The boss
+  chamber comes next round.
+- **Passages**: a mausoleum north of camp and the crypt stairs are a linked pair; travel fades out,
+  moves the player and following companions, snaps the camera and fades in.
+- **AmbienceZone**: dark torch-lit environment, no sun, camera pitched down to clear walls (not while
+  aiming).
+- New monsters as data: **Skeleton Archer** (new data-selected `Shoot` state: hold range, need a
+  line, back off along the navmesh) and **Skeleton Champion** (3-hit combo, 260 HP, poise 70).
+- `EnemySpawn`: rises when the player can see the spot; defeated monsters stay dead in saves.
+- Monsters and companions only target what they can see.
+
+**Test performed** 14 new tests (123 total, clean repeated runs): crypt geometry/collision/navmesh route
+from the stairs to the elite room, travel down and back with a companion (ambience, sun, camera snap),
+spawns rising near the player and persisting defeat across two saves, no aggro through rock, archers
+shooting from range and backing off on the floor, chest loot once across save/load, spikes hurting the
+player but not companions or monsters, stable cell-based prop names; plus the regression set below.
+Visual run: `docs/rounds/round_07/`.
+
+**Critic findings and resolution** (critic score 7/10)
+| # | Finding | Status |
+|---|---|---|
+| 1 | Camera swooped 400 m during the fade-in | Fixed: `CameraRig.snap()` on travel, respawn and load; test |
+| 2 | Companions targeted and spawns rose through walls | Fixed: visible-only companion targeting; spawns need sight of their spot (or < 6 m); test |
+| 3 | LOS aggro only checked the nearest hostile | Fixed: `Targeting.nearest_visible_hostile` (sorted, first visible); overworld test |
+| 4 | Prop save ids from auto names | Fixed: props named by cell; test |
+| 5 | Pitch cap broke free aim; travel vs load/scene exit races | Fixed: no cap while aiming; load cancels a trip; fade cleared on exit |
+| 6 | Archers backed into walls | Fixed: navmesh-snapped back-off goal; test |
+| 7 | Trap double hits via knockback into the next tile | Fixed: shared per-victim cooldown across traps |
+| 8 | Spawn transform set after add_child | Fixed |
+| – | Single-zone ambience, legend can't parametrise props, no DungeonDefinition/events, elite readability, torch processing | Deferred: DungeonDefinition + clear/boss events land with the boss next round |
+
+**Known problems** Spider, Necromancer boss, reward and building unlock (next round); the champion reads
+as elite only by size; the crypt sits at a fixed offset (x = 400) in the region; spike hall timing is
+tight for slow classes.
+
+**Highest-priority next task** Phase 8 (part 2): Spider, Necromancer boss chamber, the rare reward
+(special crafting resource) and the Blacksmith unlock — the crypt feeding the settlement.
+
+---
+
+## Round 6 — Phase 7 companions (the same NPC works and adventures)
+
+**What changed**
+- `Settler` now has a **mode**: STRANGER (met in the world, neutral, can't be hurt), WORKER (the
+  existing `WorkerController`), COMPANION (new `CompanionController`). Switching deactivates one brain
+  (claims released, cargo dropped) and starts the other; body, class, gear, job and health carry over.
+- Settlers use `CharacterLoadout` like the player: a Villager class (hand axe) by default, any class
+  as data. Working shows the job tool (falls back to the job's tool scene when the rig lacks the part);
+  adventuring shows the class weapon.
+- Companion AI (`ai/companions/`): Follow (formation slots, sprint to catch up, navmesh-snapped
+  teleport when hopelessly far), Hold, Attack (melee take turns via attack slots and swing short
+  combos; ranged keep distance, need a clear line, back off when rushed; abilities used when ready and
+  in range), Retreat (behind the player when hurt and threatened), rest-regen out of combat, Downed
+  (revive with E, or they get up after 30 s at 40%). Whoever hurts the player becomes the target.
+- Recruitment: strangers join if there's a free bed (tents: 2 beds each). **Vesna** (Ranger) waits
+  west of the camp; the camp has one free bed for her.
+- `Party` on the player (max 3), **T** toggles hold/follow for all; HUD party frames (HP, activity,
+  DOWNED). `TalkPanel` replaces blind job cycling: invite, join party, follow/hold, go home and work,
+  pick a job (keys 1–9 or click).
+- Mode, class, order, hold point, greeting and downed state persist; the party rebuilds on load.
+
+**Test performed** 20 new tests (109 total, 3 consecutive clean runs): bed-gated recruitment through
+the panel, enemies ignore strangers, join via talk and follow a moving player, party limit, T hold /
+follow, a fighter companion kills a skeleton, a ranger companion shoots and uses Volley, defending the
+player (switches to the player's attacker), retreat + rest, player revive, **send home → walks back,
+chops and hauls a log**, save/load of companion + stranger, HUD frames; plus the regression set below.
+Visual run: `docs/rounds/round_06/` (meeting Vesna, recruiting, party following, party fight, downed
+companion, Vesna back at work).
+
+**Critic findings and resolution** (critic score 7/10)
+| # | Finding | Status |
+|---|---|---|
+| 1 | Loading with the talk panel open soft-locked input (freed speaker compared `== null`) | Fixed: explicit open flag, `is_instance_valid`, close on `game_loaded`; test |
+| 2 | Strangers could still be shot/blasted (non-monitorable areas are still ray/shape hits) and stayed dead | Fixed: `DamageReceiver.accepts_damage` (combat never toggles it); projectiles fly through; test |
+| 3 | Below 30% HP, Follow/Hold stood still; auto-recover at 25% looped into another downing | Fixed: `should_retreat()` in every state, recover at 40%; tests |
+| 4 | Talking froze the player during combat | Fixed: a hit closes the panel; test |
+| 5 | Companions body-blocked the player; teleports could land in walls | Fixed: collision exceptions in companion mode; navmesh-snapped teleport; test |
+| 6 | Downed state lost on save; coroutines resumed on freed settlers | Fixed: saved `downed`; timers connected with bound callables instead of awaited; test |
+| 7 | Ranged companion on Hold chased for a shot | Fixed: holds, only engages what it can hit from the hold point |
+| 8 | Panel subtitle stale, overlapped help line; strangers showed a health bar | Fixed |
+| 9 | `Party` duck-typed members; literal group name; docs | Fixed: typed `Array[Settler]`, `Settler.GROUP`, ARCHITECTURE updated |
+| – | Nearest house chosen even if full | Deferred: beds are a count, not assignments, until houses matter (Phase 10) |
+
+Also found: class changes left stale weapon parts (warning on load) → `EquipmentController.set_model`;
+the interaction scan could touch areas just removed on load → skipped; NPC-only classes hidden from the
+class select (`playable`); nameplates fade near the camera instead of filling the screen.
+
+**Known problems** Spec states INTERACT (companions using objects) deferred until the crypt needs it;
+no companion equipment swapping yet (Phase 9 crafted weapons); separation is still O(N²) per think;
+companions cross regions only once regions exist (Phase 8 will decide).
+
+**Highest-priority next task** Phase 8: the Crypt — skeleton, spider, necromancer boss, reward =
+special resource + building unlock; the party goes in with you.
 
 ---
 

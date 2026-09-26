@@ -16,6 +16,9 @@ extends Node3D
 @export var distance := 4.6
 ## Added to `distance` by gameplay (e.g. carrying a big load).
 var extra_distance := 0.0
+## Interiors lower the highest allowed pitch (look down more) so the arm
+## rises over walls instead of snapping in behind the character.
+var max_pitch_override := INF
 ## Aim mode (ranged): pulled in over the shoulder with a narrower FOV.
 var aiming := false
 @export var aim_distance := 2.3
@@ -66,6 +69,14 @@ func add_trauma(amount: float) -> void:
 	_trauma = clampf(_trauma + amount, 0.0, 1.0)
 
 
+## Jump straight to the target (teleports, respawns, loading): no swoop.
+func snap() -> void:
+	if target:
+		global_position = target.global_position + Vector3.UP * height
+	spring_arm.spring_length = aim_distance if aiming else distance + extra_distance
+	_apply_rotation()
+
+
 ## Camera-relative horizontal basis for movement input.
 func flat_forward() -> Vector3:
 	return Vector3.FORWARD.rotated(Vector3.UP, deg_to_rad(yaw))
@@ -91,7 +102,9 @@ func _process(delta: float) -> void:
 
 
 func _apply_rotation() -> void:
-	pitch = clampf(pitch, min_pitch, max_pitch)
+	# Aiming needs the full range (free-aimed shots at distant targets).
+	var top := max_pitch if aiming else minf(max_pitch, max_pitch_override)
+	pitch = clampf(pitch, min_pitch, top)
 	rotation_degrees = Vector3(pitch, yaw, 0.0)
 
 

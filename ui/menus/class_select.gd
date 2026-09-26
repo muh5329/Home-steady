@@ -12,7 +12,8 @@ func _ready() -> void:
 	layer = 50
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	for c in DataRegistry.get_all(CharacterClassData):
-		classes.append(c)
+		if c.playable:
+			classes.append(c)
 	var order := [&"class.fighter", &"class.ranger", &"class.wizard"]
 	classes.sort_custom(func(a, b): return order.find(a.id) < order.find(b.id))
 	_build()

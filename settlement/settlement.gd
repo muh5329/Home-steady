@@ -64,6 +64,14 @@ func totals() -> Dictionary:
 	return out
 
 
+func settler_count() -> int:
+	return get_tree().get_nodes_in_group(Settler.GROUP).filter(func(s): return s.is_member()).size()
+
+
+func free_beds() -> int:
+	return beds() - settler_count()
+
+
 func beds() -> int:
 	var n := 0
 	for h in get_tree().get_nodes_in_group(HousingComponent.GROUP):

@@ -50,8 +50,10 @@ func _physics_process(delta: float) -> void:
 
 # --- helpers for states ---------------------------------------------------------
 
+## Nearest hostile in aggro range that it can actually see (no noticing
+## the party through crypt walls).
 func find_target() -> CombatController:
-	return combat.find_nearest_hostile(definition.aggro_range)
+	return Targeting.nearest_visible_hostile(combat, definition.aggro_range)
 
 
 func has_valid_target() -> bool:

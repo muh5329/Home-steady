@@ -1,6 +1,7 @@
 class_name WorkerController
 extends Node
-## Settler brain for settlement work. Every job runs the same StateMachine
+## Settler brain for settlement work (the Settler switches between this
+## and CompanionController; only the running brain acts). Every job runs the same StateMachine
 ## (ai/jobs/states/): Idle -> GoToWork -> Work -> Collect -> Deliver.
 ## The JobDefinition supplies everything job-specific; this node offers
 ## shared helpers (movement, progress/stuck tracking, threat memory,
@@ -44,12 +45,38 @@ var _threat_until := 0.0
 var _approach_goal := Vector3.INF
 var _approach_best := INF
 var _approach_since := 0.0
+var _running := true
+var _downed_serial := 0
 
 
 func _ready() -> void:
 	process_physics_priority = -10
 	combat.receiver.damage_taken.connect(_on_damage_taken)
 	combat.died.connect(_on_died)
+	combat.revived.connect(_on_revived)
+
+
+func is_running() -> bool:
+	return _running
+
+
+## Takes over the body (settler mode Worker). Starts from Idle.
+func activate() -> void:
+	_running = true
+	set_physics_process(true)
+	if _started and combat.is_alive() and state_machine.current == null:
+		state_machine.start(self)
+
+
+## Hands the body to another brain: releases claims, puts down cargo.
+func deactivate() -> void:
+	_running = false
+	set_physics_process(false)
+	state_machine.stop()
+	steering.stop()
+	if carry.carrying:
+		carry.drop()
+	set_activity("")
 
 
 func _physics_process(delta: float) -> void:
@@ -161,6 +188,8 @@ func swing_at(target: Node3D) -> Variant:
 
 
 func _on_damage_taken(event: DamageEvent) -> void:
+	if not _running:
+		return
 	var attacker := event.source_combatant
 	if attacker == null or not combat.is_hostile_to(attacker) or not combat.is_alive():
 		return
@@ -170,15 +199,27 @@ func _on_damage_taken(event: DamageEvent) -> void:
 		state_machine.transition_to(&"Flee", {"from": _threat_position})
 
 
-## Downed: drop everything, lie there, then get up at home.
+## Downed: drop everything, lie there, then get up at home (unless
+## someone revives us first).
 func _on_died() -> void:
+	if not _running:
+		return
 	steering.stop()
 	state_machine.stop()  # exits the state: releases claims
 	set_activity("Downed")
-	await get_tree().create_timer(DOWNED_SECONDS, false).timeout
-	if not is_instance_valid(body):
+	_downed_serial += 1
+	# Connected, not awaited: dropped automatically if we're freed (loading).
+	get_tree().create_timer(DOWNED_SECONDS, false).timeout.connect(_recover.bind(_downed_serial))
+
+
+func _recover(serial: int) -> void:
+	if not _running or combat.is_alive() or serial != _downed_serial:
 		return
 	body.global_position = home_position
 	body.velocity = Vector3.ZERO
 	combat.revive(combat.health.max_health * 0.5)
-	state_machine.start(self)
+
+
+func _on_revived() -> void:
+	if _running and _started and state_machine.current == null:
+		state_machine.start(self)

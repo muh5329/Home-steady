@@ -27,7 +27,12 @@ const LAYER := 1 << 2  # physics layer 3 "hurtboxes"
 ## or spells).
 @export var required_any_tags: PackedStringArray = []
 
+## Momentary immunity (dodge i-frames); combat toggles it.
 var invulnerable := false
+## Off for bystanders (strangers, cutscene actors): nothing can hurt them,
+## and projectiles fly through. Unlike `invulnerable`, combat never
+## touches it.
+var accepts_damage := true
 
 
 func _ready() -> void:
@@ -38,7 +43,7 @@ func _ready() -> void:
 
 
 func can_be_hit_by(attacker_faction: StringName) -> bool:
-	if invulnerable or (health and not health.is_alive()):
+	if not accepts_damage or invulnerable or (health and not health.is_alive()):
 		return false
 	if not allowed_attacker_factions.is_empty():
 		return attacker_faction in allowed_attacker_factions
@@ -55,7 +60,7 @@ func accepts_tags(tags: PackedStringArray) -> bool:
 
 
 func receive(event: DamageEvent) -> void:
-	if invulnerable or (health and not health.is_alive()) or not accepts_tags(event.tags):
+	if not accepts_damage or invulnerable or (health and not health.is_alive()) or not accepts_tags(event.tags):
 		return
 	event.target = owner if owner else get_parent()
 	event.amount *= float(type_multipliers.get(event.damage_type, 1.0)) * damage_multiplier

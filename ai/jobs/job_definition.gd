@@ -26,7 +26,7 @@ extends GameData
 @export_group("Look")
 ## Model part (on the rig) to show as this job's tool, if the rig has one.
 @export var tool_part: StringName = &""
-## Otherwise a tool scene attached to the right hand.
+## Otherwise (or if the rig lacks that part) a tool scene for the right hand.
 @export var tool_scene: PackedScene
 
 

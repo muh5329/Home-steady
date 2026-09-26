@@ -9,6 +9,7 @@ extends Node
 @export var camera_rig: CameraRig
 @export var equipment: EquipmentController
 @export var abilities: AbilityController
+@export var party: Party
 @export var aim_assist_min_dot := 0.35
 ## Ranged weapons assist inside a narrower cone around the camera.
 @export var ranged_assist_min_dot := 0.9
@@ -49,6 +50,10 @@ func _physics_process(_delta: float) -> void:
 		interaction.interact()
 	if Input.is_action_just_pressed(&"drop"):
 		interaction.drop()
+	if Input.is_action_just_pressed(&"party_order") and party:
+		var order := party.toggle_orders()
+		if order != "":
+			DebugOverlay.notify("Party: hold position" if order == "hold" else "Party: follow me")
 
 	if not combat_input_enabled:
 		combat.set_block(false)

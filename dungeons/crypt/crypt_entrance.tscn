@@ -1,0 +1,84 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/floor_tile_large.gltf.glb" id="1_floor"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/wall_doorway.glb" id="2_door"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/wall.gltf.glb" id="3_wall"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/pillar_decorated.gltf.glb" id="4_pillar"]
+[ext_resource type="PackedScene" path="res://world/passage.tscn" id="5_passage"]
+[ext_resource type="PackedScene" path="res://dungeons/props/wall_torch.tscn" id="6_torch"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/rubble_half.gltf.glb" id="7_rubble"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/banner_patternA_red.gltf.glb" id="8_banner"]
+
+[sub_resource type="BoxShape3D" id="wall_x"]
+size = Vector3(5, 4, 1)
+
+[sub_resource type="BoxShape3D" id="wall_z"]
+size = Vector3(1, 4, 5)
+
+[sub_resource type="BoxShape3D" id="pillar"]
+size = Vector3(1.4, 4, 1.4)
+
+[node name="CryptEntrance" type="Node3D"]
+
+[node name="Floor" parent="." instance=ExtResource("1_floor")]
+
+[node name="BackDoor" parent="." instance=ExtResource("2_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="WallLeft" parent="." instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2, 0, 0)
+
+[node name="WallRight" parent="." instance=ExtResource("3_wall")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2, 0, 0)
+
+[node name="PillarL" parent="." instance=ExtResource("4_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
+
+[node name="PillarR" parent="." instance=ExtResource("4_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+
+[node name="PillarBL" parent="." instance=ExtResource("4_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="PillarBR" parent="." instance=ExtResource("4_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+
+[node name="Banner" parent="." instance=ExtResource("8_banner")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.2, -1.6)
+
+[node name="TorchL" parent="." instance=ExtResource("6_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.2, 2.75)
+
+[node name="TorchR" parent="." instance=ExtResource("6_torch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.2, 2.75)
+
+[node name="Rubble" parent="." instance=ExtResource("7_rubble")]
+transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, -4.2, 0, 1.2)
+
+[node name="Passage" parent="." instance=ExtResource("5_passage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.1)
+link = &"crypt"
+prompt = "Enter the Abandoned Crypt"
+
+[node name="Body" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Back" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -2)
+shape = SubResource("wall_x")
+
+[node name="Left" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, 0)
+shape = SubResource("wall_z")
+
+[node name="Right" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 0)
+shape = SubResource("wall_z")
+
+[node name="PL" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2, 2)
+shape = SubResource("pillar")
+
+[node name="PR" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2, 2)
+shape = SubResource("pillar")

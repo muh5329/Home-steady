@@ -11,6 +11,8 @@ signal attack_started(attack: AttackData)
 signal attack_hit(event: DamageEvent)
 signal staggered
 signal died
+## A dead combatant was brought back (respawn, revive, recovery).
+signal revived
 
 enum CombatState { READY, ATTACKING, BLOCKING, DODGING, STAGGERED, BUSY, DEAD }
 
@@ -183,6 +185,16 @@ func revive(health_value := -1.0) -> void:
 	animator.set_base_override(&"")
 	state = CombatState.DEAD  # force _enter to run its READY bookkeeping
 	_enter(CombatState.READY)
+	revived.emit()
+
+
+## Changes sides (strangers are neutral until recruited).
+func set_faction(new_faction: StringName) -> void:
+	faction = new_faction
+	if receiver:
+		receiver.faction = new_faction
+	if hitbox:
+		hitbox.faction = new_faction
 
 
 ## Cancels whatever is happening (used by scripted events and loading).

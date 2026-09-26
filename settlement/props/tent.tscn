@@ -1,4 +1,6 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://settlement/buildings/housing_component.gd" id="1_housing"]
 
 [sub_resource type="StandardMaterial3D" id="canvas"]
 albedo_color = Color(0.86, 0.8, 0.66, 1)
@@ -47,6 +49,10 @@ mesh = SubResource("pole")
 [node name="PoleBack" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -1.55)
 mesh = SubResource("pole")
+
+[node name="Housing" type="Node" parent="."]
+script = ExtResource("1_housing")
+beds = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)

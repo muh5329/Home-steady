@@ -1,7 +1,7 @@
-[gd_scene load_steps=32 format=3]
+[gd_scene load_steps=38 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/settler.gd" id="1_settler"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_characters/Barbarian.glb" id="2_model"]
+[ext_resource type="Resource" path="res://data/classes/villager.tres" id="2_class"]
 [ext_resource type="Script" path="res://characters/shared/character_motor.gd" id="3_motor"]
 [ext_resource type="Script" path="res://characters/shared/character_animator.gd" id="4_animator"]
 [ext_resource type="Script" path="res://characters/shared/health_component.gd" id="5_health"]
@@ -26,6 +26,14 @@
 [ext_resource type="Script" path="res://core/interaction/interactable.gd" id="24_interact"]
 
 [ext_resource type="Script" path="res://combat/status_effects/status_effect_component.gd" id="40_status"]
+[ext_resource type="Script" path="res://characters/shared/equipment_controller.gd" id="41_equip"]
+[ext_resource type="Script" path="res://characters/shared/ability_controller.gd" id="42_abil"]
+[ext_resource type="Script" path="res://characters/shared/character_loadout.gd" id="43_loadout"]
+[ext_resource type="Script" path="res://ai/companions/companion_controller.gd" id="44_companion"]
+[ext_resource type="Script" path="res://ai/companions/states/companion_follow_state.gd" id="45_follow"]
+[ext_resource type="Script" path="res://ai/companions/states/companion_hold_state.gd" id="46_hold"]
+[ext_resource type="Script" path="res://ai/companions/states/companion_attack_state.gd" id="47_attack"]
+[ext_resource type="Script" path="res://ai/companions/states/companion_retreat_state.gd" id="48_retreat"]
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.35
@@ -46,8 +54,7 @@ collision_layer = 2
 collision_mask = 19
 floor_snap_length = 0.3
 script = ExtResource("1_settler")
-hidden_parts = PackedStringArray("1H_Axe_Offhand", "Barbarian_Round_Shield", "2H_Axe", "Mug")
-tool_parts = PackedStringArray("1H_Axe")
+character_class = ExtResource("2_class")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -56,8 +63,6 @@ shape = SubResource("body_shape")
 [node name="Model" type="Node3D" parent="."]
 transform = Transform3D(-0.75, 0, -6.55671e-08, 0, 0.75, 0, 6.55671e-08, 0, -0.75, 0, 0, 0)
 
-[node name="Barbarian" parent="Model" instance=ExtResource("2_model")]
-
 [node name="CharacterMotor" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("3_motor")
 body = NodePath("..")
@@ -65,9 +70,8 @@ walk_speed = 2.0
 run_speed = 4.4
 sprint_speed = 6.0
 
-[node name="CharacterAnimator" type="Node" parent="." node_paths=PackedStringArray("model", "motor")]
+[node name="CharacterAnimator" type="Node" parent="." node_paths=PackedStringArray("motor")]
 script = ExtResource("4_animator")
-model = NodePath("../Model/Barbarian")
 motor = NodePath("../CharacterMotor")
 walk_reference_speed = 2.0
 run_reference_speed = 4.4
@@ -159,12 +163,57 @@ script = ExtResource("18_deliver")
 [node name="Flee" type="Node" parent="Worker/StateMachine"]
 script = ExtResource("19_flee")
 
-[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("receiver", "motor", "health", "model")]
+[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("receiver", "motor", "health")]
 script = ExtResource("40_status")
 receiver = NodePath("../Hurtbox")
 motor = NodePath("../CharacterMotor")
 health = NodePath("../HealthComponent")
-model = NodePath("../Model")
+
+[node name="Equipment" type="Node" parent="." node_paths=PackedStringArray("combat")]
+script = ExtResource("41_equip")
+combat = NodePath("../CombatController")
+
+[node name="Abilities" type="Node" parent="." node_paths=PackedStringArray("combat")]
+script = ExtResource("42_abil")
+combat = NodePath("../CombatController")
+
+[node name="Loadout" type="Node" parent="." node_paths=PackedStringArray("model_holder", "animator", "motor", "health", "combat", "carry", "equipment", "abilities", "status_effects")]
+script = ExtResource("43_loadout")
+model_holder = NodePath("../Model")
+animator = NodePath("../CharacterAnimator")
+motor = NodePath("../CharacterMotor")
+health = NodePath("../HealthComponent")
+combat = NodePath("../CombatController")
+carry = NodePath("../Carry")
+equipment = NodePath("../Equipment")
+abilities = NodePath("../Abilities")
+status_effects = NodePath("../StatusEffects")
+
+[node name="Companion" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "abilities", "equipment", "steering", "state_machine")]
+script = ExtResource("44_companion")
+body = NodePath("..")
+motor = NodePath("../CharacterMotor")
+combat = NodePath("../CombatController")
+abilities = NodePath("../Abilities")
+equipment = NodePath("../Equipment")
+steering = NodePath("../Steering")
+state_machine = NodePath("StateMachine")
+
+[node name="StateMachine" type="Node" parent="Companion" node_paths=PackedStringArray("initial_state")]
+script = ExtResource("13_fsm")
+initial_state = NodePath("Follow")
+
+[node name="Follow" type="Node" parent="Companion/StateMachine"]
+script = ExtResource("45_follow")
+
+[node name="Hold" type="Node" parent="Companion/StateMachine"]
+script = ExtResource("46_hold")
+
+[node name="Attack" type="Node" parent="Companion/StateMachine"]
+script = ExtResource("47_attack")
+
+[node name="Retreat" type="Node" parent="Companion/StateMachine"]
+script = ExtResource("48_retreat")
 
 [node name="CombatSfx" type="Node3D" parent="." node_paths=PackedStringArray("combat")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -193,4 +242,7 @@ billboard = 1
 modulate = Color(1, 0.96, 0.85, 1)
 outline_size = 10
 font_size = 48
+visibility_range_begin = 3.5
+visibility_range_begin_margin = 1.0
 visibility_range_end = 25.0
+visibility_range_fade_mode = 1

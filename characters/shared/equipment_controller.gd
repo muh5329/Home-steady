@@ -29,6 +29,13 @@ func equip(new_weapon: WeaponData) -> void:
 	equipment_changed.emit(weapon)
 
 
+## A new body (class change): the old meshes went away with the old model.
+func set_model(root: Node3D) -> void:
+	model_root = root
+	_shown_parts = []
+	_attached = null
+
+
 ## Stow/unstow weapon meshes (e.g. while carrying).
 func set_weapon_visible(is_visible: bool) -> void:
 	ModelUtils.set_parts_visible(model_root, _shown_parts, is_visible)

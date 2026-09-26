@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://items/equipment/weapon_data.gd" id="1"]
+[ext_resource type="Resource" path="res://data/items/movesets/sword_and_shield.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"weapon.hand_axe"
+display_name = "Hand Axe"
+description = "A woodsman's axe. Serviceable in a fight."
+storable = false
+moveset = ExtResource("2")
+damage_multiplier = 0.9
+rig_parts = PackedStringArray("1H_Axe")
+aim_range = 3.2

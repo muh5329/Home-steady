@@ -54,14 +54,14 @@ func distance_to(point: Vector3) -> float:
 
 ## Cheap per-think updates: navigation readiness and crowd separation.
 func refresh() -> void:
-	_nav_ready = agent != null and _map_ready(agent.get_navigation_map())
+	_nav_ready = agent != null and is_map_ready(agent.get_navigation_map())
 	_separation = _compute_separation()
 
 
 ## Map readiness cached per frame (shared by every agent on the map).
 static var _ready_cache: Dictionary = {}  # RID -> [frame, bool]
 
-static func _map_ready(map: RID) -> bool:
+static func is_map_ready(map: RID) -> bool:
 	var frame := Engine.get_physics_frames()
 	var cached: Array = _ready_cache.get(map, [-1, false])
 	if cached[0] != frame:

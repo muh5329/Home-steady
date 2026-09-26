@@ -8,7 +8,7 @@ third concrete use exists.
 
 | Autoload | Responsibility |
 |---|---|
-| `EventBus` | Cross-system signals only (e.g. `damage_applied`, `combatant_died`). Local wiring uses node signals. |
+| `EventBus` | Cross-system signals only (e.g. `damage_applied`, `combatant_died`, `talk_requested`). Local wiring uses node signals. |
 | `DataRegistry` | Indexes every `GameData` resource under `res://data` by stable `id`. Saves reference ids, never paths. |
 | `SaveManager` | Collects `save_state()` from nodes in the `persistent` group into JSON; `can_save()` can veto. |
 | `DebugOverlay` | F3 performance panel, `watch(key, value)`, `notify(text)` toasts. |
@@ -58,12 +58,33 @@ speed modifier on the motor, a `CarryPoseModifier` (SkeletonModifier3D) for the 
   building; `ConstructionSite` consumes delivered items, then labour.
 - `Footprint` (physics layer 6) reserves ground for placement, including things without solid colliders.
 
-## Workers and jobs
+## Settlers: one body, two brains
 
 ```
-Settler (CharacterBody3D) — same components as player/monsters + CarryComponent, NavSteering
-└─ WorkerController + StateMachine: Idle → GoToWork → Work → Collect → Deliver (+ Flee)
+Settler (CharacterBody3D) — same components as player/monsters + CarryComponent, NavSteering,
+│                           Equipment, Abilities, CharacterLoadout (class: villager, ranger…)
+├─ WorkerController    + StateMachine: Idle → GoToWork → Work → Collect → Deliver (+ Flee)
+└─ CompanionController + StateMachine: Follow ⇄ Hold, Attack (abilities inside), Retreat
 ```
+
+- `Settler.mode`: **STRANGER** (met in the world; neutral, `DamageReceiver.accepts_damage = false`,
+  no brain), **WORKER** (worker brain), **COMPANION** (companion brain). Switching deactivates one brain
+  (releasing claims, dropping cargo) and activates the other; the body, class, gear and job persist, so
+  the same character works the fields and fights in the crypt.
+- Recruiting a stranger needs a free bed (`HousingComponent` beds − member settlers); they move next
+  to the nearest house.
+- `Party` (on the player, max 3) is membership + formation slots; settlers register when they enter
+  companion mode, so a loaded save rebuilds the party. **T** toggles hold/follow for everyone.
+- Companion AI: engage threats around the player (or the hold point); whoever hurts the player is the
+  priority target (spec's DEFEND); melee take turns with attack slots, ranged keep distance and need a
+  clear line; abilities are used when ready and in range (`AbilityData.ai_use_range()`); retreat behind
+  the player when hurt and threatened; out of combat they recover slowly. Downed = brain stopped until
+  the player revives them (E) or they get up after 30 s. Companions don't collide with the player.
+  Spec states INTERACT (companions using objects) is deferred until a dungeon needs it.
+- `TalkPanel` (UI, opened via `EventBus.talk_requested`): recruit, join/leave party, hold/follow, pick
+  a job. Pauses player control; closes on damage, walking away, load, E/Esc.
+
+## Workers and jobs
 
 - A `JobDefinition` (woodcutter, miner, farmer) is data: produce it gathers, radius, work animation,
   impact frame, amount, tags, tool. The states contain no job-specific code (a test enforces this).
@@ -76,6 +97,24 @@ Settler (CharacterBody3D) — same components as player/monsters + CarryComponen
   progress-based stuck detection blacklists unreachable targets; recent threats are avoided; downed
   settlers recover at home; swings are chained continuously (only decisions are distance-throttled);
   async swings/pickups check `CombatController.action_serial` / state generations before acting.
+
+## Dungeons
+
+- A dungeon is a **`DungeonLayout`** (hand-authored character grid + legend: symbol → prop scene or
+  `EnemyDefinition`) turned into a space at load by **`DungeonBuilder`**: MultiMesh floors/walls/corner
+  pillars from the KayKit kit, box collision, wall torches, props (named by cell for stable save ids),
+  `EnemySpawn`s, then a bake of the dungeon's own `NavigationRegion3D`. New dungeon = new layout.
+- `EnemySpawn` raises its monster when the player is near *and can see the spot*; `defeated` persists,
+  living monsters reset on load. Monster behaviour in range is data (`EnemyDefinition.attack_state`:
+  melee "Attack" strings or ranged "Shoot"). Monsters and companions only target what they can see
+  (`Targeting.nearest_visible_hostile`).
+- **`Passage`** pairs (same `link`) move the player and following companions with a fade and a camera
+  snap; a load mid-trip cancels the move. **`AmbienceZone`** swaps the environment, hides the sun and
+  caps camera pitch (except while aiming) while the player is inside.
+- Props: `Chest` (spills physical loot, persists open), `SpikeTrap` (shared rhythm; hurts only the
+  player — the dead ignore their own traps and companions step where you step).
+- The crypt lives in the same region scene, far from the overworld (x = 400), so the settlement keeps
+  simulating while the party is underground.
 
 ## Physics layers
 

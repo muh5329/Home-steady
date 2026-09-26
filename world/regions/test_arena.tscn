@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3]
+[gd_scene load_steps=37 format=3]
 
 [ext_resource type="Script" path="res://world/regions/region.gd" id="1_region"]
 [ext_resource type="Environment" path="res://art/environments/default_environment.tres" id="2_env"]
@@ -37,6 +37,11 @@
 [ext_resource type="Resource" path="res://data/jobs/miner.tres" id="87_miner"]
 [ext_resource type="Resource" path="res://data/jobs/farmer.tres" id="88_farmer"]
 
+[ext_resource type="Script" path="res://ui/character/talk_panel.gd" id="86_talk"]
+[ext_resource type="Resource" path="res://data/classes/ranger.tres" id="85_ranger"]
+
+[ext_resource type="PackedScene" path="res://dungeons/crypt/crypt.tscn" id="84_crypt"]
+[ext_resource type="PackedScene" path="res://dungeons/crypt/crypt_entrance.tscn" id="83_entrance"]
 [sub_resource type="NavigationMesh" id="navmesh"]
 resource_local_to_scene = true
 geometry_parsed_geometry_type = 1
@@ -191,6 +196,16 @@ settler_name = "Mira"
 [node name="Worker" parent="Population/Mira"]
 job = ExtResource("88_farmer")
 
+[node name="Vesna" parent="Population" instance=ExtResource("92_settler")]
+transform = Transform3D(0.7, 0, 0.71, 0, 1, 0, -0.71, 0, 0.7, -7, 0.05, 2)
+settler_name = "Vesna"
+character_class = ExtResource("85_ranger")
+mode = 0
+greeting = "Skeletons chased me out of the old crypt road. If you've a bed to spare, my crossbow is yours."
+
+[node name="Worker" parent="Population/Vesna"]
+job = null
+
 [node name="Settlement" type="Node" parent="."]
 script = ExtResource("94_settlement")
 
@@ -202,6 +217,9 @@ registry = NodePath("../NavigationRegion3D/Buildings")
 [node name="BuildMenu" type="CanvasLayer" parent="." node_paths=PackedStringArray("build_mode")]
 script = ExtResource("97_buildmenu")
 build_mode = NodePath("../BuildMode")
+
+[node name="CryptEntrance" parent="NavigationRegion3D" instance=ExtResource("83_entrance")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 0, -30)
 
 [node name="Camp" type="Node3D" parent="NavigationRegion3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 8)
@@ -258,3 +276,9 @@ definition = ExtResource("6_skeleton")
 [node name="HUD" type="CanvasLayer" parent="." node_paths=PackedStringArray("player")]
 script = ExtResource("12_hud")
 player = NodePath("../Player")
+
+[node name="TalkPanel" type="CanvasLayer" parent="."]
+script = ExtResource("86_talk")
+
+[node name="Crypt" parent="." instance=ExtResource("84_crypt")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 400, 0, 0)

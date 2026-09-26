@@ -132,11 +132,24 @@ func test_changing_job_by_talking() -> void:
 	player.controller.input_enabled = true
 	await wait_seconds(0.5)
 	check(player.interaction.focused == s.interactable, "settler focused")
-	var before := s.worker.job.id
+	var panel: TalkPanel = world.get_node("TalkPanel")
 	await tap(&"interact")
 	await wait_seconds(0.2)
-	check(s.worker.job.id != before, "job changed from %s to %s" % [before, s.worker.job.id])
-	check(s.nameplate.text.contains(s.worker.job.display_name), "nameplate shows new job")
+	check(panel.is_open() and panel.speaker == s, "talking opens the talk panel")
+	var texts := panel.option_texts()
+	var farmer := -1
+	for i in texts.size():
+		if texts[i].contains("Farmer"):
+			farmer = i
+	check(farmer >= 0, "farmer offered (%s)" % [texts])
+	await tap_key(KEY_1 + farmer)
+	await wait_seconds(0.2)
+	check_eq(s.worker.job.id, &"job.farmer", "job changed to farmer")
+	check(s.nameplate.text.contains("Farmer"), "nameplate shows new job")
+	await tap(&"interact")
+	await wait_seconds(0.3)
+	check(not panel.is_open(), "E closes the panel")
+	check(player.controller.input_enabled, "controls restored")
 
 
 func test_job_survives_save_load() -> void:

@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="DungeonLayout" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://dungeons/generation/dungeon_layout.gd" id="1_layout"]
+[ext_resource type="PackedScene" path="res://dungeons/props/crypt_exit.tscn" id="2_exit"]
+[ext_resource type="PackedScene" path="res://dungeons/props/chest.tscn" id="3_chest"]
+[ext_resource type="PackedScene" path="res://dungeons/props/spike_trap.tscn" id="4_spikes"]
+[ext_resource type="PackedScene" path="res://dungeons/props/pillar.tscn" id="5_pillar"]
+[ext_resource type="PackedScene" path="res://dungeons/props/crypt_clutter.tscn" id="6_clutter"]
+[ext_resource type="Resource" path="res://data/enemies/skeleton_warrior.tres" id="7_warrior"]
+[ext_resource type="Resource" path="res://data/enemies/skeleton_archer.tres" id="8_archer"]
+[ext_resource type="Resource" path="res://data/enemies/skeleton_champion.tres" id="9_champion"]
+[ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="10_def"]
+
+[resource]
+script = ExtResource("1_layout")
+rows = PackedStringArray("########################", "#####..E..##############", "#####.....##############", "#####.P.P.##############", "#####b....##############", "#######..###############", "#######..###############", "##...........###########", "##.w.......a.#b....#####", "##....P..P.........C####", "##..w........#b...a#####", "##...........###########", "######..################", "######..################", "###SSSSSSSS#############", "###SSSSSSSS#############", "###SSSSSSSS#############", "###SSSSSSSS#############", "###........#############", "######..################", "####...........#########", "####.a.......a.#########", "####...P...P...#########", "####b....M....b#########", "####...........#########", "########################")
+cell_size = 3.0
+piece_scale = 0.75
+props = Dictionary[String, PackedScene]({"E": ExtResource("2_exit"), "C": ExtResource("3_chest"), "S": ExtResource("4_spikes"), "P": ExtResource("5_pillar"), "b": ExtResource("6_clutter")})
+enemies = Dictionary[String, ExtResource("10_def")]({"w": ExtResource("7_warrior"), "a": ExtResource("8_archer"), "M": ExtResource("9_champion")})
+floor_supplied_by = "S"
+torch_spacing = 3

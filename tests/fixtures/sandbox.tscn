@@ -16,6 +16,8 @@
 
 [ext_resource type="Script" path="res://settlement/population.gd" id="93_population"]
 
+[ext_resource type="Script" path="res://ui/character/talk_panel.gd" id="86_talk"]
+
 [sub_resource type="NavigationMesh" id="navmesh"]
 resource_local_to_scene = true
 geometry_parsed_geometry_type = 1
@@ -89,3 +91,6 @@ script = ExtResource("99_hitfx")
 script = ExtResource("98_items")
 
 [node name="Enemies" type="Node3D" parent="."]
+
+[node name="TalkPanel" type="CanvasLayer" parent="."]
+script = ExtResource("86_talk")

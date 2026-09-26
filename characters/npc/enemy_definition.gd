@@ -32,3 +32,8 @@ extends GameData
 @export var max_combo := 2
 ## After being hit, ignores its leash for this long (can't be kited to death).
 @export var provoked_seconds := 6.0
+## AI state used in range: "Attack" (melee strings) or "Shoot" (ranged).
+@export var attack_state: StringName = &"Attack"
+## Played when raised by an EnemySpawn (e.g. clawing out of the floor).
+@export var spawn_animation: StringName = &""
+@export var spawn_animation_speed := 1.0

@@ -25,3 +25,4 @@ run_speed = 3.6
 moveset = ExtResource("3_moveset")
 aggro_range = 11.0
 attack_range = 1.9
+spawn_animation = &"Skeletons_Awaken_Floor"

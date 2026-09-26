@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://dungeons/props/spike_trap.gd" id="1_trap"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/floor_tile_big_spikes.glb" id="2_mesh"]
+
+[sub_resource type="BoxShape3D" id="zone"]
+size = Vector3(2.8, 1.2, 2.8)
+
+[node name="SpikeTrap" type="Node3D"]
+script = ExtResource("1_trap")
+
+[node name="Mesh" parent="." instance=ExtResource("2_mesh")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0.02, 0)
+
+[node name="Area" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 4
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("zone")

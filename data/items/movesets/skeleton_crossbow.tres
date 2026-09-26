@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="MovesetData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://combat/moveset_data.gd" id="1_moveset"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2_attack"]
+[ext_resource type="Resource" path="res://data/combat/projectiles/bone_bolt.tres" id="3_bolt"]
+
+[sub_resource type="Resource" id="shot"]
+script = ExtResource("2_attack")
+animation = &"1H_Ranged_Shoot"
+speed = 0.7
+active_start = 0.5
+active_end = 0.52
+combo_window = 1.0
+recovery_end = 1.0
+damage = 9.0
+poise_damage = 8.0
+knockback = 1.5
+tags = PackedStringArray("ranged")
+projectile = ExtResource("3_bolt")
+muzzle_offset = Vector3(0.2, 1.2, -0.6)
+lunge_distance = 0.0
+
+[resource]
+script = ExtResource("1_moveset")
+light_combo = Array[ExtResource("2_attack")]([SubResource("shot")])
+can_block = false

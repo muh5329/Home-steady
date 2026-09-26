@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/wall_doorway.glb" id="1_door"]
+[ext_resource type="PackedScene" path="res://world/passage.tscn" id="2_passage"]
+[ext_resource type="PackedScene" path="res://dungeons/props/wall_torch.tscn" id="3_torch"]
+
+[node name="CryptExit" type="Node3D"]
+
+[node name="Doorway" parent="." instance=ExtResource("1_door")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, -1.42)
+
+[node name="Passage" parent="." instance=ExtResource("2_passage")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.6)
+link = &"crypt"
+prompt = "Climb out of the crypt"
+
+[node name="TorchL" parent="." instance=ExtResource("3_torch")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -1.2, 1.6, -1.1)
+
+[node name="TorchR" parent="." instance=ExtResource("3_torch")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 1.2, 1.6, -1.1)

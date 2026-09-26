@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://characters/player/player.gd" id="1_player"]
 [ext_resource type="Resource" path="res://data/classes/fighter.tres" id="2_class"]
@@ -20,6 +20,7 @@
 [ext_resource type="Resource" path="res://data/combat/sounds_knight.tres" id="14_sounds"]
 [ext_resource type="Script" path="res://characters/player/camera_occlusion.gd" id="15_occl"]
 [ext_resource type="Script" path="res://characters/shared/carry_component.gd" id="16_carry"]
+[ext_resource type="Script" path="res://characters/player/party.gd" id="21_party"]
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.35
@@ -147,7 +148,7 @@ shape = SubResource("interact_shape")
 [node name="HoldPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.55)
 
-[node name="PlayerController" type="Node" parent="." node_paths=PackedStringArray("motor", "combat", "interaction", "camera_rig", "equipment", "abilities")]
+[node name="PlayerController" type="Node" parent="." node_paths=PackedStringArray("motor", "combat", "interaction", "camera_rig", "equipment", "abilities", "party")]
 script = ExtResource("11_controller")
 motor = NodePath("../CharacterMotor")
 combat = NodePath("../CombatController")
@@ -155,6 +156,7 @@ interaction = NodePath("../Interaction")
 camera_rig = NodePath("../CameraRig")
 equipment = NodePath("../Equipment")
 abilities = NodePath("../Abilities")
+party = NodePath("../Party")
 
 [node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
 script = ExtResource("12_camera")
@@ -173,3 +175,6 @@ margin = 0.2
 [node name="Camera3D" type="Camera3D" parent="CameraRig/SpringArm3D"]
 fov = 62.0
 far = 800.0
+
+[node name="Party" type="Node" parent="."]
+script = ExtResource("21_party")

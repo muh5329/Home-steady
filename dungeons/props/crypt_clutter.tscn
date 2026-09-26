@@ -1,0 +1,26 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/barrel_large.gltf.glb" id="1_barrel"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/box_stacked.gltf.glb" id="2_boxes"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/candle_triple.gltf.glb" id="3_candles"]
+
+[sub_resource type="BoxShape3D" id="box"]
+size = Vector3(2.2, 1.6, 1.2)
+
+[node name="Clutter" type="Node3D"]
+
+[node name="Barrel" parent="." instance=ExtResource("1_barrel")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -0.6, 0, -0.8)
+
+[node name="Boxes" parent="." instance=ExtResource("2_boxes")]
+transform = Transform3D(0.65, 0, 0.375, 0, 0.75, 0, -0.375, 0, 0.65, 0.6, 0, -0.9)
+
+[node name="Candles" parent="." instance=ExtResource("3_candles")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, -0.1, 0, -0.2)
+
+[node name="Body" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.8)
+shape = SubResource("box")

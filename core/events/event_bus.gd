@@ -21,6 +21,9 @@ signal building_completed(building: Node)
 ## should be rebaked.
 signal world_geometry_changed
 
+## The player started talking to a character (UI opens the talk panel).
+signal talk_requested(speaker: Node)
+
 ## Save / load lifecycle.
 signal game_saved(slot: String)
 signal game_loaded(slot: String)

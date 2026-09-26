@@ -1,6 +1,7 @@
 class_name Population
 extends Node3D
-## Container for the settlement's settlers. Settlers are runtime entities
+## Container for the settlement's people (settlers, companions and the
+## strangers met nearby). Settlers are runtime entities
 ## (recruited, rescued), so this registry persists them as data and
 ## recreates them on load.
 
@@ -25,9 +26,13 @@ func settlers() -> Array[Settler]:
 	return out
 
 
-func spawn_settler(at: Vector3, settler_name: String, uid := "", job: JobDefinition = null) -> Settler:
+func spawn_settler(at: Vector3, settler_name: String, uid := "", job: JobDefinition = null,
+		character_class: CharacterClassData = null, mode := Settler.Mode.WORKER) -> Settler:
 	var s: Settler = SETTLER_SCENE.instantiate()
 	s.settler_name = settler_name
+	s.mode = mode
+	if character_class:
+		s.character_class = character_class
 	if job:
 		s.get_node("Worker").job = job
 	s.uid = uid if uid != "" else _new_uid()

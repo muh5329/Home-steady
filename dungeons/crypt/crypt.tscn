@@ -1,0 +1,32 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://dungeons/generation/dungeon_builder.gd" id="1_builder"]
+[ext_resource type="Resource" path="res://dungeons/crypt/crypt_layout.tres" id="2_layout"]
+[ext_resource type="Script" path="res://world/ambience_zone.gd" id="3_zone"]
+[ext_resource type="Environment" path="res://art/environments/crypt_environment.tres" id="4_env"]
+
+[sub_resource type="NavigationMesh" id="navmesh"]
+resource_local_to_scene = true
+geometry_parsed_geometry_type = 1
+geometry_collision_mask = 1
+cell_size = 0.25
+cell_height = 0.25
+agent_height = 2.0
+agent_radius = 0.5
+agent_max_climb = 0.5
+
+[node name="Crypt" type="Node3D"]
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("navmesh")
+
+[node name="Builder" type="Node3D" parent="NavigationRegion3D" node_paths=PackedStringArray("navigation_region", "ambience_zone")]
+script = ExtResource("1_builder")
+layout = ExtResource("2_layout")
+navigation_region = NodePath("..")
+ambience_zone = NodePath("../../Ambience")
+
+[node name="Ambience" type="Area3D" parent="."]
+script = ExtResource("3_zone")
+environment = ExtResource("4_env")
+camera_max_pitch = -30.0

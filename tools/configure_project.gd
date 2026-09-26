@@ -46,6 +46,7 @@ var ACTIONS := {
 	"build_menu": [["key", KEY_B], ["joy_button", JOY_BUTTON_DPAD_UP]],
 	"rotate_building": [["key", KEY_R], ["joy_button", JOY_BUTTON_DPAD_RIGHT]],
 	"demolish": [["key", KEY_X], ["joy_button", JOY_BUTTON_DPAD_DOWN]],
+	"party_order": [["key", KEY_T], ["joy_button", JOY_BUTTON_DPAD_LEFT]],
 	"quick_save": [["key", KEY_F5]],
 	"quick_load": [["key", KEY_F9]],
 	"debug_toggle": [["key", KEY_F3]],

@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_characters/Skeleton_Rogue.glb" id="2_model"]
+[ext_resource type="Resource" path="res://data/items/movesets/skeleton_crossbow.tres" id="3_moveset"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Crossbow.gltf" id="4_bow"]
+[ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="5_sounds"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"enemy.skeleton_archer"
+display_name = "Skeleton Archer"
+description = "Keeps its distance and looses bone bolts. Close in fast."
+model = ExtResource("2_model")
+model_scale = 0.75
+faction = &"monsters"
+right_hand_item = ExtResource("4_bow")
+sounds = ExtResource("5_sounds")
+max_health = 45.0
+max_poise = 14.0
+walk_speed = 1.7
+run_speed = 3.8
+moveset = ExtResource("3_moveset")
+aggro_range = 15.0
+attack_range = 11.0
+leash_range = 24.0
+attack_cooldown = Vector2(1.3, 2.4)
+max_combo = 1
+attack_state = &"Shoot"
+spawn_animation = &"Skeletons_Awaken_Standing"

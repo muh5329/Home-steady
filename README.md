@@ -13,6 +13,11 @@ verified through play (scripted and visual), reviewed by a critic, and logged in
 2. Open `project.godot` in the editor (first import takes ~40 s: it imports the KayKit art).
 3. Press **F5** (Play). Pick a class (Fighter / Ranger / Wizard) or **C** to continue a save.
    The start scene is `main.tscn` → `world/regions/test_arena.tscn`.
+4. Vesna, a ranger, waits west of the camp. Talk to her (E): the camp has a free bed, so she can move
+   in; then ask her (or any settler) to join your party.
+5. North along the road, past the skeletons, stands the **Abandoned Crypt** (E at its door): rooms of
+   rising skeletons, archers, a treasure chest, a spike hall (watch the rhythm, then sprint) and a
+   Skeleton Champion.
 
 ## Controls
 
@@ -28,7 +33,8 @@ verified through play (scripted and visual), reviewed by a critic, and logged in
 | Block (melee) / Aim (ranged) | RMB (hold) | LB |
 | Class ability | Q | R3 |
 | Build mode / rotate / cancel site | B / R / X | D-pad |
-| Interact / pick up / put down | E | X |
+| Interact / pick up / put down / talk / revive | E | X |
+| Party: hold ⇄ follow | T | D-pad left |
 | Drop | G | Y |
 | Throw (while carrying) | LMB | RB |
 | Quick save / load | F5 / F9 | |

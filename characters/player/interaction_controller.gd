@@ -55,7 +55,8 @@ func _update_focus() -> void:
 		var facing := motor.get_facing()
 		for area in get_overlapping_areas():
 			var candidate := area as Interactable
-			if candidate == null or not candidate.enabled:
+			# (Overlaps can briefly list areas just removed from the tree.)
+			if candidate == null or not candidate.enabled or not candidate.is_inside_tree():
 				continue
 			if carrying and not candidate.can_accept(carrying):
 				continue
@@ -80,7 +81,7 @@ func interact() -> void:
 			carry.deposit(focused)
 		else:
 			carry.drop()
-	elif focused and focused.enabled:
+	elif is_instance_valid(focused) and focused.is_inside_tree() and focused.enabled:
 		focused.interact(self)
 
 

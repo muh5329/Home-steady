@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="JobDefinition" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="JobDefinition" load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://ai/jobs/job_definition.gd" id="1_job"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_items/axe_1handed.gltf" id="2_tool"]
 
 [resource]
 script = ExtResource("1_job")
@@ -14,3 +15,4 @@ work_amount = 10.0
 work_tags = PackedStringArray("chop")
 work_verb = "Chopping"
 tool_part = &"1H_Axe"
+tool_scene = ExtResource("2_tool")

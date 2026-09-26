@@ -53,7 +53,7 @@ func apply(c: CharacterClassData) -> void:
 	motor.run_speed = _base_speeds.y * c.move_speed_multiplier
 	motor.sprint_speed = _base_speeds.z * c.move_speed_multiplier
 	# Gear and abilities.
-	equipment.model_root = model_root
+	equipment.set_model(model_root)
 	equipment.base_damage_multiplier = c.damage_multiplier
 	equipment.equip(c.starting_weapon)
 	if abilities:

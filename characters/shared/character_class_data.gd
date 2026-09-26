@@ -21,5 +21,7 @@ extends GameData
 @export var abilities: Array[AbilityData] = []
 
 @export_group("Presentation")
+## Offered on the class select screen (villagers etc. are NPC-only).
+@export var playable := true
 @export var role_summary := ""
 @export var ui_color := Color.WHITE

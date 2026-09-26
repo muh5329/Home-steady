@@ -15,6 +15,9 @@ var _resources: Label
 var _title: Label
 var _ability: Label
 var _reticle: Label
+var _party_box: VBoxContainer
+var _party_rows: Array[Dictionary] = []  # {member, bar, status}
+var _resource_timer := 0.0
 
 
 func _ready() -> void:
@@ -40,6 +43,10 @@ func bind_player(p: Player) -> void:
 	p.combat.died.connect(func(): show_banner("You have fallen", 3.0))
 	_title.text = p.character_class.display_name if p.character_class else "Adventurer"
 	_title.add_theme_color_override(&"font_color", p.character_class.ui_color.lightened(0.35) if p.character_class else Color(0.95, 0.88, 0.7))
+	var party := p.get_node_or_null("Party") as Party
+	if party:
+		party.members_changed.connect(_rebuild_party.bind(party))
+		_rebuild_party(party)
 
 
 func show_banner(text: String, seconds: float, color := Color(0.95, 0.3, 0.2)) -> void:
@@ -57,7 +64,7 @@ func _refresh_resources() -> void:
 		return
 	var totals := settlement.totals()
 	var lines: PackedStringArray = ["Settlement",
-		"  Settlers  %d   Beds  %d" % [get_tree().get_nodes_in_group(&"settlers").size(), settlement.beds()],
+		"  Settlers  %d   Beds  %d" % [settlement.settler_count(), settlement.beds()],
 		"Stores"]
 	if totals.is_empty():
 		lines.append("  (nothing stored yet)")
@@ -67,7 +74,12 @@ func _refresh_resources() -> void:
 	_resources.text = "\n".join(lines)
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_resource_timer -= delta
+	if _resource_timer <= 0.0:
+		_resource_timer = 1.0
+		_refresh_resources()
+	_update_party()
 	if player:
 		var ranged := player.controller.is_ranged() and not player.interaction.is_carrying()
 		_reticle.visible = ranged
@@ -82,6 +94,46 @@ func _process(_delta: float) -> void:
 	var cd := player.abilities.cooldown_left(0)
 	_ability.text = "[Q] %s   %s" % [a.display_name, "ready" if cd <= 0.0 else "%.0fs" % ceilf(cd)]
 	_ability.add_theme_color_override(&"font_color", Color(0.75, 1.0, 0.75) if cd <= 0.0 else Color(0.7, 0.7, 0.7))
+
+
+# --- party frames ------------------------------------------------------------------
+
+func _rebuild_party(party: Party) -> void:
+	for c in _party_box.get_children():
+		c.queue_free()
+	_party_rows.clear()
+	_party_box.add_child(HSeparator.new())
+	for m in party.members():
+		var row := VBoxContainer.new()
+		row.add_theme_constant_override(&"separation", 1)
+		var name_label := _label("%s · %s" % [m.settler_name, m.class_title()], 14,
+			m.character_class.ui_color.lightened(0.4) if m.character_class else Color.WHITE)
+		row.add_child(name_label)
+		var bar := ProgressBar.new()
+		bar.custom_minimum_size = Vector2(180, 9)
+		bar.show_percentage = false
+		bar.add_theme_stylebox_override(&"background", _box(Color(0.15, 0.05, 0.05, 0.9), 2))
+		bar.add_theme_stylebox_override(&"fill", _box(Color(0.3, 0.7, 0.3), 2))
+		row.add_child(bar)
+		var status := _label("", 12, Color(0.85, 0.83, 0.78))
+		row.add_child(status)
+		_party_box.add_child(row)
+		_party_rows.append({"member": m, "bar": bar, "status": status})
+	_party_box.visible = not _party_rows.is_empty()
+	_update_party()
+
+
+func _update_party() -> void:
+	for r in _party_rows:
+		var m = r.member
+		if not is_instance_valid(m):
+			continue
+		var bar: ProgressBar = r.bar
+		bar.max_value = m.health.max_health
+		bar.value = m.health.current
+		var status: Label = r.status
+		status.text = "DOWNED — [E] to revive" if m.is_downed() else m.companion.activity
+		status.add_theme_color_override(&"font_color", Color(1, 0.45, 0.35) if m.is_downed() else Color(0.85, 0.83, 0.78))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -144,6 +196,10 @@ func _build() -> void:
 	col.add_child(_health_label)
 	_ability = _label("", 15, Color(0.75, 1.0, 0.75))
 	col.add_child(_ability)
+	_party_box = VBoxContainer.new()
+	_party_box.add_theme_constant_override(&"separation", 6)
+	_party_box.visible = false
+	col.add_child(_party_box)
 
 	_prompt = _label("", 22, Color(1, 0.96, 0.85))
 	_prompt.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
@@ -154,7 +210,7 @@ func _build() -> void:
 
 	_controls = _label(
 		"WASD move   Shift sprint   Alt walk   Space jump   Ctrl/C dodge\n" +
-		"LMB attack/shoot   F heavy   RMB block (aim for ranged)   Q ability   E interact   G drop\n" +
+		"LMB attack/shoot   F heavy   RMB block (aim for ranged)   Q ability   E interact/talk   G drop   T party hold/follow\n" +
 		"B build   R rotate   X cancel site (in build mode)   F5 save   F9 load   F3 debug   H hide help", 14, Color(0.92, 0.92, 0.88, 0.85))
 	_controls.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	_controls.position = Vector2(24, -86)

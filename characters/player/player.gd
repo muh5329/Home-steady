@@ -37,6 +37,7 @@ func respawn(at: Vector3) -> void:
 	global_position = at
 	velocity = Vector3.ZERO
 	combat.revive()
+	camera_rig.snap()
 
 
 # --- persistence --------------------------------------------------------------
@@ -80,3 +81,4 @@ func load_state(state: Dictionary) -> void:
 	if weapon_id != &"" and DataRegistry.has_data(weapon_id):
 		equipment.equip(DataRegistry.get_data(weapon_id) as WeaponData)
 	carry.load_state(state.get("carrying", ""))
+	camera_rig.snap()
