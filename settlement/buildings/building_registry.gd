@@ -21,8 +21,8 @@ func place_site(definition: BuildingDefinition, xform: Transform3D, uid := "") -
 	site.definition = definition
 	site.uid = uid if uid != "" else _new_uid()
 	site.name = "Site_" + site.uid
+	site.transform = global_transform.affine_inverse() * xform  # placed before _ready runs
 	add_child(site)
-	site.global_transform = xform
 	site.completed.connect(_on_site_completed)
 	EventBus.world_geometry_changed.emit()
 	return site
@@ -34,8 +34,9 @@ func spawn_building(definition: BuildingDefinition, xform: Transform3D, uid := "
 	building.definition = definition
 	building.uid = uid if uid != "" else _new_uid()
 	building.name = "Building_" + building.uid
+	# Placed before _ready: features (ground wear, storage) see the real spot.
+	building.transform = global_transform.affine_inverse() * xform
 	add_child(building)
-	building.global_transform = xform
 	EventBus.world_geometry_changed.emit()
 	return building
 

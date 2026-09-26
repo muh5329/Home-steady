@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://art/foliage/boulder_model.gd" id="1_rock"]
+
+[node name="BoulderRock" type="Node3D"]
+
+[node name="Mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.25, 0, 0, 0, 1.1, 0, 0, 0, 1.25, 0, 0, 0)
+script = ExtResource("1_rock")

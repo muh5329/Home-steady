@@ -158,15 +158,16 @@ func test_navigation_routes_around_new_building() -> void:
 	nav.bake_finished.connect(func(): baked[0] += 1)
 	var ok := await wait_until_realtime(func(): return baked[0] > 0, 20.0)
 	check(ok, "navmesh rebaked after the building appeared")
-	await wait_physics_frames(3)
+	# A bake already running when the building appeared may finish first;
+	# the debounced rebake after it includes the building.
 	var map := nav.get_navigation_map()
-	var path := NavigationServer3D.map_get_path(map, Vector3(0, 0, -2), Vector3(0, 0, -14), true)
-	var crosses := false
-	for p in path:
-		if absf(p.x) < 1.5 and absf(p.z + 8) < 1.5:
-			crosses = true
-	check(path.size() > 2, "path bends around the building (%d points)" % path.size())
-	check(not crosses, "path doesn't go through the building")
+	var routed := await wait_until_realtime(func():
+		var path := NavigationServer3D.map_get_path(map, Vector3(0, 0, -2), Vector3(0, 0, -14), true)
+		for p in path:
+			if absf(p.x) < 1.5 and absf(p.z + 8) < 1.5:
+				return false
+		return path.size() > 2, 20.0)
+	check(routed, "path bends around the building, not through it")
 
 
 func test_save_load_sites_and_buildings() -> void:

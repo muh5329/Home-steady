@@ -1,16 +1,21 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://settlement/buildings/building.gd" id="1_building"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/blue/building_market_blue.gltf" id="2_model"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/red/building_market_red.gltf" id="2_model"]
 [ext_resource type="Script" path="res://settlement/storage/stockpile.gd" id="3_storage"]
 [ext_resource type="Script" path="res://settlement/storage/inventory_component.gd" id="4_inv"]
 [ext_resource type="Script" path="res://core/interaction/interactable.gd" id="5_interact"]
 
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/barrel.gltf" id="95_barrel"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/crate_A_small.gltf" id="95_crate"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/sack.gltf" id="95_sack"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/wheelbarrow.gltf" id="95_wheelbarrow"]
+[ext_resource type="Script" path="res://art/props/flower_planter.gd" id="98_planter"]
 [sub_resource type="BoxShape3D" id="shape"]
-size = Vector3(4.6, 4, 4.2)
+size = Vector3(6.44, 5.6, 5.88)
 
 [sub_resource type="BoxShape3D" id="zone_shape"]
-size = Vector3(5.5, 2.5, 3)
+size = Vector3(7.7, 3.5, 4.2)
 
 [sub_resource type="SphereShape3D" id="interact_shape"]
 radius = 3.2
@@ -19,10 +24,10 @@ radius = 3.2
 script = ExtResource("1_building")
 
 [node name="Model" parent="." instance=ExtResource("2_model")]
-transform = Transform3D(5.5, 0, 0, 0, 5.5, 0, 0, 0, 5.5, 0, 0, 0)
+transform = Transform3D(7.7, 0, 0, 0, 7.7, 0, 0, 0, 7.7, 0, -0.42, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -0.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -0.56)
 shape = SubResource("shape")
 
 [node name="Storage" type="Node3D" parent="." node_paths=PackedStringArray("inventory", "zone", "interactable", "stack_origin")]
@@ -39,7 +44,7 @@ script = ExtResource("4_inv")
 capacity = 120
 
 [node name="Stacks" type="Node3D" parent="Storage"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.42, 4.2)
 
 [node name="Zone" type="Area3D" parent="Storage"]
 collision_layer = 0
@@ -47,7 +52,7 @@ collision_mask = 16
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Storage/Zone"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 3.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 4.48)
 shape = SubResource("zone_shape")
 
 [node name="Interactable" type="Area3D" parent="Storage"]
@@ -55,5 +60,27 @@ script = ExtResource("5_interact")
 prompt = "Storehouse"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Storage/Interactable"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 3.08)
 shape = SubResource("interact_shape")
+
+[node name="Dressing" type="Node3D" parent="."]
+
+[node name="Crate0" parent="Dressing" instance=ExtResource("95_crate")]
+transform = Transform3D(4.9, 0, 0.993, 0, 5, 0, -0.993, 0, 4.9, 4.76, 0, 4.2)
+
+[node name="Crate1" parent="Dressing" instance=ExtResource("95_crate")]
+transform = Transform3D(2.702, 0, 4.207, 0, 5, 0, -4.207, 0, 2.702, 5.04, 0, 5.6)
+
+[node name="Sack2" parent="Dressing" instance=ExtResource("95_sack")]
+transform = Transform3D(4.388, 0, 2.397, 0, 5, 0, -2.397, 0, 4.388, -4.62, 0, 5.04)
+
+[node name="Wheelbarrow3" parent="Dressing" instance=ExtResource("95_wheelbarrow")]
+transform = Transform3D(-2.081, 0, 4.546, 0, 5, 0, -4.546, 0, -2.081, -4.76, 0, 1.96)
+
+[node name="Barrel4" parent="Dressing" instance=ExtResource("95_barrel")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, -0, 0, 5, 4.62, 0, -2.8)
+
+[node name="Planter0" type="Node3D" parent="Dressing"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.20, 0, 5.20)
+script = ExtResource("98_planter")
+petal = Color(0.95, 0.5, 0.65, 1)

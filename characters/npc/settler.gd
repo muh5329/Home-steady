@@ -11,6 +11,8 @@ signal mode_changed(mode: Mode)
 
 const GROUP := &"settlers"
 const REVIVE_SECONDS := 1.0
+## Within this distance a nameplate also says what the settler is doing.
+const ACTIVITY_RANGE := 4.0
 const REVIVE_HEALTH := 0.5
 
 ## STRANGER: met in the world, not (yet) part of the settlement.
@@ -44,6 +46,18 @@ var model_root: Node3D:
 var _tool: Node3D  # the visible job tool (rig part or attached scene)
 var _attached_tool: Node3D  # a tool scene we attached (freed on change)
 var _ready_done := false
+var _nameplate_near := false
+var _nameplate_check := 0.0
+
+
+func _process(delta: float) -> void:
+	_nameplate_check -= delta
+	if _nameplate_check <= 0.0:
+		_nameplate_check = 0.5
+		var player := get_tree().get_first_node_in_group(Player.GROUP) as Node3D
+		var near := player != null and player.global_position.distance_to(global_position) < ACTIVITY_RANGE
+		if near != _nameplate_near:
+			_update_nameplate()
 
 
 func _ready() -> void:
@@ -288,6 +302,13 @@ func _update_prompt() -> void:
 
 func _update_nameplate() -> void:
 	if not _ready_done:
+		return
+	# Close up you see what they're doing; from afar just who they are.
+	var player := get_tree().get_first_node_in_group(Player.GROUP) as Node3D
+	var near := player != null and player.global_position.distance_to(global_position) < ACTIVITY_RANGE
+	_nameplate_near = near
+	if not near:
+		nameplate.text = "%s · %s" % [settler_name, class_title() if mode != Mode.WORKER else job_title()]
 		return
 	match mode:
 		Mode.STRANGER:

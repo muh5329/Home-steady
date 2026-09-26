@@ -252,9 +252,17 @@ func _build() -> void:
 		"WASD move   Shift sprint   Alt walk   Space jump   Ctrl/C dodge\n" +
 		"LMB attack/shoot   F heavy   RMB block (aim for ranged)   Q ability   E interact/talk   G drop   T party hold/follow\n" +
 		"B build   R rotate   X cancel site (in build mode)   F5 save   F9 load   F3 debug   H hide help", 14, Color(0.92, 0.92, 0.88, 0.85))
-	_controls.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	_controls.position = Vector2(24, -86)
-	root.add_child(_controls)
+	var help := PanelContainer.new()
+	help.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	help.grow_vertical = Control.GROW_DIRECTION_BEGIN
+	help.offset_left = 16
+	help.offset_top = -16
+	help.offset_bottom = -16
+	help.add_theme_stylebox_override(&"panel", _box(Color(0.08, 0.07, 0.06, 0.55), 6))
+	help.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	help.add_child(_controls)
+	root.add_child(help)
+	_controls.visibility_changed.connect(func(): help.visible = _controls.visible)
 
 	var res_panel := PanelContainer.new()
 	res_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
@@ -314,9 +322,16 @@ func _label(text: String, font_size: int, color: Color) -> Label:
 func _box(color: Color, radius: int) -> StyleBoxFlat:
 	var b := StyleBoxFlat.new()
 	b.bg_color = color
-	b.set_corner_radius_all(radius)
-	b.content_margin_left = 10
-	b.content_margin_right = 10
-	b.content_margin_top = 6
-	b.content_margin_bottom = 6
+	b.set_corner_radius_all(maxi(radius, 6))
+	b.content_margin_left = 12
+	b.content_margin_right = 12
+	b.content_margin_top = 7
+	b.content_margin_bottom = 7
+	# Panels (translucent dark fills) get the gold storybook trim.
+	if color.a < 0.8 and color.v < 0.2:
+		b.bg_color = Color(0.1, 0.12, 0.2, 0.84)
+		b.set_border_width_all(2)
+		b.border_color = Color(0.78, 0.62, 0.33, 0.95)
+		b.shadow_color = Color(0, 0, 0, 0.3)
+		b.shadow_size = 4
 	return b

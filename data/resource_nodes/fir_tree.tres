@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="ResourceNodeDefinition" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://items/resources/resource_node_definition.gd" id="1_def"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/nature/tree_single_B.gltf" id="2_model"]
+[ext_resource type="PackedScene" path="res://art/foliage/fir_tree.tscn" id="2_model"]
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/nature/tree_single_B_cut.gltf" id="3_dep"]
 [ext_resource type="Resource" path="res://data/items/resources/log.tres" id="4_item"]
 [ext_resource type="AudioStream" path="res://audio/sfx/thud.wav" id="5_sound"]

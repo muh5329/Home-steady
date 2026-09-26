@@ -237,8 +237,11 @@ shape = SubResource("talk_shape")
 
 [node name="Nameplate" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
-pixel_size = 0.004
+pixel_size = 0.00045
 billboard = 1
+fixed_size = true
+no_depth_test = true
+render_priority = 2
 modulate = Color(1, 0.96, 0.85, 1)
 outline_size = 10
 font_size = 48

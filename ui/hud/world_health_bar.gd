@@ -25,7 +25,8 @@ func _on_health_changed(current: float, maximum: float) -> void:
 	_fill.scale.x = maxf(ratio, 0.001)
 	_fill.position.x = -width * (1.0 - ratio) * 0.5
 	_timer = visible_seconds
-	visible = current > 0.0
+	# Only while hurt: full bars (spawning, healing to full) stay hidden.
+	visible = current > 0.0 and current < maximum
 
 
 func _process(delta: float) -> void:

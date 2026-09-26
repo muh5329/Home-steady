@@ -1,6 +1,6 @@
 [gd_scene load_steps=12 format=3]
 
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/nature/mountain_B.gltf" id="1_rock"]
+[ext_resource type="Script" path="res://art/foliage/boulder_model.gd" id="1_rock"]
 [ext_resource type="Material" path="res://art/props/ore_material.tres" id="2_ore"]
 
 [sub_resource type="CylinderMesh" id="c0"]
@@ -68,50 +68,52 @@ rings = 1
 
 [node name="OreModel" type="Node3D"]
 
-[node name="Rock" parent="." instance=ExtResource("1_rock")]
-transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 0, 0, 0)
+[node name="Rock" type="MeshInstance3D" parent="."]
+transform = Transform3D(1.7, 0, 0, 0, 1.45, 0, 0, 0, 1.7, 0, 0, 0)
+script = ExtResource("1_rock")
+variant = 2
 
 [node name="Crystal0" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.992, -0.123, -0.019, 0.124, 0.980, 0.154, 0.000, -0.155, 0.988, 0.048, 1.252, 0.634)
+transform = Transform3D(0.992, -0.123, -0.019, 0.124, 0.980, 0.154, 0.000, -0.155, 0.988, 0.029, 1.032, 0.380)
 mesh = SubResource("c0")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal1" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.828, -0.532, -0.176, 0.560, 0.787, 0.260, 0.000, -0.313, 0.950, 0.213, 1.297, -0.347)
+transform = Transform3D(0.828, -0.532, -0.176, 0.560, 0.787, 0.260, 0.000, -0.313, 0.950, 0.128, 1.077, -0.208)
 mesh = SubResource("c1")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal2" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.904, -0.422, 0.069, 0.427, 0.892, -0.146, 0.000, 0.161, 0.987, -0.206, 1.334, -0.246)
+transform = Transform3D(0.904, -0.422, 0.069, 0.427, 0.892, -0.146, 0.000, 0.161, 0.987, -0.124, 1.114, -0.148)
 mesh = SubResource("c2")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal3" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.972, 0.235, -0.026, -0.236, 0.966, -0.106, 0.000, 0.109, 0.994, 0.742, 1.226, 0.316)
+transform = Transform3D(0.972, 0.235, -0.026, -0.236, 0.966, -0.106, 0.000, 0.109, 0.994, 0.445, 1.006, 0.190)
 mesh = SubResource("c3")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal4" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.875, -0.468, 0.123, 0.484, 0.846, -0.222, 0.000, 0.254, 0.967, -0.176, 1.280, -0.886)
+transform = Transform3D(0.875, -0.468, 0.123, 0.484, 0.846, -0.222, 0.000, 0.254, 0.967, -0.106, 1.060, -0.532)
 mesh = SubResource("c4")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal5" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.906, 0.375, 0.197, -0.423, 0.802, 0.421, 0.000, -0.464, 0.886, 0.830, 1.250, -0.356)
+transform = Transform3D(0.906, 0.375, 0.197, -0.423, 0.802, 0.421, 0.000, -0.464, 0.886, 0.498, 1.030, -0.214)
 mesh = SubResource("c5")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal6" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.991, 0.137, -0.001, -0.137, 0.991, -0.009, 0.000, 0.009, 1.000, -0.308, 1.294, -0.315)
+transform = Transform3D(0.991, 0.137, -0.001, -0.137, 0.991, -0.009, 0.000, 0.009, 1.000, -0.185, 1.074, -0.189)
 mesh = SubResource("c6")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal7" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.910, -0.361, 0.204, 0.415, 0.792, -0.448, 0.000, 0.492, 0.870, 0.615, 1.333, -0.422)
+transform = Transform3D(0.910, -0.361, 0.204, 0.415, 0.792, -0.448, 0.000, 0.492, 0.870, 0.369, 1.113, -0.253)
 mesh = SubResource("c7")
 surface_material_override/0 = ExtResource("2_ore")
 
 [node name="Crystal8" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.997, -0.073, 0.039, 0.083, 0.881, -0.465, 0.000, 0.467, 0.884, 0.622, 1.389, -0.746)
+transform = Transform3D(0.997, -0.073, 0.039, 0.083, 0.881, -0.465, 0.000, 0.467, 0.884, 0.373, 1.169, -0.448)
 mesh = SubResource("c8")
 surface_material_override/0 = ExtResource("2_ore")

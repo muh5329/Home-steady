@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://characters/player/player.gd" id="1_player"]
 [ext_resource type="Resource" path="res://data/classes/fighter.tres" id="2_class"]
@@ -21,6 +21,14 @@
 [ext_resource type="Script" path="res://characters/player/camera_occlusion.gd" id="15_occl"]
 [ext_resource type="Script" path="res://characters/shared/carry_component.gd" id="16_carry"]
 [ext_resource type="Script" path="res://characters/player/party.gd" id="21_party"]
+
+[ext_resource type="PackedScene" path="res://art/post/post_fx.tscn" id="22_post"]
+
+[sub_resource type="CameraAttributesPractical" id="cam_attr"]
+dof_blur_far_enabled = true
+dof_blur_far_distance = 55.0
+dof_blur_far_transition = 40.0
+dof_blur_amount = 0.06
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.35
@@ -174,8 +182,11 @@ spring_length = 4.6
 margin = 0.2
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig/SpringArm3D"]
-fov = 62.0
+attributes = SubResource("cam_attr")
+fov = 55.0
 far = 800.0
 
 [node name="Party" type="Node" parent="."]
 script = ExtResource("21_party")
+
+[node name="PostFx" parent="." instance=ExtResource("22_post")]

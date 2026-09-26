@@ -14,6 +14,12 @@ func _ready() -> void:
 	_t = randf() * 100.0
 
 
+## Changes the energy the flicker wobbles around.
+func set_base_energy(energy: float) -> void:
+	_base = energy
+	light_energy = energy
+
+
 func _process(delta: float) -> void:
 	_t += delta * speed
 	light_energy = _base * (1.0 + amount * (sin(_t) * 0.5 + sin(_t * 2.3 + 1.7) * 0.3 + sin(_t * 5.1) * 0.2))

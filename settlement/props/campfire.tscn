@@ -1,7 +1,8 @@
-[gd_scene load_steps=16 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://settlement/props/campfire.gd" id="1_fire"]
 
+[ext_resource type="PackedScene" path="res://art/vfx/smoke_plume.tscn" id="2_smoke"]
 [sub_resource type="CylinderMesh" id="log_mesh"]
 top_radius = 0.09
 bottom_radius = 0.1
@@ -158,12 +159,9 @@ lifetime = 0.7
 process_material = SubResource("fire_proc")
 draw_pass_1 = SubResource("fire_quad")
 
-[node name="Smoke" type="GPUParticles3D" parent="."]
+[node name="Smoke" parent="." instance=ExtResource("2_smoke")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
-amount = 20
-lifetime = 3.0
-process_material = SubResource("smoke_proc")
-draw_pass_1 = SubResource("smoke_quad")
+amount = 18
 
 [node name="Light" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)

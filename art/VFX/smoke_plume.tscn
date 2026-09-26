@@ -1,0 +1,70 @@
+[gd_scene load_steps=10 format=3]
+
+[sub_resource type="Gradient" id="puff_grad"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="puff_tex"]
+gradient = SubResource("puff_grad")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(1, 0.5)
+
+[sub_resource type="Gradient" id="ramp_grad"]
+offsets = PackedFloat32Array(0, 0.15, 0.7, 1)
+colors = PackedColorArray(0.62, 0.6, 0.58, 0, 0.8, 0.79, 0.78, 0.5, 0.9, 0.9, 0.92, 0.28, 0.95, 0.95, 0.98, 0)
+
+[sub_resource type="GradientTexture1D" id="ramp"]
+gradient = SubResource("ramp_grad")
+
+[sub_resource type="Curve" id="grow_curve"]
+_data = [Vector2(0, 0.25), 0.0, 1.5, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="grow"]
+curve = SubResource("grow_curve")
+
+[sub_resource type="ParticleProcessMaterial" id="proc"]
+emission_shape = 1
+emission_sphere_radius = 0.2
+direction = Vector3(0, 1, 0)
+spread = 10.0
+initial_velocity_min = 1.0
+initial_velocity_max = 1.6
+gravity = Vector3(0.35, 0.12, 0.1)
+damping_min = 0.1
+damping_max = 0.2
+angle_min = -180.0
+angle_max = 180.0
+scale_min = 1.6
+scale_max = 2.6
+scale_curve = SubResource("grow")
+color_ramp = SubResource("ramp")
+turbulence_enabled = true
+turbulence_noise_strength = 0.6
+turbulence_noise_scale = 3.0
+
+[sub_resource type="StandardMaterial3D" id="mat"]
+transparency = 1
+cull_mode = 2
+vertex_color_use_as_albedo = true
+albedo_texture = SubResource("puff_tex")
+billboard_mode = 3
+particles_anim_h_frames = 1
+particles_anim_v_frames = 1
+particles_anim_loop = false
+roughness = 1.0
+disable_receive_shadows = true
+
+[sub_resource type="QuadMesh" id="quad"]
+material = SubResource("mat")
+
+[node name="SmokePlume" type="GPUParticles3D"]
+amount = 26
+lifetime = 8.0
+preprocess = 8.0
+visibility_aabb = AABB(-6, -1, -6, 12, 20, 12)
+cast_shadow = 0
+process_material = SubResource("proc")
+draw_pass_1 = SubResource("quad")

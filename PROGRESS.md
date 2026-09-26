@@ -20,6 +20,75 @@ Scores are 0–10 against the *final* target, so early rounds are low by design.
 
 ---
 
+## Visual gauntlet — pass 1 (Fabledom art target)
+
+The user asked for a full graphics overhaul toward **Fabledom** (reference shots in `docs/art_target/`).
+Phase 9 (smithing chain) is paused mid-way (work parked outside the repo) and resumes after this.
+Passes follow the spec order (lighting → terrain → buildings → foliage → characters → props → VFX),
+each captured with `tests/capture/test_capture_visual.gd` (`VISUAL_TAG=… tools/capture.sh
+capture_visual`). Before/after: `docs/rounds/visual_01/` (`v0_before_*` vs `v5_polish_*`).
+
+| Pass | Change |
+|---|---|
+| Lighting | Golden-hour sun (warm, lower, side-lit), saturated sky gradient, cool sky ambient, filmic tonemap, stronger SSAO, soft bloom, aerial haze; far depth of field; `PostFx` lens finish (vignette, subtle chromatic fringe, warm-highlight/cool-shadow split toning); higher, wider default camera |
+| Terrain | Painterly ground shader (broad colour sweeps, brush streaks); `TerrainPainter` bakes `PaintStroke` paths into a mask → dirt roads with ruts, cobbled plazas, tilled soil; terraced red-clay `TerraceHills` (strata, grass lips) ringing the land and on the horizon; far ground to the horizon; border colliders |
+| Foliage | `FoliageScatter`: windblown grass tufts (world-noise coloured to melt into the ground) in streamed chunks with visibility fade, wildflower drifts (yellow/white/blue/pink), a dense pine belt with colliders and a forest to the horizon; layered procedural pines (`FoliageMeshes`) now also used by the choppable trees |
+| Buildings/props | Red-roofed building variants, chimney smoke plumes (`SmokePlume`), campfire smoke column, camp dressing (lumber, sacks, barrels, crates, wheelbarrow, rack, banner) |
+| UI | Storybook theme (`ui/theme/fable_theme.tres`): Fredoka font (OFL, `art/fonts/`), navy panels with gold trim, rounded buttons/bars |
+| Fix | Black "holes" at bright spots: NaN pixels from foliage normals spread by DOF/glow — foliage shader made NaN-proof |
+
+### Visual gauntlet — passes 2–5 (after a visual-critic review scoring v0 2/10, pass 1 4.5/10)
+
+| Pass | Largest discrepancy fixed |
+|---|---|
+| 2 | Neon greens → olive/yellow palette; rust roads → pale tan with worn centres and grassy, flowery edges; visible rounded cobbles; clustered grass (sparse lawn, thick drifts) kept off roads; mossy procedural boulders (were blown-out white hex rocks); dirt aprons worn around new buildings; building dressing (barrels, crates, sacks, lumber, wheelbarrow); fenced farms on tilled soil; clouds; fixed-size nameplates; help text in a themed panel; halved chromatic fringe; DOF pushed out |
+| 3 | Buildings were created at the origin before being moved, so their ground wear landed at the camp — now placed before `_ready` (also fixes construction sites); warmer tents |
+| 4–5 | The terraced hills read as dark purple slabs: their triangles were wound backwards, so Godot lit the inside of the walls. Fixed winding → sunlit red-orange strata with grass lips and summit pines. Same root cause darkened half of all grass blades and pine needles (two-sided shading flips normals on back faces) → foliage keeps its authored normals on both sides, grass is lit like the ground: the lawn now reads as one soft carpet |
+
+Latest captures: `docs/rounds/visual_02/`.
+
+### Visual gauntlet — pass 6 (visual critic re-score: v9 = 6.5/10)
+
+| Largest discrepancies | Fix |
+|---|---|
+| Hills read as stacked cakes / a uniform wall | Terraces now vary in height, drift off-centre, rims rise and dip, walls slope in, lips drape further, strata are broader and noise-broken |
+| Nothing between grass and trees; village on an empty lawn | Procedural shrubs (some flowering) along roads, in dense drifts, hugging buildings and at the forest edge; `FenceRun` fences along the roads |
+| Pines between camera and hero | Foliage dissolves (dithered) near the camera→player line via a global `player_position` shader uniform |
+| Label clutter | Health bars only while hurt; nameplates drawn on top, fixed size, and show activity only within 9 m |
+
+Captures: `docs/rounds/visual_03/`.
+
+### Visual gauntlet — pass 7 (visual critic re-score: v10 = 7/10)
+
+| Largest discrepancies | Fix |
+|---|---|
+| Buildings toy-sized next to the hero; primary red/blue kit colours | Buildings ×1.4 (footprints, colliders, dressing scaled); `StorybookPalette` shader regrades the KayKit texture: red → terracotta, pale blue plaster → warm ochre, deep blue → slate teal, white → cream |
+| Blue-tinted shadows made plaster read blue | Ambient light warmed (lavender-neutral, less sky contribution) |
+| Flat prism tents | Procedural striped bell tents (`art/props/bell_tent_model.gd`): sagging canvas cone, scalloped valance, doorway, pennant |
+| Farm = sticks in a dark pit | Procedural wheat beds (dense golden tufts with ears, wind-swayed) on raised soil furrows (`FoliageMeshes.wheat_bed`/`furrows`) |
+| Faceted "shard" bushes | Soft radial normals, no blossom shards: round painterly shrubs |
+| Grass uniform height; pines filling the lens | Tall meadow tufts with seed heads along roads/fences and in lush drifts; foliage dithers out within ~2.5 m of the camera; nameplates show activity within 6 m |
+
+Captures: `docs/rounds/visual_04/`.
+
+### Visual gauntlet — pass 8 (visual critic re-score: pass 7 = 7.5/10)
+
+| Largest discrepancies | Fix |
+|---|---|
+| Regrade left the village monochrome; grey stone lumps | Pale plaster → bright ochre (#EACB8A), shutters/doors → muted teal, neutral/cool greys lightened and sun-warmed; flower planters (pink/yellow/white) against houses, the forge and the store |
+| Village thin, bare placement pads | Aprons are smaller with ragged, trodden edges; farms paint a crisp rotated square field; a village well by the camp; the village capture shows a grown village (7 buildings) framed so roofs fill the frame |
+| Placeholder assets clash | Ore veins are mossy boulders with ore shards; the crypt entrance is weathered into mossy ruin stone (`StorybookPalette.apply(root, weathered)`), its torches dimmed in daylight; bell-tent doorway follows the canvas curve (no black shards) |
+| Hills: flame-like stripes | Cliff noise sampled in metres at a slow rate: broad wavy strata, soft rain-wash, softer grass lips |
+| Milky haze | Fog −30%, contrast 1.18, less SSAO light-affect |
+| Pines hiding the hero; stipple on flowers | Occlusion dissolve widened (1.8–3.4 m from the view line) but only for foliage above chest height or in the near half of the view; near-lens fade 0.8–1.8 m; nameplate activity within 4 m |
+
+Captures: `docs/rounds/visual_05/` (`pass6_vs_pass8.jpg` is a before/after).
+
+The visual capture test takes `VISUAL_VIEWS` (e.g. `56`) to render a subset, and adds a sixth
+view close on the farm.
+
+---
+
 ## Round 8 — Phase 8 (part 2): spiders, the Necromancer, and a reward that builds the settlement
 
 **What changed**

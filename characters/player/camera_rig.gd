@@ -13,7 +13,7 @@ extends Node3D
 @export var max_pitch := 35.0
 @export var min_distance := 2.5
 @export var max_distance := 8.0
-@export var distance := 4.6
+@export var distance := 5.6
 ## Added to `distance` by gameplay (e.g. carrying a big load).
 var extra_distance := 0.0
 ## Interiors lower the highest allowed pitch (look down more) so the arm
@@ -36,7 +36,7 @@ var _base_fov := 62.0
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
 
 var yaw := 0.0
-var pitch := -20.0
+var pitch := -24.0
 var _trauma := 0.0
 var _noise := FastNoiseLite.new()
 var _noise_t := 0.0
@@ -106,6 +106,8 @@ func _process(delta: float) -> void:
 	_apply_rotation()
 	_apply_shake(delta)
 	_update_body_fade()
+	if target:
+		RenderingServer.global_shader_parameter_set(&"player_position", target.global_position + Vector3.UP)
 
 
 ## A wall behind the player pulls the camera in; rather than filling the

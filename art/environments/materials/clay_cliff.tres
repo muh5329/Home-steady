@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" load_steps=4 format=3]
+
+[ext_resource type="Shader" path="res://art/environments/materials/clay_cliff.gdshader" id="1_shader"]
+
+[sub_resource type="FastNoiseLite" id="n"]
+frequency = 0.05
+fractal_octaves = 3
+
+[sub_resource type="NoiseTexture2D" id="tex"]
+width = 256
+height = 256
+seamless = true
+noise = SubResource("n")
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/noise = SubResource("tex")

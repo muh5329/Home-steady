@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/floor_tile_large.gltf.glb" id="1_floor"]
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/wall_doorway.glb" id="2_door"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" path="res://dungeons/props/wall_torch.tscn" id="6_torch"]
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/rubble_half.gltf.glb" id="7_rubble"]
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/banner_patternA_red.gltf.glb" id="8_banner"]
+[ext_resource type="Script" path="res://dungeons/crypt/crypt_entrance.gd" id="9_script"]
 
 [sub_resource type="BoxShape3D" id="wall_x"]
 size = Vector3(5, 4, 1)
@@ -19,6 +20,7 @@ size = Vector3(1, 4, 5)
 size = Vector3(1.4, 4, 1.4)
 
 [node name="CryptEntrance" type="Node3D"]
+script = ExtResource("9_script")
 
 [node name="Floor" parent="." instance=ExtResource("1_floor")]
 

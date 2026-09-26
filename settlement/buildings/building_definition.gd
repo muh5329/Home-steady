@@ -14,6 +14,10 @@ extends GameData
 @export var cost: Dictionary[StringName, int] = {}
 ## Labour after materials arrive (hit points of work; a sword swing ~12).
 @export var build_work := 40.0
+## How the ground around it wears (TerrainPainter kind: 0 dirt, 1 cobbles,
+## 2 tilled soil) and how far, relative to the footprint.
+@export var ground_paint := 0
+@export var ground_paint_scale := 0.45
 ## Shown in the build menu; locked buildings are hidden until unlocked.
 @export var unlocked := true
 @export var menu_order := 0

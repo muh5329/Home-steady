@@ -84,9 +84,12 @@ func _initialize() -> void:
 		"rendering/environment/volumetric_fog/volume_size": 96,
 		"rendering/textures/default_filters/anisotropic_filtering_level": 3,
 		"debug/gdscript/warnings/untyped_declaration": 0,
+		"gui/theme/custom": "res://ui/theme/fable_theme.tres",
 	}
 	for key in s:
 		ProjectSettings.set_setting(key, s[key])
+	# Global shader uniforms (set every frame by the camera rig).
+	ProjectSettings.set_setting("shader_globals/player_position", {"type": "vec3", "value": Vector3.ZERO})
 
 	var err := ProjectSettings.save()
 	print("configure_project: ", error_string(err))

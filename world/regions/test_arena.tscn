@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3]
+[gd_scene load_steps=67 format=3]
 
 [ext_resource type="Script" path="res://world/regions/region.gd" id="1_region"]
 [ext_resource type="Environment" path="res://art/environments/default_environment.tres" id="2_env"]
@@ -25,6 +25,7 @@
 
 [ext_resource type="PackedScene" path="res://settlement/props/campfire.tscn" id="90_campfire"]
 [ext_resource type="PackedScene" path="res://settlement/props/tent.tscn" id="91_tent"]
+[ext_resource type="PackedScene" path="res://art/props/village_well.tscn" id="92_well"]
 
 [ext_resource type="Script" path="res://core/utilities/footprint.gd" id="89_footprint"]
 
@@ -42,6 +43,23 @@
 
 [ext_resource type="PackedScene" path="res://dungeons/crypt/crypt.tscn" id="84_crypt"]
 [ext_resource type="PackedScene" path="res://dungeons/crypt/crypt_entrance.tscn" id="83_entrance"]
+[ext_resource type="Script" path="res://world/terrain/terrain_painter.gd" id="82_painter"]
+[ext_resource type="Script" path="res://world/terrain/paint_stroke.gd" id="81_stroke"]
+[ext_resource type="Script" path="res://world/terrain/terrace_hills.gd" id="80_hills"]
+[ext_resource type="Material" path="res://art/environments/materials/clay_cliff.tres" id="79_clay"]
+[ext_resource type="Script" path="res://world/terrain/foliage_scatter.gd" id="78_foliage"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/resource_lumber.gltf" id="70_lumber"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/wheelbarrow.gltf" id="71_wheelbarrow"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/sack.gltf" id="72_sack"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/barrel.gltf" id="73_barrel"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/crate_A_big.gltf" id="74_crate"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/bucket_water.gltf" id="75_bucket"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/weaponrack.gltf" id="76_rack"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/flag_red.gltf" id="77_flag"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/crate_long_A.gltf" id="78_crate_long"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/pallet.gltf" id="79_pallet"]
+[ext_resource type="Script" path="res://world/terrain/sky_clouds.gd" id="77_clouds"]
+[ext_resource type="Script" path="res://world/terrain/fence_run.gd" id="76_fence"]
 [sub_resource type="NavigationMesh" id="navmesh"]
 resource_local_to_scene = true
 geometry_parsed_geometry_type = 1
@@ -52,8 +70,77 @@ agent_height = 2.0
 agent_radius = 0.5
 agent_max_climb = 0.5
 
+[sub_resource type="Curve3D" id="c_road_main"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 2, 0, 78, 0, 0, 0, 0, 0, 0, 1, 0, 40, 0, 0, 0, 0, 0, 0, 3, 0, 21, 0, 0, 0, 0, 0, 0, 1, 0, 12, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, -12, 0, 0, 0, 0, 0, 0, 4, 0, -26),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 7
+[sub_resource type="Curve3D" id="c_road_east"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 8, 0, 1, 0, 0, 0, 0, 0, 0, 14, 0, 2, 0, 0, 0, 0, 0, 0, 18, 0, -2),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+[sub_resource type="Curve3D" id="c_road_west"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 1, 0, 5, 0, 0, 0, 0, 0, 0, -6, 0, 3, 0, 0, 0, 0, 0, 0, -11, 0, 1),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+[sub_resource type="Curve3D" id="c_clearing"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -1, 0, 9, 0, 0, 0, 0, 0, 0, 5, 0, 9),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+[sub_resource type="Curve3D" id="c_crypt_paving"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 4, 0, -24, 0, 0, 0, 0, 0, 0, 4, 0, -28),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
+[sub_resource type="Curve3D" id="c_road_south_farm"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 1, 0, 30, 0, 0, 0, 0, 0, 0, -10, 0, 32, 0, 0, 0, 0, 0, 0, -22, 0, 30),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="f_road_e"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 4.2, 0, 40, 0, 0, 0, 0, 0, 0, 5.0, 0, 30, 0, 0, 0, 0, 0, 0, 5.4, 0, 21),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="f_road_w"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -1.6, 0, 44, 0, 0, 0, 0, 0, 0, -1.4, 0, 33, 0, 0, 0, 0, 0, 0, 0.8, 0, 22),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="f_farm"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -6, 0, 33.8, 0, 0, 0, 0, 0, 0, -14, 0, 34.6, 0, 0, 0, 0, 0, 0, -21, 0, 32.6),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
 [sub_resource type="PlaneMesh" id="ground_mesh"]
 size = Vector2(160, 160)
+subdivide_width = 8
+subdivide_depth = 8
+
+[sub_resource type="PlaneMesh" id="ground_far_mesh"]
+size = Vector2(700, 700)
+
+[sub_resource type="BoxShape3D" id="border_x"]
+size = Vector3(160, 8, 1)
+
+[sub_resource type="BoxShape3D" id="border_z"]
+size = Vector3(1, 8, 160)
 
 [sub_resource type="BoxShape3D" id="ground_shape"]
 size = Vector3(160, 1, 160)
@@ -71,9 +158,9 @@ navigation_region = NodePath("NavigationRegion3D")
 environment = ExtResource("2_env")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.819152, -0.40558, 0.40558, 0, 0.707107, 0.707107, -0.573576, -0.579228, 0.579228, 0, 20, 0)
-light_color = Color(1, 0.94, 0.84, 1)
-light_energy = 1.35
+transform = Transform3D(0.64978, 0.44050, -0.61947, -0.00000, 0.81497, 0.57951, 0.76012, -0.37655, 0.52955, 0, 20, 0)
+light_color = Color(1, 0.86, 0.66, 1)
+light_energy = 1.65
 shadow_enabled = true
 shadow_bias = 0.04
 shadow_blur = 1.5
@@ -91,6 +178,135 @@ surface_material_override/0 = ExtResource("3_ground")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D/Ground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("ground_shape")
+
+[node name="GroundFar" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
+mesh = SubResource("ground_far_mesh")
+surface_material_override/0 = ExtResource("3_ground")
+
+[node name="Border" type="StaticBody3D" parent="NavigationRegion3D"]
+collision_mask = 0
+
+[node name="N" type="CollisionShape3D" parent="NavigationRegion3D/Border"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -79)
+shape = SubResource("border_x")
+
+[node name="S" type="CollisionShape3D" parent="NavigationRegion3D/Border"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 79)
+shape = SubResource("border_x")
+
+[node name="E" type="CollisionShape3D" parent="NavigationRegion3D/Border"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 79, 4, 0)
+shape = SubResource("border_z")
+
+[node name="W" type="CollisionShape3D" parent="NavigationRegion3D/Border"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79, 4, 0)
+shape = SubResource("border_z")
+
+[node name="Hills" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("80_hills")
+hills = Array[Vector4]([Vector4(-44, -34, 11, 3), Vector4(42, -38, 10, 2), Vector4(-47, 34, 10, 3), Vector4(46, 28, 12, 3), Vector4(-64, -44, 18, 3), Vector4(-72, 6, 15, 3), Vector4(-60, 50, 20, 4), Vector4(-30, 72, 16, 3), Vector4(36, 70, 18, 3), Vector4(68, 40, 17, 3), Vector4(74, -10, 19, 4), Vector4(60, -58, 18, 3), Vector4(22, -74, 20, 3), Vector4(-24, -72, 17, 3), Vector4(-125, -60, 38, 4), Vector4(115, -105, 42, 5), Vector4(135, 40, 34, 3), Vector4(-135, 95, 32, 4), Vector4(20, 150, 40, 3), Vector4(-40, -150, 44, 5)])
+side_material = ExtResource("79_clay")
+top_material = ExtResource("3_ground")
+
+[node name="CampDressing" type="Node3D" parent="."]
+
+[node name="Lumber" parent="CampDressing" instance=ExtResource("70_lumber")]
+transform = Transform3D(4.605, 0, 1.947, 0, 5, 0, -1.947, 0, 4.605, 7.2, 0, 5.8)
+
+[node name="Wheelbarrow" parent="CampDressing" instance=ExtResource("71_wheelbarrow")]
+transform = Transform3D(-3.331, 0, 3.729, 0, 5, 0, -3.729, 0, -3.331, 6.6, 0, 12.8)
+
+[node name="Sacks" parent="CampDressing" instance=ExtResource("72_sack")]
+transform = Transform3D(2.702, 0, 4.207, 0, 5, 0, -4.207, 0, 2.702, -1.8, 0, 5.4)
+
+[node name="Sacks2" parent="CampDressing" instance=ExtResource("72_sack")]
+transform = Transform3D(-2.081, 0, 4.546, 0, 5, 0, -4.546, 0, -2.081, -2.4, 0, 5.0)
+
+[node name="Barrels" parent="CampDressing" instance=ExtResource("73_barrel")]
+transform = Transform3D(5.000, 0, 0.000, 0, 5, 0, -0.000, 0, 5.000, 8.3, 0, 9.0)
+
+[node name="Barrels2" parent="CampDressing" instance=ExtResource("73_barrel")]
+transform = Transform3D(2.702, 0, 4.207, 0, 5, 0, -4.207, 0, 2.702, 8.6, 0, 10.0)
+
+[node name="Crate" parent="CampDressing" instance=ExtResource("74_crate")]
+transform = Transform3D(4.777, 0, 1.478, 0, 5, 0, -1.478, 0, 4.777, -6.8, 0, 12.6)
+
+[node name="CrateLong" parent="CampDressing" instance=ExtResource("78_crate_long")]
+transform = Transform3D(-0.146, 0, 4.998, 0, 5, 0, -4.998, 0, -0.146, -7.2, 0, 11.0)
+
+[node name="Bucket" parent="CampDressing" instance=ExtResource("75_bucket")]
+transform = Transform3D(5.000, 0, 0.000, 0, 5, 0, -0.000, 0, 5.000, 0.4, 0, 4.6)
+
+[node name="Rack" parent="CampDressing" instance=ExtResource("76_rack")]
+transform = Transform3D(-5.000, 0, 0.008, 0, 5, 0, -0.008, 0, -5.000, -2.6, 0, 13.4)
+
+[node name="Flag" parent="CampDressing" instance=ExtResource("77_flag")]
+transform = Transform3D(4.388, 0, 2.397, 0, 5, 0, -2.397, 0, 4.388, 3.2, 0, 4.4)
+
+[node name="Pallet" parent="CampDressing" instance=ExtResource("79_pallet")]
+transform = Transform3D(4.900, 0, 0.993, 0, 5, 0, -0.993, 0, 4.900, 7.6, 0, 7.2)
+
+[node name="FenceRoadE" type="Path3D" parent="."]
+curve = SubResource("f_road_e")
+script = ExtResource("76_fence")
+random_seed = 1
+
+[node name="FenceRoadW" type="Path3D" parent="."]
+curve = SubResource("f_road_w")
+script = ExtResource("76_fence")
+random_seed = 2
+
+[node name="FenceFarmRoad" type="Path3D" parent="."]
+curve = SubResource("f_farm")
+script = ExtResource("76_fence")
+random_seed = 3
+
+[node name="Clouds" type="Node3D" parent="."]
+script = ExtResource("77_clouds")
+
+[node name="Foliage" type="Node3D" parent="."]
+script = ExtResource("78_foliage")
+
+[node name="TerrainPainter" type="Node3D" parent="." node_paths=PackedStringArray("ground")]
+script = ExtResource("82_painter")
+ground = NodePath("../NavigationRegion3D/Ground/Mesh")
+
+[node name="RoadMain" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_road_main")
+script = ExtResource("81_stroke")
+kind = 0
+width = 3.4
+
+[node name="RoadEast" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_road_east")
+script = ExtResource("81_stroke")
+kind = 0
+width = 2.6
+
+[node name="RoadWest" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_road_west")
+script = ExtResource("81_stroke")
+kind = 0
+width = 2.2
+
+[node name="Clearing" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_clearing")
+script = ExtResource("81_stroke")
+kind = 0
+width = 9.0
+
+[node name="CryptPaving" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_crypt_paving")
+script = ExtResource("81_stroke")
+kind = 1
+width = 6.5
+
+[node name="RoadFarm" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_road_south_farm")
+script = ExtResource("81_stroke")
+kind = 0
+width = 2.4
 
 [node name="ResourceNodes" type="Node3D" parent="NavigationRegion3D"]
 
@@ -241,6 +457,9 @@ transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 3.6, 0, 2.2)
 
 [node name="Tent2" parent="NavigationRegion3D/Camp" instance=ExtResource("91_tent")]
 transform = Transform3D(0.87, 0, -0.5, 0, 1, 0, 0.5, 0, 0.87, -2.8, 0, 3.0)
+
+[node name="Well" parent="NavigationRegion3D" instance=ExtResource("92_well")]
+transform = Transform3D(0.8, 0, 0.6, 0, 1, 0, -0.6, 0, 0.8, -4.5, 0, 14.5)
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)

@@ -1,59 +1,20 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://settlement/buildings/housing_component.gd" id="1_housing"]
-
-[sub_resource type="StandardMaterial3D" id="canvas"]
-albedo_color = Color(0.86, 0.8, 0.66, 1)
-roughness = 0.95
-
-[sub_resource type="StandardMaterial3D" id="trim"]
-albedo_color = Color(0.62, 0.22, 0.16, 1)
-roughness = 0.9
-
-[sub_resource type="PrismMesh" id="body"]
-size = Vector3(2.4, 1.7, 3.0)
-
-[sub_resource type="PrismMesh" id="flap"]
-size = Vector3(1.0, 1.1, 0.04)
-
-[sub_resource type="CylinderMesh" id="pole"]
-top_radius = 0.04
-bottom_radius = 0.05
-height = 2.0
-radial_segments = 6
+[ext_resource type="Script" path="res://art/props/bell_tent_model.gd" id="2_tent"]
 
 [sub_resource type="BoxShape3D" id="shape"]
-size = Vector3(2.4, 1.6, 3.0)
+size = Vector3(2.8, 2.0, 2.8)
 
 [node name="Tent" type="StaticBody3D"]
 
-[node name="Body" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
-mesh = SubResource("body")
-surface_material_override/0 = SubResource("canvas")
-
-[node name="Ridge" type="MeshInstance3D" parent="."]
-transform = Transform3D(1.05, 0, 0, 0, 0.08, 0, 0, 0, 1.02, 0, 1.66, 0)
-mesh = SubResource("body")
-surface_material_override/0 = SubResource("trim")
-
-[node name="Door" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 1.51)
-mesh = SubResource("flap")
-surface_material_override/0 = SubResource("trim")
-
-[node name="PoleFront" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 1.55)
-mesh = SubResource("pole")
-
-[node name="PoleBack" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -1.55)
-mesh = SubResource("pole")
+[node name="Model" type="MeshInstance3D" parent="."]
+script = ExtResource("2_tent")
 
 [node name="Housing" type="Node" parent="."]
 script = ExtResource("1_housing")
 beds = 2
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 shape = SubResource("shape")
