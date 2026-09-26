@@ -5,5 +5,8 @@ extends GameData
 @export var duration := 3.0
 ## Movement speed multiplier while active.
 @export var speed_multiplier := 1.0
+## Damage dealt per second while active (poison, burning). Bypasses block.
+@export var damage_per_second := 0.0
+
 ## Overlay tint on the affected character's meshes.
 @export var tint := Color(0, 0, 0, 0)

@@ -5,6 +5,11 @@ extends EnemyState
 func enter(_message: Dictionary) -> void:
 	ai.target = null
 	ai.move_to(ai.home_position, CharacterMotor.Gait.RUN)
+	# Leashing resets the fight: no chip-and-retreat, no lingering phases.
+	ai.combat.health.set_current(ai.combat.health.max_health)
+	var summoner := ai.body.get_node_or_null(^"Summoner") as Summoner
+	if summoner:
+		summoner.dismiss_all()
 
 
 func tick(_delta: float) -> void:

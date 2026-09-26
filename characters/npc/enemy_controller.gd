@@ -9,6 +9,7 @@ extends Node
 @export var combat: CombatController
 @export var steering: NavSteering
 @export var state_machine: StateMachine
+@export var abilities: AbilityController
 
 var definition: EnemyDefinition
 var home_position: Vector3
@@ -85,6 +86,21 @@ func stop_moving() -> void:
 func face_target() -> void:
 	if has_valid_target():
 		motor.face(target.global_position() - body.global_position)
+
+
+## Uses the first ready ability whose range covers the target (volleys,
+## novas, summons). Returns true if one was started.
+func try_ability() -> bool:
+	if abilities == null or not has_valid_target() or not combat.can_start_action():
+		return false
+	var d := distance_to_target()
+	for i in abilities.abilities.size():
+		var a := abilities.abilities[i]
+		if abilities.is_ready(i) and d <= a.ai_use_range():
+			face_target()
+			if abilities.use(i):
+				return true
+	return false
 
 
 ## Direct movement without pathfinding (strafing, short hops).

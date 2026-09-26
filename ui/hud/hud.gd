@@ -18,6 +18,10 @@ var _reticle: Label
 var _party_box: VBoxContainer
 var _party_rows: Array[Dictionary] = []  # {member, bar, status}
 var _resource_timer := 0.0
+var _boss_panel: Control
+var _boss_name: Label
+var _boss_bar: ProgressBar
+var _boss: Node
 
 
 func _ready() -> void:
@@ -32,6 +36,12 @@ func _ready() -> void:
 		_refresh_resources()
 		show_banner("%s built!" % b.definition.display_name, 2.5, Color(1, 0.85, 0.4)))
 	_refresh_resources.call_deferred()
+	EventBus.unlocked.connect(_on_unlocked)
+	EventBus.boss_engaged.connect(_show_boss)
+	EventBus.boss_disengaged.connect(func(b): if b == _boss: _hide_boss())
+	EventBus.boss_defeated.connect(func(b):
+		_hide_boss()
+		show_banner("%s is destroyed" % b.display_name(), 3.5, Color(1, 0.85, 0.4)))
 
 
 func bind_player(p: Player) -> void:
@@ -80,6 +90,7 @@ func _process(delta: float) -> void:
 		_resource_timer = 1.0
 		_refresh_resources()
 	_update_party()
+	_update_boss()
 	if player:
 		var ranged := player.controller.is_ranged() and not player.interaction.is_carrying()
 		_reticle.visible = ranged
@@ -94,6 +105,35 @@ func _process(delta: float) -> void:
 	var cd := player.abilities.cooldown_left(0)
 	_ability.text = "[Q] %s   %s" % [a.display_name, "ready" if cd <= 0.0 else "%.0fs" % ceilf(cd)]
 	_ability.add_theme_color_override(&"font_color", Color(0.75, 1.0, 0.75) if cd <= 0.0 else Color(0.7, 0.7, 0.7))
+
+
+# --- boss bar & unlocks --------------------------------------------------------------
+
+func _show_boss(boss: Node) -> void:
+	_boss = boss
+	_boss_name.text = boss.display_name()
+	_boss_panel.visible = true
+
+
+func _hide_boss() -> void:
+	_boss = null
+	_boss_panel.visible = false
+
+
+func _update_boss() -> void:
+	if _boss == null:
+		return
+	if not is_instance_valid(_boss):
+		_hide_boss()
+		return
+	_boss_bar.max_value = _boss.health.max_health
+	_boss_bar.value = _boss.health.current
+
+
+func _on_unlocked(id: StringName) -> void:
+	var data := DataRegistry.get_data(id)
+	var what: String = data.display_name if data else String(id)
+	show_banner("Unlocked: %s" % what, 4.0, Color(1, 0.8, 0.35))
 
 
 # --- party frames ------------------------------------------------------------------
@@ -233,6 +273,23 @@ func _build() -> void:
 	_reticle.size = Vector2(120, 40)
 	_reticle.visible = false
 	root.add_child(_reticle)
+
+	_boss_panel = VBoxContainer.new()
+	_boss_panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
+	_boss_panel.position = Vector2(-320, 26)
+	_boss_panel.custom_minimum_size = Vector2(640, 0)
+	_boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_boss_panel.visible = false
+	_boss_name = _label("", 22, Color(0.9, 0.78, 1.0))
+	_boss_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_boss_panel.add_child(_boss_name)
+	_boss_bar = ProgressBar.new()
+	_boss_bar.custom_minimum_size = Vector2(640, 16)
+	_boss_bar.show_percentage = false
+	_boss_bar.add_theme_stylebox_override(&"background", _box(Color(0.1, 0.04, 0.12, 0.9), 3))
+	_boss_bar.add_theme_stylebox_override(&"fill", _box(Color(0.55, 0.2, 0.85), 3))
+	_boss_panel.add_child(_boss_bar)
+	root.add_child(_boss_panel)
 
 	_banner = _label("", 48, Color(0.95, 0.3, 0.2))
 	_banner.set_anchors_preset(Control.PRESET_CENTER)

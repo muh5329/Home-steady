@@ -13,6 +13,7 @@ func _ready() -> void:
 		add_child(menu)
 		menu.class_chosen.connect(func(c):
 			GameManager.selected_class = c
+			Progression.reset()  # a new game starts with nothing unlocked
 			menu.queue_free()
 			_start())
 		menu.continue_requested.connect(func():

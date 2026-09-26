@@ -34,6 +34,8 @@ extends Resource
 @export var status_effects: Array[StatusEffectData] = []
 ## Area burst drawn at the active frame (alpha 0 = none), sized to the hitbox.
 @export var burst_color := Color(0, 0, 0, 0)
+## Area attacks: draw the danger zone on the ground during the wind-up.
+@export var telegraph := false
 
 @export_group("Projectile")
 ## If set, the active frame fires projectile(s) instead of opening the

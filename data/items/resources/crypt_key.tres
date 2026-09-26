@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://items/item_data.gd" id="1_item"]
+[ext_resource type="PackedScene" path="res://items/resources/props/crypt_key.tscn" id="2_carry"]
+
+[resource]
+script = ExtResource("1_item")
+id = &"item.crypt_key"
+display_name = "Crypt Key"
+description = "Heavy iron, cold to the touch. It opens the necromancer's door."
+carry_scene = ExtResource("2_carry")
+heavy = false
+carry_speed = 1.0
+storable = false

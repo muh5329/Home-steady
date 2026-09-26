@@ -27,6 +27,10 @@ var aiming := false
 var _base_fov := 62.0
 ## Over-the-shoulder offset keeps the target visible past the character.
 @export var shoulder_offset := 0.6
+## The character's body: faded out when a wall pushes the camera into it.
+@export var fade_root: Node3D
+## Arm lengths between which the body fades (fully hidden below the first).
+@export var fade_range := Vector2(1.1, 2.0)
 
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
@@ -37,6 +41,8 @@ var _trauma := 0.0
 var _noise := FastNoiseLite.new()
 var _noise_t := 0.0
 var _shoulder := 0.6
+var _fade_meshes: Array[GeometryInstance3D] = []
+var _fade := 0.0
 
 
 func _ready() -> void:
@@ -99,6 +105,26 @@ func _process(delta: float) -> void:
 	_shoulder = lerpf(_shoulder, aim_shoulder_offset if aiming else shoulder_offset, 1.0 - exp(-10.0 * delta))
 	_apply_rotation()
 	_apply_shake(delta)
+	_update_body_fade()
+
+
+## A wall behind the player pulls the camera in; rather than filling the
+## screen with the back of a helmet, the body fades out.
+func _update_body_fade() -> void:
+	if fade_root == null:
+		return
+	var length := spring_arm.get_hit_length()
+	var fade := 1.0 - clampf((length - fade_range.x) / (fade_range.y - fade_range.x), 0.0, 1.0)
+	if is_equal_approx(fade, _fade):
+		return
+	_fade = fade
+	if _fade_meshes.is_empty() or not is_instance_valid(_fade_meshes[0]) or not _fade_meshes[0].is_inside_tree():
+		_fade_meshes.clear()
+		for m in fade_root.find_children("*", "GeometryInstance3D", true, false):
+			_fade_meshes.append(m)
+	for m in _fade_meshes:
+		if is_instance_valid(m):
+			m.transparency = fade * 0.85
 
 
 func _apply_rotation() -> void:

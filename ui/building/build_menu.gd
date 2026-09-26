@@ -14,6 +14,7 @@ var _rows: Dictionary = {}  # BuildingDefinition -> Label
 func _ready() -> void:
 	_build()
 	_panel.visible = false
+	build_mode.definitions_changed.connect(_rebuild_rows)
 	build_mode.opened.connect(func(): _panel.visible = true)
 	build_mode.closed.connect(func(): _panel.visible = false)
 	build_mode.selection_changed.connect(_on_selection_changed)
@@ -30,6 +31,17 @@ func _on_selection_changed(definition: BuildingDefinition) -> void:
 func _on_validity_changed(valid: bool, reason: String) -> void:
 	_status.text = "LMB place   R rotate   X cancel site   RMB/B close" if valid else "Can't build here: %s   (X cancels a site in front)" % reason
 	_status.add_theme_color_override(&"font_color", Color(0.7, 1, 0.7) if valid else Color(1, 0.55, 0.45))
+
+
+func _rebuild_rows() -> void:
+	var visible := _panel.visible
+	_panel.queue_free()
+	_rows.clear()
+	_build()
+	_panel.visible = visible
+	if build_mode.selected:
+		_on_selection_changed(build_mode.selected)
+		_on_validity_changed(build_mode.valid, build_mode.invalid_reason())
 
 
 func _build() -> void:

@@ -1,0 +1,47 @@
+[gd_resource type="Resource" script_class="MovesetData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://combat/moveset_data.gd" id="1_moveset"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2_attack"]
+[ext_resource type="Resource" path="res://data/combat/effects/poison.tres" id="3_poison"]
+[ext_resource type="Script" path="res://combat/status_effects/status_effect_data.gd" id="4_effect"]
+
+[sub_resource type="Resource" id="bite"]
+script = ExtResource("2_attack")
+animation = &"Spider_Bite"
+speed = 1.0
+active_start = 0.38
+active_end = 0.5
+combo_window = 0.6
+recovery_end = 0.85
+damage = 7.0
+poise_damage = 8.0
+knockback = 1.5
+tags = PackedStringArray("melee", "bite")
+hitbox_size = Vector3(1.2, 1.0, 1.6)
+hitbox_offset = Vector3(0, 0.6, -0.9)
+status_effects = Array[ExtResource("4_effect")]([ExtResource("3_poison")])
+lunge_distance = 0.9
+lunge_duration = 0.14
+
+[sub_resource type="Resource" id="leap"]
+script = ExtResource("2_attack")
+animation = &"Spider_Leap"
+speed = 1.0
+active_start = 0.45
+active_end = 0.65
+combo_window = 0.8
+recovery_end = 1.0
+damage = 10.0
+poise_damage = 14.0
+knockback = 3.0
+tags = PackedStringArray("melee", "bite")
+hitbox_size = Vector3(1.4, 1.2, 1.8)
+hitbox_offset = Vector3(0, 0.6, -1.0)
+status_effects = Array[ExtResource("4_effect")]([ExtResource("3_poison")])
+lunge_distance = 2.6
+lunge_duration = 0.3
+
+[resource]
+script = ExtResource("1_moveset")
+light_combo = Array[ExtResource("2_attack")]([SubResource("bite"), SubResource("leap")])
+can_block = false

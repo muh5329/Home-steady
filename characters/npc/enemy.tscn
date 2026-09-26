@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=24 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy.gd" id="1_enemy"]
 [ext_resource type="Script" path="res://characters/shared/character_motor.gd" id="3_motor"]
@@ -20,6 +20,8 @@
 [ext_resource type="Script" path="res://combat/status_effects/status_effect_component.gd" id="40_status"]
 
 [ext_resource type="Script" path="res://ai/states/enemy_shoot_state.gd" id="41_shoot"]
+[ext_resource type="Script" path="res://characters/shared/ability_controller.gd" id="42_abil"]
+[ext_resource type="Script" path="res://characters/npc/summoner.gd" id="43_summoner"]
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.38
 height = 1.8
@@ -83,6 +85,15 @@ health = NodePath("../HealthComponent")
 receiver = NodePath("../Hurtbox")
 hitbox = NodePath("../WeaponHitbox")
 
+[node name="Summoner" type="Node" parent="." node_paths=PackedStringArray("combat")]
+script = ExtResource("43_summoner")
+combat = NodePath("../CombatController")
+
+[node name="Abilities" type="Node" parent="." node_paths=PackedStringArray("combat", "summoner")]
+script = ExtResource("42_abil")
+combat = NodePath("../CombatController")
+summoner = NodePath("../Summoner")
+
 [node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("receiver", "motor", "health", "model")]
 script = ExtResource("40_status")
 receiver = NodePath("../Hurtbox")
@@ -107,13 +118,14 @@ motor = NodePath("../CharacterMotor")
 agent = NodePath("../NavigationAgent3D")
 combat = NodePath("../CombatController")
 
-[node name="EnemyController" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "steering", "state_machine")]
+[node name="EnemyController" type="Node" parent="." node_paths=PackedStringArray("body", "motor", "combat", "steering", "state_machine", "abilities")]
 script = ExtResource("9_controller")
 body = NodePath("..")
 motor = NodePath("../CharacterMotor")
 combat = NodePath("../CombatController")
 steering = NodePath("../Steering")
 state_machine = NodePath("StateMachine")
+abilities = NodePath("../Abilities")
 
 [node name="StateMachine" type="Node" parent="EnemyController" node_paths=PackedStringArray("initial_state")]
 script = ExtResource("10_fsm")

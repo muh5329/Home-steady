@@ -8,7 +8,6 @@ extends Marker3D
 signal defeated
 
 const GROUP := &"enemy_spawns"
-const ENEMY_SCENE := preload("res://characters/npc/enemy.tscn")
 
 @export var definition: EnemyDefinition
 @export var activation_radius := 20.0
@@ -41,13 +40,8 @@ func _physics_process(delta: float) -> void:
 func spawn() -> Enemy:
 	if is_instance_valid(enemy) or is_defeated:
 		return enemy
-	enemy = ENEMY_SCENE.instantiate()
-	enemy.definition = definition
-	enemy.transform = transform  # same parent: set before entering the tree
-	get_parent().add_child(enemy)
+	enemy = Enemy.raise(definition, get_parent(), global_position, rotation.y)
 	enemy.combat.died.connect(_on_enemy_died)
-	if definition.spawn_animation != &"":
-		enemy.combat.perform(definition.spawn_animation, definition.spawn_animation_speed)
 	return enemy
 
 

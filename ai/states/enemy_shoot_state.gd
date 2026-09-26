@@ -23,8 +23,7 @@ func tick(delta: float) -> void:
 		return
 	var d := ai.distance_to_target()
 	if d > ai.definition.attack_range + 2.0 or not Targeting.has_line_of_sight(ai.combat, ai.target):
-		ai.motor.set_facing_lock(&"ai", false)
-		ai.move_to(ai.target.global_position(), CharacterMotor.Gait.RUN)
+		transition(&"Chase")  # close in / regain sight (and give up if it can't)
 		return
 	ai.motor.set_facing_lock(&"ai", true)
 	ai.face_target()
@@ -39,6 +38,8 @@ func tick(delta: float) -> void:
 	else:
 		ai.stop_moving()
 	_cooldown -= delta
+	if ai.try_ability():
+		return
 	if _cooldown <= 0.0 and ai.combat.state == CombatController.CombatState.READY:
 		ai.combat.request_light()
 		var c := ai.definition.attack_cooldown

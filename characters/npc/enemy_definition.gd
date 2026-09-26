@@ -12,6 +12,13 @@ extends GameData
 @export var left_hand_item: PackedScene
 @export var sounds: CombatSounds
 
+@export_group("Body")
+## Collision capsule and hurtbox (spiders are low and wide).
+@export var body_radius := 0.35
+@export var body_height := 1.8
+@export var hurtbox_radius := 0.45
+@export var hurtbox_height := 1.7
+
 @export_group("Stats")
 @export var max_health := 60.0
 @export var max_poise := 20.0
@@ -20,6 +27,17 @@ extends GameData
 @export var moveset: MovesetData
 @export var stagger_duration := 0.9
 @export var flinch_duration := 0.35
+
+## Special moves (volleys, novas, summons), used when ready and in range.
+@export var abilities: Array[AbilityData] = []
+
+@export_group("Rewards")
+## Physical items spilled on death (keys, trophies, crafting materials).
+@export var loot: Dictionary[StringName, int] = {}
+## Unlocked for the player when this monster falls (e.g. a building id).
+@export var unlocks: Array[StringName] = []
+## Bosses get the big HUD bar and announce engage/defeat on the EventBus.
+@export var is_boss := false
 
 @export_group("Behaviour")
 @export var aggro_range := 11.0

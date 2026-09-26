@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="DungeonLayout" load_steps=11 format=3]
+[gd_resource type="Resource" script_class="DungeonLayout" load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://dungeons/generation/dungeon_layout.gd" id="1_layout"]
 [ext_resource type="PackedScene" path="res://dungeons/props/crypt_exit.tscn" id="2_exit"]
@@ -10,13 +10,16 @@
 [ext_resource type="Resource" path="res://data/enemies/skeleton_archer.tres" id="8_archer"]
 [ext_resource type="Resource" path="res://data/enemies/skeleton_champion.tres" id="9_champion"]
 [ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="10_def"]
+[ext_resource type="PackedScene" path="res://dungeons/props/crypt_gate.tscn" id="11_gate"]
+[ext_resource type="Resource" path="res://data/enemies/crypt_spider.tres" id="12_spider"]
+[ext_resource type="Resource" path="res://data/enemies/necromancer.tres" id="13_boss"]
 
 [resource]
 script = ExtResource("1_layout")
-rows = PackedStringArray("########################", "#####..E..##############", "#####.....##############", "#####.P.P.##############", "#####b....##############", "#######..###############", "#######..###############", "##...........###########", "##.w.......a.#b....#####", "##....P..P.........C####", "##..w........#b...a#####", "##...........###########", "######..################", "######..################", "###SSSSSSSS#############", "###SSSSSSSS#############", "###SSSSSSSS#############", "###SSSSSSSS#############", "###........#############", "######..################", "####...........#########", "####.a.......a.#########", "####...P...P...#########", "####b....M....b#########", "####...........#########", "########################")
+rows = PackedStringArray("########################", "#####..E..##############", "#####.....##############", "#####.P.P.##############", "#####b....##############", "#######..###############", "#######..###############", "##...........###########", "##.w.......a.#b....#####", "##....P..P.........C####", "##..w........#b...a#####", "##...........###########", "######..################", "######..################", "###SSSSSSSS#############", "###SSSSSSSS#############", "###SSSSSSSS#############", "###SSSSSSSS#############", "###........#############", "######..################", "####...........#########", "####.a.......a.#########", "####...P...P...#########", "####b....M....b#########", "####...........#########", "#########D##############", "#########.##############", "#######x....############", "#######..x.x############", "##########.#############", "####.............#######", "####.P.........P.#######", "####.............#######", "####.......N.....#######", "####.............#######", "####.P.........P.#######", "####b...........b#######", "########################")
 cell_size = 3.0
 piece_scale = 0.75
-props = Dictionary[String, PackedScene]({"E": ExtResource("2_exit"), "C": ExtResource("3_chest"), "S": ExtResource("4_spikes"), "P": ExtResource("5_pillar"), "b": ExtResource("6_clutter")})
-enemies = Dictionary[String, ExtResource("10_def")]({"w": ExtResource("7_warrior"), "a": ExtResource("8_archer"), "M": ExtResource("9_champion")})
+props = Dictionary[String, PackedScene]({"E": ExtResource("2_exit"), "C": ExtResource("3_chest"), "S": ExtResource("4_spikes"), "P": ExtResource("5_pillar"), "b": ExtResource("6_clutter"), "D": ExtResource("11_gate")})
+enemies = Dictionary[String, ExtResource("10_def")]({"w": ExtResource("7_warrior"), "a": ExtResource("8_archer"), "M": ExtResource("9_champion"), "x": ExtResource("12_spider"), "N": ExtResource("13_boss")})
 floor_supplied_by = "S"
 torch_spacing = 3

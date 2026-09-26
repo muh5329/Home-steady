@@ -68,6 +68,7 @@ func _run_file(path: String, filter: String) -> void:
 		var test: TestCase = script.new()
 		test.name = file_name
 		add_child(test)
+		Progression.reset()  # global unlocks never leak between tests
 		test.before_each()
 		var watchdog := get_tree().create_timer(TEST_TIMEOUT, true, true)
 		var on_timeout := _on_timeout.bind("%s:%s" % [file_name, mname])

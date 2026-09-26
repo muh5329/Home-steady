@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://combat/abilities/ability_data.gd" id="1"]
+[ext_resource type="Resource" path="res://data/enemies/skeleton_minion.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"ability.raise_dead"
+display_name = "Raise Dead"
+description = "Calls minions out of the crypt floor."
+cooldown = 13.0
+summon = ExtResource("2")
+summon_count = 2
+summon_max_alive = 3
+summon_delay = 1.1

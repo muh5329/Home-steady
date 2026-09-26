@@ -32,3 +32,4 @@ attack_cooldown = Vector2(0.9, 1.6)
 max_combo = 3
 provoked_seconds = 10.0
 spawn_animation = &"Skeletons_Awaken_Standing"
+loot = Dictionary[StringName, int]({&"item.crypt_key": 1})

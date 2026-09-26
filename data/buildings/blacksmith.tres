@@ -7,9 +7,10 @@
 script = ExtResource("1_def")
 id = &"building.blacksmith"
 display_name = "Blacksmith"
-description = "Smelts ore and forges tools and weapons."
+description = "Smelts ore and forges tools and weapons. Its fire is the Forge Rune from the crypt."
 scene = ExtResource("2_scene")
 footprint = Vector2(6, 5.6)
-cost = Dictionary[StringName, int]({&"item.log": 6, &"item.stone": 6, &"item.iron_ore": 2})
+cost = Dictionary[StringName, int]({&"item.log": 6, &"item.stone": 6, &"item.iron_ore": 2, &"item.forge_rune": 1})
+unlocked = false
 build_work = 84.0
 menu_order = 3

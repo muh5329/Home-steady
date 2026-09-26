@@ -158,9 +158,10 @@ equipment = NodePath("../Equipment")
 abilities = NodePath("../Abilities")
 party = NodePath("../Party")
 
-[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
+[node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target", "fade_root")]
 script = ExtResource("12_camera")
 target = NodePath("..")
+fade_root = NodePath("../Model")
 
 [node name="CameraOcclusion" type="Node" parent="CameraRig" node_paths=PackedStringArray("camera", "target")]
 script = ExtResource("15_occl")

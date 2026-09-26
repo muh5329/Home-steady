@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="EnemyDefinition" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
+[ext_resource type="PackedScene" path="res://characters/npc/models/spider.tscn" id="2_model"]
+[ext_resource type="Resource" path="res://data/items/movesets/spider.tres" id="3_moveset"]
+[ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="4_sounds"]
+
+[resource]
+script = ExtResource("1_def")
+id = &"enemy.crypt_spider"
+display_name = "Crypt Spider"
+description = "Drops from the dark on a thread. Its bite is poisoned; its leap is quick."
+model = ExtResource("2_model")
+model_scale = 1.0
+faction = &"monsters"
+sounds = ExtResource("4_sounds")
+body_radius = 0.55
+body_height = 1.1
+hurtbox_radius = 0.75
+hurtbox_height = 1.3
+max_health = 38.0
+max_poise = 10.0
+walk_speed = 2.6
+run_speed = 5.6
+moveset = ExtResource("3_moveset")
+stagger_duration = 0.6
+flinch_duration = 0.25
+aggro_range = 12.0
+attack_range = 2.2
+leash_range = 22.0
+attack_cooldown = Vector2(0.5, 1.2)
+max_combo = 2
+spawn_animation = &"Spawn_Drop"

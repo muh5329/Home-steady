@@ -1,12 +1,15 @@
 class_name AbilityController
 extends Node
 ## Owns a character's abilities and their cooldowns; using one asks the
-## CombatController to perform its attack.
+## CombatController to perform its attack, or hands a summon to the
+## character's Summoner (if it has one).
 
 signal ability_used(index: int, ability: AbilityData)
 signal abilities_changed
 
 @export var combat: CombatController
+## Optional: characters that can raise others (necromancers).
+@export var summoner: Summoner
 
 var abilities: Array[AbilityData] = []
 var _cooldowns: Array[float] = []
@@ -28,7 +31,18 @@ func cooldown_left(index: int) -> float:
 
 
 func is_ready(index: int) -> bool:
-	return index < abilities.size() and _cooldowns[index] <= 0.0
+	if index >= abilities.size() or _cooldowns[index] > 0.0:
+		return false
+	var a := abilities[index]
+	if combat.health and combat.health.ratio() > a.use_below_health:
+		return false
+	if a.summon:
+		return summoner != null and summoner.can_raise(a)
+	return true
+
+
+func summons_alive() -> int:
+	return summoner.alive() if summoner else 0
 
 
 ## Queues the ability. Its cooldown starts only when the attack actually
@@ -37,8 +51,25 @@ func is_ready(index: int) -> bool:
 func use(index: int) -> bool:
 	if not is_ready(index) or not combat.is_alive():
 		return false
-	combat.request_special(abilities[index].attack)
+	var a := abilities[index]
+	if a.summon:
+		return _cast_summon(index, a)
+	combat.request_special(a.attack)
 	return true
+
+
+func _cast_summon(index: int, a: AbilityData) -> bool:
+	if not summoner.cast(a, _refund.bind(index)):
+		return false
+	_cooldowns[index] = a.cooldown
+	ability_used.emit(index, a)
+	return true
+
+
+## A cast that got interrupted costs nothing.
+func _refund(index: int) -> void:
+	if index < _cooldowns.size():
+		_cooldowns[index] = 0.0
 
 
 func _on_attack_started(attack: AttackData) -> void:

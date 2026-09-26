@@ -1,7 +1,7 @@
 # Gauntlet Progress
 
-Current phase: **Phase 8 — First dungeon (Crypt)**, part 2 next (boss, reward, unlock)
-Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (123 passing)
+Current phase: **Phase 9 — Settlement economy** (next)
+Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (134 passing)
 
 ## Scoreboard
 
@@ -14,8 +14,57 @@ Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (123 passing)
 | 5 (Phase 6) | 6 | 6 | 5 | 3 | 7 | 5 | 7 |
 | 6 (Phase 7) | 7 | 6 | 6 | 3 | 7 | 5 | 7 |
 | 7 (Phase 8a) | 7 | 6 | 6 | 5 | 7 | 6 | 7 |
+| 8 (Phase 8b) | 7 | 7 | 7 | 5 | 7 | 6 | 7 |
 
 Scores are 0–10 against the *final* target, so early rounds are low by design.
+
+---
+
+## Round 8 — Phase 8 (part 2): spiders, the Necromancer, and a reward that builds the settlement
+
+**What changed**
+- **Crypt Spider**: a procedural model (`SpiderModel`: primitive body, 8 legs, keyed gait/bite/leap/
+  death/drop clips under the standard names) on the shared enemy scene; drops from the ceiling, poison
+  bite (new damage-over-time on `StatusEffectData`), pounce. Body/hurtbox size is now per definition.
+- **Key and door**: the Skeleton Champion drops a physical Crypt Key; carry it to the locked door and
+  press E (the door accepts it like storage accepts items); navigation rebakes through the doorway.
+- **Morvath the Necromancer** (boss) is data on the generic Shoot state: bone-orb bolts, **Necrotic
+  Volley**, **Raise Dead** (armored cast; minions climb out), **Grave Nova** below 60% (ground
+  telegraph) and **Raise the Fallen** below 50%. HUD boss bar via `BossPresence` + EventBus.
+- **Reward feeds the settlement**: the boss drops the **Forge Rune** (special crafting resource) and
+  unlocks the **Blacksmith** (`Progression` autoload, persisted); the Blacksmith now needs the rune,
+  so it must be carried home. Build menu refreshes on unlock; banner announces it.
+- Generic pieces: `EnemyDefinition.abilities/loot/unlocks/is_boss`, `LootDrop`, health-gated abilities,
+  `Summoner`, `NavRebake`, `Enemy.raise`.
+
+**Test performed** 11 new tests (134 total): spider clips + poison ticking out of reach, key → door →
+navigation through, boss summons/nova/phase gating at 100/55/45%, boss death → minions crumble, rune
+drops, Blacksmith unlocked and offered, unlock saved/loaded, rune delivered to a Blacksmith site; plus
+the regression set below. Visual run: `docs/rounds/round_08/`.
+
+**Critic findings and resolution** (critic score 7/10)
+| # | Finding | Status |
+|---|---|---|
+| 1 | Any hit cancelled a summon (cooldown lost) | Fixed: armored casts (only poise breaks interrupt), refund on cancel; test |
+| 2 | Loading mid-fight orphaned summons | Fixed: `Summoner` removes its summons when the caster leaves/resets; test |
+| 3 | Single-source key/rune could lock progress (old saves, lost items, loot in walls) | Fixed: door re-issues a missing key; items below the world return to the player; loot spawn ray-checked; tests |
+| 4 | Boss never reset; boss bar showed while the player was away | Fixed: leashing heals + dismisses summons; monsters lose track after 5 s without sight (the boss was stuck at the locked door forever); bar only while the player is there; test |
+| 5 | Gate closing on load didn't rebake; rebakes dropped while baking | Fixed: shared debounced `NavRebake` (Region uses it too); test |
+| 6 | AbilityController depended on Enemy; boss logic in the controller | Fixed: `Summoner` and `BossPresence` components |
+| 7 | Spider used a humanoid capsule; per-instance asset rebuilds | Fixed: body/hurtbox size per definition; spider materials and clips cached |
+| 8 | Nova had no telegraph | Fixed: `AttackData.telegraph` ground circle filling until the hit |
+| 9 | Build menu lost its status text on refresh; vacuous tests | Fixed |
+| – | Poison permanently kept up by fast bites; no dungeon-cleared event | Documented; the boss-defeated event covers the loop today |
+
+Also: when a wall pulls the camera in, the player's body now fades instead of filling the screen;
+companion nameplates fade out closer than 5 m.
+
+**Known problems** The spider's hurtbox is a capsule, not its leg span; Progression is global (one
+save slot today); nothing yet uses the Blacksmith (Phase 9); narrow crypt corridors still give awkward
+camera angles (p8b_01).
+
+**Highest-priority next task** Phase 9: Iron Ore → Miner → Warehouse → Blacksmith → Iron Sword, fully
+autonomous, with crafted weapons the player and companions can equip.
 
 ---
 

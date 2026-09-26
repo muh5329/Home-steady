@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="MovesetData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://combat/moveset_data.gd" id="1_moveset"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2_attack"]
+[ext_resource type="Resource" path="res://data/combat/projectiles/necrotic_orb.tres" id="3_orb"]
+
+[sub_resource type="Resource" id="bolt"]
+script = ExtResource("2_attack")
+animation = &"Spellcast_Shoot"
+speed = 0.85
+active_start = 0.45
+active_end = 0.47
+combo_window = 1.0
+recovery_end = 1.05
+damage = 12.0
+damage_type = 5
+poise_damage = 10.0
+knockback = 2.5
+tags = PackedStringArray("magic")
+projectile = ExtResource("3_orb")
+muzzle_offset = Vector3(0.3, 1.6, -0.7)
+lunge_distance = 0.0
+
+[resource]
+script = ExtResource("1_moveset")
+light_combo = Array[ExtResource("2_attack")]([SubResource("bolt")])
+can_block = false

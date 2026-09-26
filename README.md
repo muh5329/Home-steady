@@ -17,7 +17,8 @@ verified through play (scripted and visual), reviewed by a critic, and logged in
    in; then ask her (or any settler) to join your party.
 5. North along the road, past the skeletons, stands the **Abandoned Crypt** (E at its door): rooms of
    rising skeletons, archers, a treasure chest, a spike hall (watch the rhythm, then sprint) and a
-   Skeleton Champion.
+   Skeleton Champion. His key opens the door to the spiders' lair and **Morvath the Necromancer**.
+   Defeat him, carry the **Forge Rune** home, and build the Blacksmith it unlocks.
 
 ## Controls
 

@@ -24,6 +24,16 @@ signal world_geometry_changed
 ## The player started talking to a character (UI opens the talk panel).
 signal talk_requested(speaker: Node)
 
+## Something (a building, later recipes/spells) became available.
+signal unlocked(id: StringName)
+## The set of unlocks changed in any way (unlock, load, new game).
+signal unlocks_changed
+
+## A boss noticed the party / gave up / fell (HUD boss bar, music later).
+signal boss_engaged(boss: Node)
+signal boss_disengaged(boss: Node)
+signal boss_defeated(boss: Node)
+
 ## Save / load lifecycle.
 signal game_saved(slot: String)
 signal game_loaded(slot: String)

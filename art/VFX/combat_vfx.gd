@@ -64,6 +64,38 @@ static func burst(parent: Node, point: Vector3, radius: float, color: Color) -> 
 	root.get_tree().create_timer(1.2, false).timeout.connect(root.queue_free)
 
 
+## A danger circle on the ground that fills in until the hit lands.
+static func telegraph(parent: Node, point: Vector3, radius: float, seconds: float, color: Color) -> void:
+	var root := Node3D.new()
+	parent.add_child(root)
+	root.global_position = point + Vector3.UP * 0.08
+	var edge := MeshInstance3D.new()
+	var torus := TorusMesh.new()
+	torus.inner_radius = 0.94
+	torus.outer_radius = 1.0
+	torus.rings = 32
+	torus.ring_segments = 4
+	edge.mesh = torus
+	edge.material_override = _additive(color * 1.4, false)
+	edge.scale = Vector3(radius, 0.02, radius)
+	edge.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(edge)
+	var fill := MeshInstance3D.new()
+	var disc := CylinderMesh.new()
+	disc.top_radius = 1.0
+	disc.bottom_radius = 1.0
+	disc.height = 0.02
+	disc.radial_segments = 32
+	fill.mesh = disc
+	fill.material_override = _additive(Color(color.r, color.g, color.b, 0.35), false)
+	fill.scale = Vector3(0.05, 1.0, 0.05)
+	fill.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(fill)
+	var tween := root.create_tween()
+	tween.tween_property(fill, "scale", Vector3(radius, 1.0, radius), maxf(seconds, 0.05))
+	tween.tween_callback(root.queue_free)
+
+
 static func _additive(color: Color, particles: bool) -> StandardMaterial3D:
 	var mat := StandardMaterial3D.new()
 	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED

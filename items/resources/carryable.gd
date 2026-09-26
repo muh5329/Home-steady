@@ -11,6 +11,10 @@ extends RigidBody3D
 @export var hold_offset := Vector3.ZERO
 @export var hold_rotation_degrees := Vector3.ZERO
 
+const GROUP := &"carryables"
+## Below this height an item has fallen out of the world.
+const KILL_Y := -25.0
+
 var carrier: Node = null  # the CarryComponent holding it
 ## Someone is on their way to / in the middle of picking this up. Storage
 ## and other haulers leave claimed items alone.
@@ -27,6 +31,7 @@ static var _grippy: PhysicsMaterial
 
 
 func _ready() -> void:
+	add_to_group(GROUP)
 	# Thrown and dropped items should settle, not roll away.
 	if physics_material_override == null:
 		if _grippy == null:

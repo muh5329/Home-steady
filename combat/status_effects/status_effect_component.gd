@@ -57,6 +57,8 @@ func _physics_process(delta: float) -> void:
 	if _active.is_empty():
 		return
 	for effect: StatusEffectData in _active.keys():
+		if effect.damage_per_second > 0.0 and health and health.is_alive():
+			health.take(effect.damage_per_second * delta)
 		_active[effect] -= delta
 		if _active[effect] <= 0.0:
 			_active.erase(effect)

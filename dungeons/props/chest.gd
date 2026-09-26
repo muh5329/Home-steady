@@ -31,23 +31,7 @@ func open() -> void:
 
 
 func _spawn_loot() -> void:
-	var parent := get_tree().get_first_node_in_group(WorldItems.GROUP)
-	if parent == null:
-		parent = get_parent()
-	var forward := global_basis.z.normalized()
-	var i := 0
-	for id in loot:
-		var data := DataRegistry.get_data(id) as ItemData
-		if data == null or data.carry_scene == null:
-			continue
-		for n in loot[id]:
-			var body: Carryable = data.carry_scene.instantiate()
-			parent.add_child(body)
-			var side := forward.cross(Vector3.UP) * (float(i % 3) - 1.0) * 0.8
-			body.global_position = global_position + forward * 1.4 + side + Vector3.UP * (0.9 + 0.3 * (i / 3))
-			body.rotation.y = randf() * TAU
-			body.apply_central_impulse((forward * 1.5 + Vector3.UP * 2.0) * body.mass * 0.5)
-			i += 1
+	LootDrop.spill(get_tree(), loot, global_position, global_basis.z)
 
 
 func _set_lid(open_lid: bool, animate: bool) -> void:

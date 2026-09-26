@@ -75,6 +75,9 @@ var _hitstop := 0.0
 var _immunity := 0.0
 var _attackers: Array[CombatController] = []
 var _special: AttackData
+## The current BUSY action shrugs off flinches (spell casts); only a poise
+## break interrupts it.
+var _armored := false
 
 
 func _ready() -> void:
@@ -165,10 +168,12 @@ func set_block(held: bool) -> void:
 ## Plays a non-combat action (pickup, throw, chop...) that occupies the
 ## character. Duration defaults to the clip length at `speed`.
 ## Returns false if currently unable.
-func perform(clip: StringName, speed := 1.0, move_multiplier := 0.0, duration := -1.0) -> bool:
+func perform(clip: StringName, speed := 1.0, move_multiplier := 0.0, duration := -1.0,
+		armored := false) -> bool:
 	if state not in [CombatState.READY, CombatState.BLOCKING]:
 		return false
 	_enter(CombatState.BUSY)
+	_armored = armored
 	_state_duration = duration if duration > 0.0 else animator.clip_length(clip) / speed
 	motor.set_speed_modifier(&"combat", move_multiplier)
 	animator.play_action(clip, speed)
@@ -342,6 +347,9 @@ func _start_attack(attack: AttackData, combo_index: int) -> void:
 	motor.cancel_burst()
 	_aim(true)
 	animator.play_action(attack.animation, attack.speed, 0.06)
+	if attack.telegraph and attack.hitbox_radius > 0.0:
+		var color := attack.burst_color if attack.burst_color.a > 0.0 else Color(1, 0.3, 0.2, 0.8)
+		CombatVfx.telegraph(body.get_parent(), body.global_position, attack.hitbox_radius, attack.scaled(attack.active_start), color)
 	attack_started.emit(attack)
 
 
@@ -422,6 +430,7 @@ func _enter(new_state: CombatState) -> void:
 		receiver.invulnerable = false
 	state = new_state
 	_t = 0.0
+	_armored = false
 	action_serial += 1
 	if new_state == CombatState.READY:
 		motor.set_speed_modifier(&"combat", 1.0)
@@ -468,7 +477,8 @@ func _on_damage_taken(event: DamageEvent) -> void:
 		return
 	if poise <= 0.0:
 		_stagger(stagger_duration)
-	elif _immunity <= 0.0 and state in [CombatState.READY, CombatState.BLOCKING, CombatState.BUSY]:
+	elif _immunity <= 0.0 and state in [CombatState.READY, CombatState.BLOCKING, CombatState.BUSY] \
+			and not (state == CombatState.BUSY and _armored):
 		# Light flinch; attacks and dodges keep their "armor".
 		_stagger(flinch_duration)
 

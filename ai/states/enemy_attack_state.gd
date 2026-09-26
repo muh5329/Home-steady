@@ -44,7 +44,9 @@ func tick(delta: float) -> void:
 				ai.move_to(ai.target.global_position(), CharacterMotor.Gait.RUN)
 			elif combat.state == CombatController.CombatState.READY:
 				ai.stop_moving()
-				if _swings_left > 0:
+				if ai.try_ability():
+					pass
+				elif _swings_left > 0:
 					ai.face_target()
 					combat.request_light()
 					_swings_left -= 1

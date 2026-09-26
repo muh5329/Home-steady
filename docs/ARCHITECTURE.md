@@ -13,6 +13,7 @@ third concrete use exists.
 | `SaveManager` | Collects `save_state()` from nodes in the `persistent` group into JSON; `can_save()` can veto. |
 | `DebugOverlay` | F3 performance panel, `watch(key, value)`, `notify(text)` toasts. |
 | `GameManager` | Session state (world seed, play time), pause, quick save/load keys. |
+| `Progression` | What the player has unlocked (buildings today); persisted; `EventBus.unlocked` / `unlocks_changed`. |
 
 ## Characters: shared components
 
@@ -113,6 +114,18 @@ Settler (CharacterBody3D) — same components as player/monsters + CarryComponen
   caps camera pitch (except while aiming) while the player is inside.
 - Props: `Chest` (spills physical loot, persists open), `SpikeTrap` (shared rhythm; hurts only the
   player — the dead ignore their own traps and companions step where you step).
+- Monsters are data all the way down: `EnemyDefinition` adds body/hurtbox size, `abilities` (used by
+  the generic Attack/Shoot states via `EnemyController.try_ability`), `loot` (physical, via `LootDrop`),
+  `unlocks` (→ `Progression`) and `is_boss` (a `BossPresence` component announces engage/disengage/
+  defeat for the HUD boss bar). Abilities can be health-gated (`use_below_health` = boss phases) and
+  can summon (`Summoner` component: armored cast, cooldown refunded if interrupted, summons crumble
+  with their master and vanish if it is reset). Leashing heals and dismisses summons; monsters lose
+  track of a target they can't see for 5 s.
+- The crypt's spider has no art-kit model: `SpiderModel` builds a primitive body and keys its clips
+  procedurally under the standard clip names, so it plugs into the same animator/combat code.
+- Progress can't be lost: a locked `CryptGate` re-issues its key if the keeper is dead and the key is
+  gone; items falling out of the world return to the player; loot never spawns inside walls.
+- Static-geometry changes rebake through `NavRebake.queue` (debounced, never drops a request).
 - The crypt lives in the same region scene, far from the overworld (x = 400), so the settlement keeps
   simulating while the party is underground.
 

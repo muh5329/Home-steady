@@ -10,6 +10,7 @@ const AUTOLOADS := [
 	["SaveManager", "res://core/save/save_manager.gd"],
 	["DebugOverlay", "res://core/utilities/debug_overlay.gd"],
 	["GameManager", "res://core/game_manager.gd"],
+	["Progression", "res://core/progression.gd"],
 ]
 
 const PHYSICS_LAYERS := {

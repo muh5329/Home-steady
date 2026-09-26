@@ -1,0 +1,34 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://dungeons/props/crypt_gate.gd" id="1_gate"]
+[ext_resource type="PackedScene" path="res://art/third_party/kaykit/dungeon/wall_doorway.glb" id="2_door"]
+[ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
+
+[sub_resource type="BoxShape3D" id="door"]
+size = Vector3(3.0, 3.0, 0.5)
+
+[sub_resource type="SphereShape3D" id="use"]
+radius = 1.8
+
+[node name="CryptGate" type="Node3D"]
+script = ExtResource("1_gate")
+
+[node name="Doorway" parent="." instance=ExtResource("2_door")]
+transform = Transform3D(0.75, 0, 0, 0, 0.75, 0, 0, 0, 0.75, 0, 0, 0)
+
+[node name="Body" type="StaticBody3D" parent="."]
+collision_mask = 0
+
+[node name="Door" type="CollisionShape3D" parent="Body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("door")
+
+[node name="Interactable" type="Area3D" parent="."]
+script = ExtResource("3_interact")
+prompt = "Locked door"
+focus_priority = 1
+approach_radius = 2.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactable"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("use")

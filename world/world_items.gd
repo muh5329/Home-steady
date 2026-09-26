@@ -7,9 +7,27 @@ extends Node3D
 const GROUP := &"props_root"
 
 
+var _check := 1.0
+
+
 func _ready() -> void:
 	add_to_group(GROUP)
 	add_to_group(SaveManager.GROUP)
+
+
+## Nothing is ever lost to the void: items that fall out of the world
+## come back at the player's feet.
+func _physics_process(delta: float) -> void:
+	_check -= delta
+	if _check > 0.0:
+		return
+	_check = 1.0
+	var player := get_tree().get_first_node_in_group(&"player") as Node3D
+	for c in get_children():
+		var item := c as Carryable
+		if item and item.global_position.y < Carryable.KILL_Y and item.carrier == null and player:
+			item.linear_velocity = Vector3.ZERO
+			item.global_position = player.global_position + Vector3(0, 1.5, 0) + NavSteering.flat(player.global_basis.z) * -1.2
 
 
 func get_save_id() -> String:

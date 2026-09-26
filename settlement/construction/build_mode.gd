@@ -11,6 +11,8 @@ signal selection_changed(definition: BuildingDefinition)
 signal validity_changed(valid: bool, reason: String)
 signal placed(site: ConstructionSite)
 signal site_cancelled(definition: BuildingDefinition)
+## The buildable list changed (something was unlocked, or a save loaded).
+signal definitions_changed
 
 const GHOST_OK := Color(0.35, 1.0, 0.45, 0.32)
 const GHOST_BAD := Color(1.0, 0.3, 0.25, 0.32)
@@ -37,10 +39,8 @@ var _query_shape := BoxShape3D.new()
 func _ready() -> void:
 	_ghost_ok_mat = _make_ghost_material(GHOST_OK)
 	_ghost_bad_mat = _make_ghost_material(GHOST_BAD)
-	for d in DataRegistry.get_all(BuildingDefinition):
-		if (d as BuildingDefinition).unlocked:
-			_definitions.append(d)
-	_definitions.sort_custom(func(a, b): return a.menu_order < b.menu_order)
+	_refresh_definitions()
+	EventBus.unlocks_changed.connect(_refresh_definitions)
 	if not player.is_node_ready():
 		await player.ready
 	player.combat.died.connect(close)
@@ -48,6 +48,27 @@ func _ready() -> void:
 
 func definitions() -> Array[BuildingDefinition]:
 	return _definitions
+
+
+func invalid_reason() -> String:
+	return _reason
+
+
+func is_available(d: BuildingDefinition) -> bool:
+	return d.unlocked or Progression.is_unlocked(d.id)
+
+
+func _refresh_definitions() -> void:
+	_definitions.clear()
+	for d: BuildingDefinition in DataRegistry.get_all(BuildingDefinition):
+		if is_available(d):
+			_definitions.append(d)
+	_definitions.sort_custom(func(a, b): return a.menu_order < b.menu_order)
+	if selected and selected not in _definitions:
+		selected = null
+		if active and not _definitions.is_empty():
+			select(_definitions[0])
+	definitions_changed.emit()
 
 
 func open() -> void:
