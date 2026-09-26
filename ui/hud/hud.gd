@@ -12,6 +12,9 @@ var _prompt: Label
 var _controls: Label
 var _banner: Label
 var _resources: Label
+var _title: Label
+var _ability: Label
+var _reticle: Label
 
 
 func _ready() -> void:
@@ -35,6 +38,8 @@ func bind_player(p: Player) -> void:
 	p.interaction.focus_changed.connect(_on_focus_changed)
 	p.interaction.carrying_changed.connect(_on_carrying_changed)
 	p.combat.died.connect(func(): show_banner("You have fallen", 3.0))
+	_title.text = p.character_class.display_name if p.character_class else "Adventurer"
+	_title.add_theme_color_override(&"font_color", p.character_class.ui_color.lightened(0.35) if p.character_class else Color(0.95, 0.88, 0.7))
 
 
 func show_banner(text: String, seconds: float, color := Color(0.95, 0.3, 0.2)) -> void:
@@ -60,6 +65,23 @@ func _refresh_resources() -> void:
 		var data := DataRegistry.get_data(id) as ItemData
 		lines.append("  %s  %d" % [data.display_name if data else String(id), totals[id]])
 	_resources.text = "\n".join(lines)
+
+
+func _process(_delta: float) -> void:
+	if player:
+		var ranged := player.controller.is_ranged() and not player.interaction.is_carrying()
+		_reticle.visible = ranged
+		if ranged:
+			var locked := player.controller.has_assist_target()
+			_reticle.text = "( + )" if locked else "+"
+			_reticle.add_theme_color_override(&"font_color", Color(1, 0.45, 0.35) if locked else Color(1, 1, 1, 0.85))
+	if player == null or player.abilities.abilities.is_empty():
+		_ability.text = ""
+		return
+	var a := player.abilities.abilities[0]
+	var cd := player.abilities.cooldown_left(0)
+	_ability.text = "[Q] %s   %s" % [a.display_name, "ready" if cd <= 0.0 else "%.0fs" % ceilf(cd)]
+	_ability.add_theme_color_override(&"font_color", Color(0.75, 1.0, 0.75) if cd <= 0.0 else Color(0.7, 0.7, 0.7))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -110,8 +132,8 @@ func _build() -> void:
 	root.add_child(panel)
 	var col := VBoxContainer.new()
 	panel.add_child(col)
-	var title := _label("Adventurer", 16, Color(0.95, 0.88, 0.7))
-	col.add_child(title)
+	_title = _label("Adventurer", 16, Color(0.95, 0.88, 0.7))
+	col.add_child(_title)
 	_health_bar = ProgressBar.new()
 	_health_bar.custom_minimum_size = Vector2(260, 18)
 	_health_bar.show_percentage = false
@@ -120,6 +142,8 @@ func _build() -> void:
 	col.add_child(_health_bar)
 	_health_label = _label("", 13, Color(0.9, 0.9, 0.9))
 	col.add_child(_health_label)
+	_ability = _label("", 15, Color(0.75, 1.0, 0.75))
+	col.add_child(_ability)
 
 	_prompt = _label("", 22, Color(1, 0.96, 0.85))
 	_prompt.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
@@ -130,7 +154,7 @@ func _build() -> void:
 
 	_controls = _label(
 		"WASD move   Shift sprint   Alt walk   Space jump   Ctrl/C dodge\n" +
-		"LMB attack (combo)   F heavy   RMB block   E interact   G drop\n" +
+		"LMB attack/shoot   F heavy   RMB block (aim for ranged)   Q ability   E interact   G drop\n" +
 		"B build   R rotate   X cancel site (in build mode)   F5 save   F9 load   F3 debug   H hide help", 14, Color(0.92, 0.92, 0.88, 0.85))
 	_controls.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
 	_controls.position = Vector2(24, -86)
@@ -144,6 +168,15 @@ func _build() -> void:
 	root.add_child(res_panel)
 	_resources = _label("", 15, Color(0.95, 0.9, 0.78))
 	res_panel.add_child(_resources)
+
+	_reticle = _label("+", 26, Color(1, 1, 1, 0.85))
+	_reticle.set_anchors_preset(Control.PRESET_CENTER)
+	_reticle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_reticle.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	_reticle.position = Vector2(-60, -20)
+	_reticle.size = Vector2(120, 40)
+	_reticle.visible = false
+	root.add_child(_reticle)
 
 	_banner = _label("", 48, Color(0.95, 0.3, 0.2))
 	_banner.set_anchors_preset(Control.PRESET_CENTER)

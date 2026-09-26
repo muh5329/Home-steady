@@ -11,7 +11,8 @@ verified through play (scripted and visual), reviewed by a critic, and logged in
 
 1. Install **Godot 4.7.2** (standard build, not .NET): https://godotengine.org/download
 2. Open `project.godot` in the editor (first import takes ~40 s: it imports the KayKit art).
-3. Press **F5** (Play). The start scene is `main.tscn` → `world/regions/test_arena.tscn`.
+3. Press **F5** (Play). Pick a class (Fighter / Ranger / Wizard) or **C** to continue a save.
+   The start scene is `main.tscn` → `world/regions/test_arena.tscn`.
 
 ## Controls
 
@@ -24,7 +25,9 @@ verified through play (scripted and visual), reviewed by a critic, and logged in
 | Dodge roll | Ctrl or C | B |
 | Light attack (3-hit combo) | LMB | RB |
 | Heavy attack | F | RT |
-| Block | RMB (hold) | LB |
+| Block (melee) / Aim (ranged) | RMB (hold) | LB |
+| Class ability | Q | R3 |
+| Build mode / rotate / cancel site | B / R / X | D-pad |
 | Interact / pick up / put down | E | X |
 | Drop | G | Y |
 | Throw (while carrying) | LMB | RB |

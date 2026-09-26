@@ -1,22 +1,27 @@
 class_name Player
 extends CharacterBody3D
-## Player root. Only wires components together and handles persistence;
-## all behavior lives in the child components.
+## Player root. Wires components together and handles persistence; the
+## body, stats and gear come from the chosen class via CharacterLoadout.
 
 const GROUP := &"player"
 
-## Model parts hidden at start (until equipment drives visuals).
-@export var hidden_parts: PackedStringArray = []
-## Weapon meshes, stowed (hidden) while both hands carry something.
-@export var weapon_parts: PackedStringArray = []
+## Used when no class was chosen (tests, direct scene runs).
+@export var default_class: CharacterClassData
 
-@onready var model_root: Node3D = $Model.get_child(0)
+var character_class: CharacterClassData:
+	get: return loadout.character_class
+var model_root: Node3D:
+	get: return loadout.model_root
+
 @onready var motor: CharacterMotor = $CharacterMotor
 @onready var animator: CharacterAnimator = $CharacterAnimator
 @onready var health: HealthComponent = $HealthComponent
 @onready var combat: CombatController = $CombatController
 @onready var interaction: InteractionController = $Interaction
 @onready var carry: CarryComponent = $Carry
+@onready var equipment: EquipmentController = $Equipment
+@onready var abilities: AbilityController = $Abilities
+@onready var loadout: CharacterLoadout = $Loadout
 @onready var controller: PlayerController = $PlayerController
 @onready var camera_rig: CameraRig = $CameraRig
 
@@ -24,13 +29,8 @@ const GROUP := &"player"
 func _ready() -> void:
 	add_to_group(GROUP)
 	add_to_group(SaveManager.GROUP)
-	ModelUtils.set_parts_visible(model_root, hidden_parts, false)
-	_setup_carry_pose()
-	carry.carrying_changed.connect(func(item): ModelUtils.set_parts_visible(model_root, weapon_parts, item == null))
-
-
-func _setup_carry_pose() -> void:
-	CarryPoseModifier.install(animator, carry)
+	loadout.apply(GameManager.selected_class if GameManager.selected_class else default_class)
+	carry.carrying_changed.connect(func(item): equipment.set_weapon_visible(item == null))
 
 
 func respawn(at: Vector3) -> void:
@@ -51,15 +51,20 @@ func can_save() -> bool:
 
 func save_state() -> Dictionary:
 	return {
+		"class": String(character_class.id),
 		"position": SaveManager.vec3_to_array(global_position),
 		"yaw": rotation.y,
 		"health": health.current,
 		"carrying": carry.save_state(),
+		"weapon": String(equipment.weapon.id) if equipment.weapon else "",
 	}
 
 
 func load_state(state: Dictionary) -> void:
 	carry.discard_carried()
+	var class_id := StringName(state.get("class", ""))
+	if class_id != &"" and class_id != character_class.id and DataRegistry.has_data(class_id):
+		loadout.apply(DataRegistry.get_data(class_id) as CharacterClassData)
 	global_position = SaveManager.array_to_vec3(state["position"])
 	velocity = Vector3.ZERO
 	var yaw := float(state.get("yaw", 0.0))
@@ -71,4 +76,7 @@ func load_state(state: Dictionary) -> void:
 		health.set_current(hp)
 	else:
 		combat.revive(hp)
+	var weapon_id := StringName(state.get("weapon", ""))
+	if weapon_id != &"" and DataRegistry.has_data(weapon_id):
+		equipment.equip(DataRegistry.get_data(weapon_id) as WeaponData)
 	carry.load_state(state.get("carrying", ""))

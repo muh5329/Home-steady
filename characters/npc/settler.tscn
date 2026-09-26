@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/settler.gd" id="1_settler"]
 [ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_characters/Barbarian.glb" id="2_model"]
@@ -24,6 +24,8 @@
 [ext_resource type="Script" path="res://ui/hud/world_health_bar.gd" id="22_bar"]
 [ext_resource type="Resource" path="res://data/jobs/woodcutter.tres" id="23_job"]
 [ext_resource type="Script" path="res://core/interaction/interactable.gd" id="24_interact"]
+
+[ext_resource type="Script" path="res://combat/status_effects/status_effect_component.gd" id="40_status"]
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.35
@@ -156,6 +158,13 @@ script = ExtResource("18_deliver")
 
 [node name="Flee" type="Node" parent="Worker/StateMachine"]
 script = ExtResource("19_flee")
+
+[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("receiver", "motor", "health", "model")]
+script = ExtResource("40_status")
+receiver = NodePath("../Hurtbox")
+motor = NodePath("../CharacterMotor")
+health = NodePath("../HealthComponent")
+model = NodePath("../Model")
 
 [node name="CombatSfx" type="Node3D" parent="." node_paths=PackedStringArray("combat")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

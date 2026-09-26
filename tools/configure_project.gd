@@ -38,6 +38,7 @@ var ACTIONS := {
 	"dodge": [["key", KEY_CTRL], ["key", KEY_C], ["joy_button", JOY_BUTTON_B]],
 	"interact": [["key", KEY_E], ["joy_button", JOY_BUTTON_X]],
 	"drop": [["key", KEY_G], ["joy_button", JOY_BUTTON_Y]],
+	"ability_1": [["key", KEY_Q], ["joy_button", JOY_BUTTON_RIGHT_STICK]],
 	"attack_light": [["mouse", MOUSE_BUTTON_LEFT], ["joy_button", JOY_BUTTON_RIGHT_SHOULDER]],
 	"attack_heavy": [["key", KEY_F], ["joy_axis", JOY_AXIS_TRIGGER_RIGHT, 1.0]],
 	"block": [["mouse", MOUSE_BUTTON_RIGHT], ["joy_button", JOY_BUTTON_LEFT_SHOULDER]],

@@ -30,6 +30,9 @@ var _built := false
 var _claimed_by: Object = null
 var _last_hit_from := Vector3.FORWARD
 
+## Only melee swings and tool work gather; bolts and spells do not.
+const WORK_TAGS: PackedStringArray = ["melee", "work"]
+
 
 func _enter_tree() -> void:
 	if _built or definition == null:
@@ -346,6 +349,7 @@ func _build() -> void:
 	receiver.name = "Hurtbox"
 	receiver.health = health
 	receiver.allowed_attacker_factions = d.gatherer_factions
+	receiver.required_any_tags = WORK_TAGS
 	var hurt_shape := CylinderShape3D.new()
 	hurt_shape.radius = maxf(d.collision_radius, 0.3) + 0.3
 	hurt_shape.height = minf(maxf(d.collision_height, 1.0), 2.5)

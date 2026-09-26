@@ -231,6 +231,7 @@ func _build() -> void:
 	receiver.name = "Hurtbox"
 	receiver.health = work
 	receiver.allowed_attacker_factions = [&"player"]
+	receiver.required_any_tags = ResourceNode.WORK_TAGS
 	var hurt := CollisionShape3D.new()
 	var hurt_shape := BoxShape3D.new()
 	hurt_shape.size = Vector3(d.footprint.x * 0.9, 2.0, d.footprint.y * 0.9)

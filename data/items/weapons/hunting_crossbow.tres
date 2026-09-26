@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://items/equipment/weapon_data.gd" id="1"]
+[ext_resource type="Resource" path="res://data/items/movesets/crossbow.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"weapon.hunting_crossbow"
+display_name = "Hunting Crossbow"
+description = "Fires bolts. Hold F for a power shot."
+storable = false
+moveset = ExtResource("2")
+damage_multiplier = 1.0
+rig_parts = PackedStringArray("2H_Crossbow")
+aim_range = 22.0

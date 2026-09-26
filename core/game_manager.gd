@@ -4,6 +4,8 @@ extends Node
 ## their own nodes.
 
 var world_seed: int = 0
+## Chosen at the class select screen; the Player builds itself from it.
+var selected_class: CharacterClassData
 var play_time: float = 0.0
 
 
@@ -45,9 +47,13 @@ func get_save_id() -> String:
 
 
 func save_state() -> Dictionary:
-	return {"world_seed": world_seed, "play_time": play_time}
+	return {"world_seed": world_seed, "play_time": play_time,
+		"class": String(selected_class.id) if selected_class else ""}
 
 
 func load_state(state: Dictionary) -> void:
 	world_seed = int(state.get("world_seed", world_seed))
 	play_time = float(state.get("play_time", 0.0))
+	var class_id := StringName(state.get("class", ""))
+	if class_id != &"" and DataRegistry.has_data(class_id):
+		selected_class = DataRegistry.get_data(class_id) as CharacterClassData

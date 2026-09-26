@@ -4,6 +4,11 @@ class_name Targeting
 ## spatial queries without touching combat logic.
 
 
+## Where to aim at a combatant: the centre of its hurtbox (chest height).
+static func aim_point(target: CombatController) -> Vector3:
+	return target.global_position() + Vector3.UP * 1.0
+
+
 ## Nearest living combatant hostile to `from` within `max_distance`.
 ## If `facing` is non-zero, only targets inside the cone (dot >= min_dot).
 static func nearest_hostile(from: CombatController, max_distance: float,

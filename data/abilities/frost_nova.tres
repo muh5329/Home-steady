@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://combat/abilities/ability_data.gd" id="1"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/combat/effects/chill.tres" id="3"]
+[ext_resource type="Script" path="res://combat/status_effects/status_effect_data.gd" id="4"]
+
+[sub_resource type="Resource" id="attack"]
+script = ExtResource("2")
+animation = &"Spellcast_Raise"
+speed = 1.4
+active_start = 0.38
+active_end = 0.5
+combo_window = 0.9
+recovery_end = 0.95
+damage = 10.0
+damage_type = 2
+poise_damage = 20.0
+knockback = 4.0
+tags = PackedStringArray("magic")
+hitbox_offset = Vector3(0, 1, 0)
+hitbox_radius = 4.5
+status_effects = Array[ExtResource("4")]([ExtResource("3")])
+lunge_distance = 0.0
+burst_color = Color(0.45, 0.75, 1, 1)
+
+[resource]
+script = ExtResource("1")
+id = &"ability.frost_nova"
+display_name = "Frost Nova"
+description = "Burst of cold around you: damages and chills nearby foes."
+attack = SubResource("attack")
+cooldown = 10.0

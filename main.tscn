@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://world/regions/test_arena.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://ui/menus/class_select.tscn" id="3"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1")
 start_region = ExtResource("2")
+class_select = ExtResource("3")

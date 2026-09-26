@@ -16,6 +16,12 @@ extends Node3D
 @export var distance := 4.6
 ## Added to `distance` by gameplay (e.g. carrying a big load).
 var extra_distance := 0.0
+## Aim mode (ranged): pulled in over the shoulder with a narrower FOV.
+var aiming := false
+@export var aim_distance := 2.3
+@export var aim_shoulder_offset := 0.95
+@export var aim_fov := 48.0
+var _base_fov := 62.0
 ## Over-the-shoulder offset keeps the target visible past the character.
 @export var shoulder_offset := 0.6
 
@@ -27,6 +33,7 @@ var pitch := -20.0
 var _trauma := 0.0
 var _noise := FastNoiseLite.new()
 var _noise_t := 0.0
+var _shoulder := 0.6
 
 
 func _ready() -> void:
@@ -36,6 +43,7 @@ func _ready() -> void:
 		global_position = target.global_position + Vector3.UP * height
 		yaw = target.global_rotation_degrees.y
 	spring_arm.spring_length = distance
+	_base_fov = camera.fov
 	spring_arm.collision_mask = 1  # world only
 	_apply_rotation()
 
@@ -74,7 +82,10 @@ func _process(delta: float) -> void:
 	if target:
 		var goal := target.global_position + Vector3.UP * height
 		global_position = global_position.lerp(goal, 1.0 - exp(-follow_sharpness * delta))
-	spring_arm.spring_length = lerpf(spring_arm.spring_length, distance + extra_distance, 1.0 - exp(-6.0 * delta))
+	var goal_length := aim_distance if aiming else distance + extra_distance
+	spring_arm.spring_length = lerpf(spring_arm.spring_length, goal_length, 1.0 - exp(-8.0 * delta))
+	camera.fov = lerpf(camera.fov, aim_fov if aiming else _base_fov, 1.0 - exp(-10.0 * delta))
+	_shoulder = lerpf(_shoulder, aim_shoulder_offset if aiming else shoulder_offset, 1.0 - exp(-10.0 * delta))
 	_apply_rotation()
 	_apply_shake(delta)
 
@@ -88,6 +99,6 @@ func _apply_shake(delta: float) -> void:
 	_trauma = maxf(_trauma - 1.8 * delta, 0.0)
 	var s := _trauma * _trauma
 	_noise_t += delta * 60.0
-	camera.h_offset = shoulder_offset + _noise.get_noise_2d(_noise_t, 0.0) * 0.25 * s
+	camera.h_offset = _shoulder + _noise.get_noise_2d(_noise_t, 0.0) * 0.25 * s
 	camera.v_offset = _noise.get_noise_2d(0.0, _noise_t) * 0.25 * s
 	camera.rotation.z = _noise.get_noise_2d(_noise_t, _noise_t) * 0.04 * s

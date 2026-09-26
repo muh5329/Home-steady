@@ -23,6 +23,7 @@ var _provoked := 0.0
 func _ready() -> void:
 	process_physics_priority = -10  # decide before combat/motor run
 	combat.aim_provider = _aim_direction
+	combat.aim_point_provider = func(): return Targeting.aim_point(target) if has_valid_target() else null
 	combat.died.connect(func(): motor.stop())
 	combat.receiver.damage_taken.connect(_on_damage_taken)
 	# Stagger think timers so a crowd doesn't think on the same frame.

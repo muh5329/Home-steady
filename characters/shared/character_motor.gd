@@ -24,9 +24,19 @@ enum Gait { WALK, RUN, SPRINT }
 
 ## Multiplies turn speed (0 = facing locked, e.g. mid-swing).
 var turn_multiplier := 1.0
-## When true, movement input no longer turns the body (strafing, blocking,
-## lock-on). Facing is then driven only by face().
-var lock_facing := false
+## True while any system holds a facing lock: movement input no longer
+## turns the body (blocking, aiming, circling). Facing then comes only
+## from face(). Locks are named so systems never clear each other's.
+var lock_facing: bool:
+	get: return not _facing_locks.is_empty()
+var _facing_locks: Dictionary = {}  # StringName -> true
+
+
+func set_facing_lock(key: StringName, locked: bool) -> void:
+	if locked:
+		_facing_locks[key] = true
+	else:
+		_facing_locks.erase(key)
 
 ## Named speed multipliers from independent systems (combat, carrying...).
 ## Effective multiplier is their product, so systems never overwrite

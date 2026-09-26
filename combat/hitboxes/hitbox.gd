@@ -15,14 +15,17 @@ var _already_hit: Array[DamageReceiver] = []
 var _shape_node: CollisionShape3D
 var _default_size := Vector3.ZERO
 var _default_offset := Vector3.ZERO
+var _box: BoxShape3D
+var _sphere := SphereShape3D.new()
 
 
 func _ready() -> void:
 	for child in get_children():
 		if child is CollisionShape3D and child.shape is BoxShape3D:
 			_shape_node = child
-			_shape_node.shape = child.shape.duplicate()  # per-instance resize
-			_default_size = _shape_node.shape.size
+			_box = child.shape.duplicate()  # per-instance resize
+			_shape_node.shape = _box
+			_default_size = _box.size
 			_default_offset = _shape_node.position
 	collision_layer = 0
 	collision_mask = DamageReceiver.LAYER
@@ -33,10 +36,16 @@ func _ready() -> void:
 ## Starts a hit window. `event_factory` builds a fresh DamageEvent per victim.
 ## A non-zero `size`/`offset` reshapes the box for this attack (a thrust
 ## reaches further than a sweep).
-func activate(event_factory: Callable, size := Vector3.ZERO, offset := Vector3.ZERO) -> void:
+func activate(event_factory: Callable, size := Vector3.ZERO, offset := Vector3.ZERO, radius := 0.0) -> void:
 	if _shape_node:
-		_shape_node.shape.size = size if size != Vector3.ZERO else _default_size
-		_shape_node.position = offset if size != Vector3.ZERO else _default_offset
+		if radius > 0.0:
+			_sphere.radius = radius
+			_shape_node.shape = _sphere
+			_shape_node.position = offset
+		else:
+			_shape_node.shape = _box
+			_box.size = size if size != Vector3.ZERO else _default_size
+			_shape_node.position = offset if size != Vector3.ZERO else _default_offset
 	_factory = event_factory
 	_already_hit.clear()
 	_active = true
@@ -63,6 +72,8 @@ func _physics_process(_delta: float) -> void:
 			continue
 		_already_hit.append(receiver)
 		var event: DamageEvent = _factory.call(receiver)
+		if not receiver.accepts_tags(event.tags):
+			continue
 		event.hit_position = receiver.global_position + Vector3.UP * 1.0
 		receiver.receive(event)
 		hit.emit(receiver, event)

@@ -49,6 +49,8 @@ const BLOCK_TRACK_RANGE := 6.0
 
 ## Optional: returns a world direction to aim attacks at (auto-aim / AI).
 var aim_provider: Callable
+## Optional: returns a world point projectiles should fly at (or null).
+var aim_point_provider: Callable
 
 var state: CombatState = CombatState.READY
 var poise := 0.0
@@ -70,6 +72,7 @@ var _since_hit := 99.0
 var _hitstop := 0.0
 var _immunity := 0.0
 var _attackers: Array[CombatController] = []
+var _special: AttackData
 
 
 func _ready() -> void:
@@ -140,6 +143,12 @@ func request_light() -> void:
 
 func request_heavy() -> void:
 	_buffer(&"heavy")
+
+
+## Queues a specific attack (abilities). Starts like a heavy attack would.
+func request_special(attack: AttackData) -> void:
+	_special = attack
+	_buffer(&"special")
 
 
 func request_dodge(direction: Vector3) -> void:
@@ -229,7 +238,7 @@ func _physics_process(delta: float) -> void:
 func _update_ready() -> void:
 	if _consume(&"dodge"):
 		return
-	if _consume(&"light") or _consume(&"heavy"):
+	if _consume(&"light") or _consume(&"heavy") or _consume(&"special"):
 		return
 	var want_block := _block_held and motor.is_grounded()
 	if want_block and state == CombatState.READY:
@@ -237,7 +246,7 @@ func _update_ready() -> void:
 		animator.play_action(moveset.block_start_animation, 1.5)
 		animator.set_base_override(moveset.block_loop_animation)
 		motor.set_speed_modifier(&"combat", 0.4)
-		motor.lock_facing = true  # back off without turning your shield away
+		motor.set_facing_lock(&"block", true)  # back off without turning your shield away
 	elif not want_block and state == CombatState.BLOCKING:
 		_enter(CombatState.READY)
 	if state == CombatState.BLOCKING:
@@ -260,11 +269,18 @@ func _update_attack() -> void:
 		_lunged = true
 		if a.lunge_distance > 0.0:
 			motor.burst(motor.get_facing() * a.lunge_distance / a.lunge_duration, a.lunge_duration)
-		hitbox.activate(_make_event_factory(a), a.hitbox_size, a.hitbox_offset)
+		if a.projectile:
+			_fire_projectiles(a)
+		else:
+			hitbox.activate(_make_event_factory(a), a.hitbox_size, a.hitbox_offset, a.hitbox_radius)
+		if a.burst_color.a > 0.0:
+			var center := body.global_transform * Vector3(a.hitbox_offset.x, 0.0, a.hitbox_offset.z)
+			var r := a.hitbox_radius if a.hitbox_radius > 0.0 else maxf(a.hitbox_size.x, a.hitbox_size.z) * 0.5
+			CombatVfx.burst(body.get_parent(), center, r, a.burst_color)
 	if hitbox.is_active() and _t >= a.scaled(a.active_end):
 		hitbox.deactivate()
 	# Follow-ups.
-	if can_chain() and (_buffered == &"light" or _buffered == &"heavy"):
+	if can_chain() and (_buffered == &"light" or _buffered == &"heavy" or _buffered == &"special"):
 		_consume(_buffered)
 		return
 	if _t >= a.scaled(a.active_end) and _buffered == &"dodge":
@@ -291,6 +307,11 @@ func _consume(action: StringName) -> bool:
 			if moveset == null or moveset.heavy_attack == null:
 				return false
 			_start_attack(moveset.heavy_attack, 0)
+		&"special":
+			if _special == null:
+				return false
+			_start_attack(_special, 0)
+			_special = null
 		&"dodge":
 			if _dodge_cooldown > 0.0 or not motor.is_grounded():
 				return false
@@ -342,6 +363,29 @@ func _aim(instant: bool) -> void:
 		motor.face(dir, instant)
 
 
+func _fire_projectiles(a: AttackData) -> void:
+	var facing := motor.get_facing()
+	# Launch from inside the chest (just ahead of the spine) at muzzle
+	# height: rays hit from inside, so walls you hug and enemies at point
+	# blank are handled instead of being skipped.
+	var origin := body.global_position + Vector3.UP * a.muzzle_offset.y + facing * 0.25
+	var target = aim_point_provider.call() if aim_point_provider.is_valid() else null
+	var dir: Vector3 = (target - origin).normalized() if target is Vector3 else facing
+	var ignore: Array[RID] = [receiver.get_rid()]
+	var parent := body.get_parent()
+	for i in a.projectile_count:
+		var angle := 0.0
+		if a.projectile_count > 1:
+			angle = deg_to_rad(lerpf(-a.spread_degrees, a.spread_degrees, float(i) / (a.projectile_count - 1)))
+		Projectile.fire(parent, a.projectile, origin, dir.rotated(Vector3.UP, angle), faction,
+			a.tags, _make_event_factory(a), ignore)
+
+
+## Could a new action (ability) start now or chain from the current one?
+func can_start_action() -> bool:
+	return state in [CombatState.READY, CombatState.BLOCKING] or can_chain()
+
+
 func _make_event_factory(attack: AttackData) -> Callable:
 	return func(target_receiver: DamageReceiver) -> DamageEvent:
 		var e := DamageEvent.create(body, attack.damage * damage_multiplier, attack.damage_type)
@@ -351,6 +395,7 @@ func _make_event_factory(attack: AttackData) -> Callable:
 		push.y = 0.0
 		e.knockback = push.normalized() * attack.knockback
 		e.tags = attack.tags.duplicate()
+		e.status_effects = attack.status_effects
 		return e
 
 
@@ -360,7 +405,7 @@ func _enter(new_state: CombatState) -> void:
 	var previous := state
 	if previous == CombatState.BLOCKING and new_state != CombatState.BLOCKING:
 		animator.set_base_override(&"")
-		motor.lock_facing = false
+		motor.set_facing_lock(&"block", false)
 	if previous == CombatState.DODGING:
 		receiver.invulnerable = false
 	state = new_state

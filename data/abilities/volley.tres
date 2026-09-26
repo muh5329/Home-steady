@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://combat/abilities/ability_data.gd" id="1"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2"]
+[ext_resource type="Resource" path="res://data/combat/projectiles/bolt.tres" id="3"]
+
+[sub_resource type="Resource" id="attack"]
+script = ExtResource("2")
+animation = &"2H_Ranged_Shoot"
+speed = 0.9
+active_start = 0.12
+active_end = 0.14
+combo_window = 0.6
+recovery_end = 0.7
+damage = 8.0
+poise_damage = 10.0
+knockback = 2.0
+tags = PackedStringArray("ranged")
+projectile = ExtResource("3")
+projectile_count = 5
+spread_degrees = 18.0
+lunge_distance = 0.0
+
+[resource]
+script = ExtResource("1")
+id = &"ability.volley"
+display_name = "Volley"
+description = "Loose five bolts in a fan."
+attack = SubResource("attack")
+cooldown = 8.0

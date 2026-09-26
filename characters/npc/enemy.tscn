@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy.gd" id="1_enemy"]
 [ext_resource type="Script" path="res://characters/shared/character_motor.gd" id="3_motor"]
@@ -16,6 +16,8 @@
 [ext_resource type="Script" path="res://ui/hud/world_health_bar.gd" id="15_bar"]
 [ext_resource type="Script" path="res://characters/shared/combat_sfx.gd" id="16_sfx"]
 [ext_resource type="Script" path="res://characters/shared/nav_steering.gd" id="17_steer"]
+
+[ext_resource type="Script" path="res://combat/status_effects/status_effect_component.gd" id="40_status"]
 
 [sub_resource type="CapsuleShape3D" id="body_shape"]
 radius = 0.38
@@ -79,6 +81,13 @@ animator = NodePath("../CharacterAnimator")
 health = NodePath("../HealthComponent")
 receiver = NodePath("../Hurtbox")
 hitbox = NodePath("../WeaponHitbox")
+
+[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("receiver", "motor", "health", "model")]
+script = ExtResource("40_status")
+receiver = NodePath("../Hurtbox")
+motor = NodePath("../CharacterMotor")
+health = NodePath("../HealthComponent")
+model = NodePath("../Model")
 
 [node name="CombatSfx" type="Node3D" parent="." node_paths=PackedStringArray("combat")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

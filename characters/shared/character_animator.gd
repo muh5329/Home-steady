@@ -47,6 +47,22 @@ const FLASH_SHADER := preload("res://art/VFX/hit_flash.gdshader")
 
 
 func _ready() -> void:
+	_flash_material = ShaderMaterial.new()
+	_flash_material.shader = FLASH_SHADER
+	if model:
+		set_model(model)
+
+
+## (Re)binds to a rigged model — at startup, or when a class change swaps
+## the body at runtime.
+func set_model(new_model: Node3D) -> void:
+	if player and player.animation_finished.is_connected(_on_animation_finished):
+		player.animation_finished.disconnect(_on_animation_finished)
+	model = new_model
+	_meshes.clear()
+	_action = &""
+	_action_hold = false
+	_base_current = &""
 	player = model.find_child("AnimationPlayer", true, false)
 	skeleton = model.find_child("Skeleton3D", true, false)
 	assert(player != null, "CharacterAnimator: model has no AnimationPlayer")
@@ -58,8 +74,6 @@ func _ready() -> void:
 			player.get_animation(clip).loop_mode = Animation.LOOP_LINEAR
 	for node in model.find_children("*", "MeshInstance3D", true, false):
 		_meshes.append(node)
-	_flash_material = ShaderMaterial.new()
-	_flash_material.shader = FLASH_SHADER
 	_play_base(idle_animation)
 
 
@@ -126,6 +140,8 @@ func flash(duration := 0.12) -> void:
 
 
 func _process(delta: float) -> void:
+	if player == null:
+		return
 	_update_freeze(delta)
 	_update_flash(delta)
 	if _action_soft and motor and motor.horizontal_speed() > 0.6:
@@ -189,8 +205,9 @@ func _update_flash(delta: float) -> void:
 		return
 	_flash_time -= delta
 	if _flash_time <= 0.0:
+		# Restore whatever persistent overlay (e.g. a status tint) was there.
 		for mesh in _meshes:
-			mesh.material_overlay = null
+			mesh.material_overlay = mesh.get_meta(&"base_overlay") if mesh.has_meta(&"base_overlay") else null
 
 
 func _on_animation_finished(clip: StringName) -> void:

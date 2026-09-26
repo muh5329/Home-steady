@@ -1,7 +1,7 @@
 # Gauntlet Progress
 
-Current phase: **Phase 6 — Character classes** (next)
-Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (70 passing)
+Current phase: **Phase 7 — Companions** (next)
+Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (89 passing)
 
 ## Scoreboard
 
@@ -11,8 +11,55 @@ Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (70 passing)
 | 2 (Phase 2) | 6 | 3 | 2 | 2 | 6 | 5 | 6 |
 | 3 (Phase 3) | 6 | 5 | 2 | 2 | 6 | 5 | 7 |
 | 4 (Phases 4–5) | 6 | 6 | 2 | 3 | 7 | 5 | 6 |
+| 5 (Phase 6) | 6 | 6 | 5 | 3 | 7 | 5 | 7 |
 
 Scores are 0–10 against the *final* target, so early rounds are low by design.
+
+---
+
+## Round 5 — Phase 6 classes (melee / ranged / magic)
+
+**What changed**
+- `CharacterClassData` (Fighter, Ranger, Wizard): model, stats, damage dealt/taken multipliers, starting
+  `WeaponData`, abilities. New classes are `.tres` files. `CharacterLoadout` applies a class to any
+  character, at startup or at runtime (loading a save swaps the body back).
+- `EquipmentController` (weapon → moveset, damage, visible meshes), `AbilityController` (Q; cooldown
+  starts when the attack actually starts), `StatusEffectComponent` (Frost Nova's chill: slow + tint).
+- Ranged/magic are data on `AttackData`: projectile(s), spread, area burst. `Projectile` sweeps a ray,
+  respects factions and receiver tags, bursts for AoE with blast-centred knockback.
+  - Fighter: sword combo, heavy, block, **Shield Bash** (stagger); 130 HP, -15% damage taken, +15% damage.
+  - Ranger: crossbow bolts, charged power shot, **Volley** (5-bolt fan); 95 HP, faster.
+  - Wizard: arcane missiles, **Fireball** (AoE), **Frost Nova** (radial chill); 85 HP.
+- Ranged aiming: reticle (brackets when an enemy is assisted), camera-centre aim point with pitch,
+  assist by angle to the reticle with line of sight, **RMB aim mode** (zoomed shoulder cam, strafing).
+- Class select screen at start (click or 1–3) with **Continue** when a save exists; HUD shows class,
+  ability cooldown and reticle. Shared `CombatVfx` bursts (rings, soft particles, flashes).
+
+**Test performed** 19 new tests (89 total): each class builds its body/gear/stats, shield bash staggers,
+bolts hit at 12 m, volley fan hits a group, fireball AoE hits two with fire damage, frost nova chills
+and wears off, cooldown gating, walls stop bolts, bolts pass friendly settlers, class screen via keys,
+class persistence; plus the regression set below.
+
+**Critic findings and resolution**
+| # | Finding | Status |
+|---|---|---|
+| 1 | Spells/bolts chopped trees, built sites, reaped crops | Fixed: `DamageReceiver.required_any_tags` (gathering/building accept melee + tool work only); test |
+| 2 | Loading didn't rebuild the class (wizard body with crossbow moveset) | Fixed: `CharacterLoadout.apply` at runtime, class stored in player save; test |
+| 3 | Class setup and aiming player-only | Fixed: shared `CharacterLoadout`; `Targeting.aim_point`; enemy aim-point provider. Crafted-weapon equip in Phase 9 |
+| 4 | Ranged out-DPSed melee and was safer | Fixed: refire gated by recovery (crossbow 18.7, staff 18 DPS vs sword ~29 with class bonus), Fighter toughness, volley trimmed |
+| 5 | Ranged aiming was guesswork | Fixed: reticle, camera ray, angle+LOS assist, aim mode |
+| 6 | Muzzle past walls, point-blank misses, knockback from shooter | Fixed: chest-origin rays hitting from inside, blast/flight-based knockback, freed-shooter guard; tests |
+| 7 | Cooldown spent on queue | Fixed: spent on `attack_started`; test |
+| 8 | Status effect details, square nova | Fixed: effects cleared on death, no chill through a block, unused DoT removed, sphere hitboxes; test |
+| Perf | Per-shot material/mesh/light allocations | Fixed: per-ProjectileData caches, missile light removed |
+
+Also found while fixing: two systems wrote the motor's facing lock (aim vs block) → named facing locks.
+
+**Known problems** No hit numbers; burst VFX still allocate per burst (cheap, not cached); Continue path
+loads only the quick-save slot; companions don't use classes yet.
+
+**Highest-priority next task** Phase 7: recruit a settler as a companion who follows, fights, returns
+home and works — the same NPC in both roles.
 
 ---
 

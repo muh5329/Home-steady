@@ -20,7 +20,7 @@ func enter(_message: Dictionary) -> void:
 
 
 func exit() -> void:
-	ai.motor.lock_facing = false
+	ai.motor.set_facing_lock(&"ai", false)
 	if ai.has_valid_target():
 		ai.target.release_attack_slot(ai.combat)
 
@@ -34,7 +34,7 @@ func tick(delta: float) -> void:
 	match _phase:
 		Phase.WAITING:
 			if ai.target.claim_attack_slot(combat):
-				ai.motor.lock_facing = false
+				ai.motor.set_facing_lock(&"ai", false)
 				_phase = Phase.STRIKING
 				_swings_left = randi_range(1, maxi(ai.definition.max_combo, 1))
 			else:
@@ -58,7 +58,7 @@ func tick(delta: float) -> void:
 			_circle(2.4)
 			if _cooldown <= 0.0:
 				ai.stop_moving()
-				ai.motor.lock_facing = false
+				ai.motor.set_facing_lock(&"ai", false)
 				if ai.distance_to_target() <= ai.definition.attack_range + 1.0:
 					enter({})
 				else:
@@ -74,7 +74,7 @@ func _start_cooldown() -> void:
 
 ## Strafe around the target, keeping roughly `distance` away.
 func _circle(distance: float) -> void:
-	ai.motor.lock_facing = true
+	ai.motor.set_facing_lock(&"ai", true)
 	ai.face_target()
 	var to_target: Vector3 = ai.target.global_position() - ai.body.global_position
 	to_target.y = 0.0

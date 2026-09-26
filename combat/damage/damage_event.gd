@@ -17,6 +17,8 @@ var poise_damage: float = 0.0
 ## World-space push applied to the target.
 var knockback: Vector3 = Vector3.ZERO
 var tags: PackedStringArray = []  # e.g. "heavy", "melee", "blocked"
+## Conditions this hit applies (chill, burn...), if the target can take them.
+var status_effects: Array[StatusEffectData] = []
 ## World-space hit position (for VFX).
 var hit_position: Vector3 = Vector3.ZERO
 

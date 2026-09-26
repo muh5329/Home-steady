@@ -17,9 +17,15 @@ const LAYER := 1 << 2  # physics layer 3 "hurtboxes"
 ## Damage multiplier per DamageEvent.Type (missing = 1.0). Resistances and
 ## weaknesses are data, not code.
 @export var type_multipliers: Dictionary = {}
+## Multiplies every incoming hit (armour, class toughness).
+@export var damage_multiplier := 1.0
 ## If non-empty, only attackers of these factions can damage this receiver
 ## (e.g. only settlers can chop trees).
 @export var allowed_attacker_factions: Array[StringName] = []
+## If non-empty, only events carrying at least one of these tags have any
+## effect (trees/sites/crops accept "melee" swings and "work", not bolts
+## or spells).
+@export var required_any_tags: PackedStringArray = []
 
 var invulnerable := false
 
@@ -39,11 +45,20 @@ func can_be_hit_by(attacker_faction: StringName) -> bool:
 	return attacker_faction == &"neutral" or attacker_faction != faction
 
 
+func accepts_tags(tags: PackedStringArray) -> bool:
+	if required_any_tags.is_empty():
+		return true
+	for t in tags:
+		if t in required_any_tags:
+			return true
+	return false
+
+
 func receive(event: DamageEvent) -> void:
-	if invulnerable or (health and not health.is_alive()):
+	if invulnerable or (health and not health.is_alive()) or not accepts_tags(event.tags):
 		return
 	event.target = owner if owner else get_parent()
-	event.amount *= float(type_multipliers.get(event.damage_type, 1.0))
+	event.amount *= float(type_multipliers.get(event.damage_type, 1.0)) * damage_multiplier
 	about_to_take_damage.emit(event)
 	if health:
 		health.take(event.amount)

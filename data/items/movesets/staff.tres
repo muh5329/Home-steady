@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="MovesetData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://combat/moveset_data.gd" id="1_moveset"]
+[ext_resource type="Script" path="res://combat/attack_data.gd" id="2_attack"]
+[ext_resource type="Resource" path="res://data/combat/projectiles/magic_missile.tres" id="3_missile"]
+[ext_resource type="Resource" path="res://data/combat/projectiles/fireball.tres" id="4_fireball"]
+
+[sub_resource type="Resource" id="missile"]
+script = ExtResource("2_attack")
+animation = &"Spellcast_Shoot"
+speed = 1.1
+active_start = 0.15
+active_end = 0.17
+combo_window = 0.72
+recovery_end = 0.72
+damage = 13.0
+damage_type = 1
+poise_damage = 8.0
+knockback = 1.5
+tags = PackedStringArray("magic")
+projectile = ExtResource("3_missile")
+muzzle_offset = Vector3(0.2, 1.5, -0.8)
+lunge_distance = 0.0
+
+[sub_resource type="Resource" id="fireball"]
+script = ExtResource("2_attack")
+animation = &"Spellcast_Long"
+speed = 1.5
+active_start = 1.42
+active_end = 1.44
+combo_window = 2.0
+recovery_end = 2.0
+damage = 28.0
+damage_type = 1
+poise_damage = 35.0
+knockback = 6.0
+tags = PackedStringArray("magic", "heavy")
+projectile = ExtResource("4_fireball")
+muzzle_offset = Vector3(0, 1.9, -0.8)
+lunge_distance = 0.0
+
+[resource]
+script = ExtResource("1_moveset")
+light_combo = Array[ExtResource("2_attack")]([SubResource("missile")])
+heavy_attack = SubResource("fireball")
+can_block = false

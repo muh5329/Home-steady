@@ -148,7 +148,8 @@ func swing_at(target: Node3D) -> Variant:
 	motor.face(target.global_position - body.global_position, true)
 	# Capture everything before awaiting: the job may change meanwhile.
 	var amount := job.work_amount
-	var tags := job.work_tags
+	var tags := job.work_tags.duplicate()
+	tags.append("work")
 	var impact := job.work_impact_time / job.work_speed
 	if not combat.perform(job.work_animation, job.work_speed):
 		return null

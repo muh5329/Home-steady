@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://items/equipment/weapon_data.gd" id="1"]
+[ext_resource type="Resource" path="res://data/items/movesets/staff.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+id = &"weapon.oak_staff"
+display_name = "Oak Staff"
+description = "Channels arcane missiles and fireballs."
+storable = false
+moveset = ExtResource("2")
+damage_multiplier = 1.0
+rig_parts = PackedStringArray("2H_Staff")
+aim_range = 20.0

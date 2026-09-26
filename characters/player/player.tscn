@@ -1,7 +1,11 @@
-[gd_scene load_steps=24 format=3]
+[gd_scene load_steps=29 format=3]
 
 [ext_resource type="Script" path="res://characters/player/player.gd" id="1_player"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_characters/Knight.glb" id="2_model"]
+[ext_resource type="Resource" path="res://data/classes/fighter.tres" id="2_class"]
+[ext_resource type="Script" path="res://characters/shared/equipment_controller.gd" id="17_equip"]
+[ext_resource type="Script" path="res://characters/shared/ability_controller.gd" id="18_abil"]
+[ext_resource type="Script" path="res://combat/status_effects/status_effect_component.gd" id="19_status"]
+[ext_resource type="Script" path="res://characters/shared/character_loadout.gd" id="20_loadout"]
 [ext_resource type="Script" path="res://characters/shared/character_motor.gd" id="3_motor"]
 [ext_resource type="Script" path="res://characters/shared/character_animator.gd" id="4_animator"]
 [ext_resource type="Script" path="res://characters/shared/health_component.gd" id="5_health"]
@@ -39,8 +43,7 @@ collision_layer = 2
 collision_mask = 19
 floor_snap_length = 0.3
 script = ExtResource("1_player")
-hidden_parts = PackedStringArray("1H_Sword_Offhand", "2H_Sword", "Badge_Shield", "Rectangle_Shield", "Spike_Shield")
-weapon_parts = PackedStringArray("1H_Sword", "Round_Shield")
+default_class = ExtResource("2_class")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
@@ -49,15 +52,12 @@ shape = SubResource("body_shape")
 [node name="Model" type="Node3D" parent="."]
 transform = Transform3D(-0.75, 0, -6.55671e-08, 0, 0.75, 0, 6.55671e-08, 0, -0.75, 0, 0, 0)
 
-[node name="Knight" parent="Model" instance=ExtResource("2_model")]
-
 [node name="CharacterMotor" type="Node" parent="." node_paths=PackedStringArray("body")]
 script = ExtResource("3_motor")
 body = NodePath("..")
 
-[node name="CharacterAnimator" type="Node" parent="." node_paths=PackedStringArray("model", "motor")]
+[node name="CharacterAnimator" type="Node" parent="." node_paths=PackedStringArray("motor")]
 script = ExtResource("4_animator")
-model = NodePath("../Model/Knight")
 motor = NodePath("../CharacterMotor")
 
 [node name="HealthComponent" type="Node" parent="."]
@@ -94,6 +94,32 @@ faction = &"player"
 max_poise = 40.0
 flinch_duration = 0.22
 
+[node name="Equipment" type="Node" parent="." node_paths=PackedStringArray("combat")]
+script = ExtResource("17_equip")
+combat = NodePath("../CombatController")
+
+[node name="Abilities" type="Node" parent="." node_paths=PackedStringArray("combat")]
+script = ExtResource("18_abil")
+combat = NodePath("../CombatController")
+
+[node name="StatusEffects" type="Node" parent="." node_paths=PackedStringArray("receiver", "motor", "health")]
+script = ExtResource("19_status")
+receiver = NodePath("../Hurtbox")
+motor = NodePath("../CharacterMotor")
+health = NodePath("../HealthComponent")
+
+[node name="Loadout" type="Node" parent="." node_paths=PackedStringArray("model_holder", "animator", "motor", "health", "combat", "carry", "equipment", "abilities", "status_effects")]
+script = ExtResource("20_loadout")
+model_holder = NodePath("../Model")
+animator = NodePath("../CharacterAnimator")
+motor = NodePath("../CharacterMotor")
+health = NodePath("../HealthComponent")
+combat = NodePath("../CombatController")
+carry = NodePath("../Carry")
+equipment = NodePath("../Equipment")
+abilities = NodePath("../Abilities")
+status_effects = NodePath("../StatusEffects")
+
 [node name="CombatSfx" type="Node3D" parent="." node_paths=PackedStringArray("combat")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("13_sfx")
@@ -121,12 +147,14 @@ shape = SubResource("interact_shape")
 [node name="HoldPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, -0.55)
 
-[node name="PlayerController" type="Node" parent="." node_paths=PackedStringArray("motor", "combat", "interaction", "camera_rig")]
+[node name="PlayerController" type="Node" parent="." node_paths=PackedStringArray("motor", "combat", "interaction", "camera_rig", "equipment", "abilities")]
 script = ExtResource("11_controller")
 motor = NodePath("../CharacterMotor")
 combat = NodePath("../CombatController")
 interaction = NodePath("../Interaction")
 camera_rig = NodePath("../CameraRig")
+equipment = NodePath("../Equipment")
+abilities = NodePath("../Abilities")
 
 [node name="CameraRig" type="Node3D" parent="." node_paths=PackedStringArray("target")]
 script = ExtResource("12_camera")
