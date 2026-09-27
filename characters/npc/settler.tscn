@@ -1,4 +1,6 @@
-[gd_scene load_steps=38 format=3]
+[gd_scene load_steps=39 format=3]
+
+[ext_resource type="FontFile" path="res://art/fonts/EBGaramond-SemiBold.woff2" id="99_namefont"]
 
 [ext_resource type="Script" path="res://characters/npc/settler.gd" id="1_settler"]
 [ext_resource type="Resource" path="res://data/classes/villager.tres" id="2_class"]
@@ -237,14 +239,15 @@ shape = SubResource("talk_shape")
 
 [node name="Nameplate" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 0)
-pixel_size = 0.00045
+pixel_size = 0.00032
 billboard = 1
 fixed_size = true
 no_depth_test = true
 render_priority = 2
-modulate = Color(1, 0.96, 0.85, 1)
-outline_size = 10
-font_size = 48
+modulate = Color(1, 0.97, 0.9, 1)
+outline_size = 9
+font = ExtResource("99_namefont")
+font_size = 30
 visibility_range_begin = 5.0
 visibility_range_begin_margin = 1.0
 visibility_range_end = 25.0

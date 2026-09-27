@@ -3,3 +3,4 @@
 /android/
 *.tmp
 tests/output/
+node_modules/

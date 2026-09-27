@@ -6,7 +6,7 @@ shader_type canvas_item;
 uniform sampler2D screen : hint_screen_texture, filter_linear_mipmap;
 uniform float vignette_strength = 0.38;
 uniform float vignette_radius = 0.82;
-uniform float fringe = 0.0011;
+uniform float fringe = 0.0;
 uniform vec3 highlight_tint = vec3(1.04, 0.99, 0.9);
 uniform vec3 shadow_tint = vec3(0.93, 0.97, 1.08);
 

@@ -1,6 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://items/equipment/weapon_data.gd" id="1"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/sword.tscn" id="h1"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/round_shield.tscn" id="h2"]
 [ext_resource type="Resource" path="res://data/items/movesets/sword_and_shield.tres" id="2"]
 
 [resource]
@@ -11,5 +13,6 @@ description = "A trusty blade and a round shield."
 storable = false
 moveset = ExtResource("2")
 damage_multiplier = 1.0
-rig_parts = PackedStringArray("1H_Sword", "Round_Shield")
+hand_scene = ExtResource("h1")
+offhand_scene = ExtResource("h2")
 aim_range = 3.2

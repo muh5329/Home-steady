@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="EnemyDefinition" load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_characters/Skeleton_Mage.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://characters/humans/necromancer.tscn" id="2_model"]
 [ext_resource type="Resource" path="res://data/items/movesets/necromancer.tres" id="3_moveset"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Staff.gltf" id="4_staff"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/staff.tscn" id="4_staff"]
 [ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="5_sounds"]
 [ext_resource type="Script" path="res://combat/abilities/ability_data.gd" id="6_ability"]
 [ext_resource type="Resource" path="res://data/abilities/necrotic_volley.tres" id="7_volley"]
@@ -17,7 +17,7 @@ id = &"enemy.necromancer"
 display_name = "Morvath the Necromancer"
 description = "The crypt's master. Raises the dead, rains grave-light, and blasts anyone who crowds him."
 model = ExtResource("2_model")
-model_scale = 1.15
+model_scale = 1.1
 faction = &"monsters"
 right_hand_item = ExtResource("4_staff")
 sounds = ExtResource("5_sounds")

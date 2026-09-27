@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="EnemyDefinition" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_characters/Skeleton_Rogue.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://characters/humans/undead_archer.tscn" id="2_model"]
 [ext_resource type="Resource" path="res://data/items/movesets/skeleton_crossbow.tres" id="3_moveset"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Crossbow.gltf" id="4_bow"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/crossbow.tscn" id="4_bow"]
 [ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="5_sounds"]
 
 [resource]
@@ -12,7 +12,7 @@ id = &"enemy.skeleton_archer"
 display_name = "Skeleton Archer"
 description = "Keeps its distance and looses bone bolts. Close in fast."
 model = ExtResource("2_model")
-model_scale = 0.75
+model_scale = 1.0
 faction = &"monsters"
 right_hand_item = ExtResource("4_bow")
 sounds = ExtResource("5_sounds")

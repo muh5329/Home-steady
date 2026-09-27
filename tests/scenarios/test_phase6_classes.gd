@@ -35,9 +35,9 @@ func _damaged(e: Enemy) -> bool:
 
 
 func test_each_class_builds_its_body_and_gear() -> void:
-	for spec in [["fighter", "Knight", "weapon.arming_sword", 130.0],
-			["ranger", "Rogue_Hooded", "weapon.hunting_crossbow", 95.0],
-			["wizard", "Mage", "weapon.oak_staff", 85.0]]:
+	for spec in [["fighter", "Fighter", "weapon.arming_sword", 130.0],
+			["ranger", "Ranger", "weapon.hunting_crossbow", 95.0],
+			["wizard", "Wizard", "weapon.oak_staff", 85.0]]:
 		await _setup(spec[0])
 		check_eq(String(player.model_root.name), spec[1], "%s model" % spec[0])
 		check_eq(player.equipment.weapon.id, StringName(spec[2]), "%s weapon" % spec[0])

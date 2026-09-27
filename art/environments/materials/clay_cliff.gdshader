@@ -4,9 +4,9 @@ render_mode cull_disabled;
 // ochres, darker toward the foot, with a ragged lip of grass hanging over
 // the top edge (UV.y = 0 at the foot of a terrace, 1 at its top).
 
-uniform vec3 clay_a : source_color = vec3(0.88, 0.46, 0.27);
-uniform vec3 clay_b : source_color = vec3(0.96, 0.66, 0.38);
-uniform vec3 clay_c : source_color = vec3(0.50, 0.23, 0.16);
+uniform vec3 clay_a : source_color = vec3(0.76, 0.4, 0.25);
+uniform vec3 clay_b : source_color = vec3(0.87, 0.57, 0.36);
+uniform vec3 clay_c : source_color = vec3(0.48, 0.27, 0.2);
 uniform vec3 grass : source_color = vec3(0.34, 0.52, 0.16);
 uniform sampler2D noise : repeat_enable, filter_linear_mipmap;
 
@@ -39,7 +39,7 @@ void fragment() {
 	col *= 0.88 + fine * 0.18;
 	col *= 0.94 + wash * 0.1;
 	// Darker toward each terrace's foot.
-	col *= mix(0.8, 1.0, smoothstep(0.0, 0.45, UV.y));
+	col *= mix(0.68, 1.0, smoothstep(0.0, 0.5, UV.y));
 	// Grass lip draped over the top edge, ragged.
 	float lip = smoothstep(0.8 - n2 * 0.2, 0.88 - n2 * 0.18, UV.y);
 	col = mix(col, grass * (0.85 + fine * 0.3), lip);

@@ -1,15 +1,15 @@
 [gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://settlement/buildings/building.gd" id="1_building"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/buildings/red/building_market_red.gltf" id="2_model"]
+[ext_resource type="Script" path="res://settlement/buildings/kit_house.gd" id="2_model"]
 [ext_resource type="Script" path="res://settlement/storage/stockpile.gd" id="3_storage"]
 [ext_resource type="Script" path="res://settlement/storage/inventory_component.gd" id="4_inv"]
 [ext_resource type="Script" path="res://core/interaction/interactable.gd" id="5_interact"]
 
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/barrel.gltf" id="95_barrel"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/crate_A_small.gltf" id="95_crate"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/sack.gltf" id="95_sack"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/wheelbarrow.gltf" id="95_wheelbarrow"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_barrel.tscn" id="95_barrel"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_crate_small.tscn" id="95_crate"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_sack.tscn" id="95_sack"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_wagon.tscn" id="95_wheelbarrow"]
 [ext_resource type="Script" path="res://art/props/flower_planter.gd" id="98_planter"]
 [sub_resource type="BoxShape3D" id="shape"]
 size = Vector3(6.44, 5.6, 5.88)
@@ -23,8 +23,15 @@ radius = 3.2
 [node name="Storehouse" type="StaticBody3D"]
 script = ExtResource("1_building")
 
-[node name="Model" parent="." instance=ExtResource("2_model")]
-transform = Transform3D(7.7, 0, 0, 0, 7.7, 0, 0, 0, 7.7, 0, -0.42, 0)
+[node name="Kit" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.2)
+script = ExtResource("2_model")
+width_cells = 4
+depth_cells = 4
+floors = 1
+style = 2
+chimney = false
+random_seed = 33
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, -0.56)

@@ -9,6 +9,8 @@ const LENGTH := 2.1
 
 @export var gap_every := 5
 @export var random_seed := 1
+## Wooden fence or a low dry-stone wall.
+@export_enum("Fence", "Stone wall") var style := 0
 
 
 func _ready() -> void:
@@ -27,7 +29,13 @@ func _ready() -> void:
 		var p := curve.sample_baked(d)
 		var ahead := curve.sample_baked(minf(d + 0.5, total))
 		var dir := (ahead - p).normalized()
-		var seg: Node3D = SEGMENT.instantiate()
+		var seg: Node3D
+		if style == 1:
+			var wall := PropModel.new()
+			wall.kind = PropModel.Kind.STONE_WALL
+			seg = wall
+		else:
+			seg = SEGMENT.instantiate()
 		add_child(seg)
 		seg.position = p
 		seg.rotation.y = atan2(-dir.z, dir.x) + rng.randf_range(-0.05, 0.05)

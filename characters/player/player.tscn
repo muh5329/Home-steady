@@ -23,6 +23,7 @@
 [ext_resource type="Script" path="res://characters/player/party.gd" id="21_party"]
 
 [ext_resource type="PackedScene" path="res://art/post/post_fx.tscn" id="22_post"]
+[ext_resource type="Script" path="res://art/vfx/ground_ring.gd" id="30_ring"]
 
 [sub_resource type="CameraAttributesPractical" id="cam_attr"]
 dof_blur_far_enabled = true
@@ -128,6 +129,15 @@ carry = NodePath("../Carry")
 equipment = NodePath("../Equipment")
 abilities = NodePath("../Abilities")
 status_effects = NodePath("../StatusEffects")
+highlight_layer = 20
+
+[node name="HeroLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0.6)
+light_color = Color(1, 0.86, 0.72, 1)
+light_energy = 0.7
+light_cull_mask = 524288
+omni_range = 3.6
+omni_attenuation = 0.6
 
 [node name="CombatSfx" type="Node3D" parent="." node_paths=PackedStringArray("combat")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
@@ -178,15 +188,18 @@ target = NodePath("../..")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="CameraRig"]
 shape = SubResource("arm_shape")
-spring_length = 4.6
+spring_length = 18.0
 margin = 0.2
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig/SpringArm3D"]
 attributes = SubResource("cam_attr")
-fov = 55.0
+fov = 36.0
 far = 800.0
 
 [node name="Party" type="Node" parent="."]
 script = ExtResource("21_party")
+
+[node name="GroundRing" type="MeshInstance3D" parent="."]
+script = ExtResource("30_ring")
 
 [node name="PostFx" parent="." instance=ExtResource("22_post")]

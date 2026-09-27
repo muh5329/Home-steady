@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://settlement/storage/stockpile.gd" id="1_stockpile"]
 [ext_resource type="Script" path="res://settlement/storage/inventory_component.gd" id="2_inv"]
 [ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/pallet.gltf" id="4_pallet"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_pallet.tscn" id="4_pallet"]
 
 [sub_resource type="BoxShape3D" id="zone_shape"]
 size = Vector3(4.2, 2.5, 3.6)

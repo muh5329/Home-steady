@@ -59,15 +59,16 @@ func test_loading_rebuilds_the_saved_class() -> void:
 	cleanup()
 	await wait_physics_frames(2)
 	await _setup("wizard")
-	check_eq(String(player.model_root.name), "Mage", "started as a wizard")
+	check_eq(String(player.model_root.name), "Wizard", "started as a wizard")
 	SaveManager.load_game("test_r5")
 	await wait_physics_frames(2)
 	check_eq(player.character_class.id, &"class.ranger", "class restored from save")
-	check_eq(String(player.model_root.name), "Rogue_Hooded", "ranger body")
+	check_eq(String(player.model_root.name), "Ranger", "ranger body")
 	check_eq(player.equipment.weapon.id, &"weapon.hunting_crossbow", "ranger weapon")
 	check_eq(player.health.max_health, 95.0, "ranger health")
 	check_eq(player.abilities.abilities[0].id, &"ability.volley", "ranger ability")
-	check(player.equipment.model_root.find_child("2H_Crossbow", true, false).visible, "crossbow visible")
+	var bow := player.equipment.model_root.find_child("Crossbow", true, false) as Node3D
+	check(bow != null and bow.is_visible_in_tree(), "crossbow visible")
 	SaveManager.delete_save("test_r5")
 
 

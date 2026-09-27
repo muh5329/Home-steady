@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://art/props/weapons/weapon_model.gd" id="1_w"]
+
+[node name="RoundShield" type="MeshInstance3D"]
+script = ExtResource("1_w")
+kind = 1
+transform = Transform3D(0.65, 0, 0, 0, 0.65, 0, 0, 0, 0.65, 0, 0, 0)

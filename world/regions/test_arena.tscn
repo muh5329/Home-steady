@@ -1,8 +1,16 @@
-[gd_scene load_steps=67 format=3]
+[gd_scene load_steps=72 format=3]
 
 [ext_resource type="Script" path="res://world/regions/region.gd" id="1_region"]
 [ext_resource type="Environment" path="res://art/environments/default_environment.tres" id="2_env"]
 [ext_resource type="Material" path="res://art/environments/materials/stylized_ground.tres" id="3_ground"]
+[ext_resource type="Material" path="res://art/environments/materials/ground_far.tres" id="3_groundfar"]
+[ext_resource type="Script" path="res://world/water/river.gd" id="75_river"]
+[ext_resource type="Script" path="res://world/decor/hamlet.gd" id="73_hamlet"]
+[ext_resource type="Script" path="res://art/vfx/gulls.gd" id="74_gulls"]
+[ext_resource type="Script" path="res://world/decor/ambient_folk.gd" id="75_folk"]
+[ext_resource type="Script" path="res://world/decor/roadside_clutter.gd" id="72_clutter"]
+[ext_resource type="Script" path="res://art/vfx/drifting_leaves.gd" id="71_leaves"]
+[ext_resource type="Script" path="res://art/props/world/prop_model.gd" id="74_prop"]
 [ext_resource type="PackedScene" path="res://characters/player/player.tscn" id="4_player"]
 [ext_resource type="PackedScene" path="res://characters/npc/enemy.tscn" id="5_enemy"]
 [ext_resource type="Resource" path="res://data/enemies/skeleton_warrior.tres" id="6_skeleton"]
@@ -12,7 +20,7 @@
 [ext_resource type="Script" path="res://items/resources/resource_node.gd" id="13_resnode"]
 [ext_resource type="PackedScene" path="res://settlement/storage/stockpile.tscn" id="14_stockpile"]
 [ext_resource type="Script" path="res://world/world_items.gd" id="98_items"]
-[ext_resource type="Script" path="res://art/VFX/hit_effects.gd" id="99_hitfx"]
+[ext_resource type="Script" path="res://art/vfx/hit_effects.gd" id="99_hitfx"]
 
 [ext_resource type="Resource" path="res://data/resource_nodes/pine_tree.tres" id="20_pine"]
 [ext_resource type="Resource" path="res://data/resource_nodes/fir_tree.tres" id="21_fir"]
@@ -48,17 +56,16 @@
 [ext_resource type="Script" path="res://world/terrain/terrace_hills.gd" id="80_hills"]
 [ext_resource type="Material" path="res://art/environments/materials/clay_cliff.tres" id="79_clay"]
 [ext_resource type="Script" path="res://world/terrain/foliage_scatter.gd" id="78_foliage"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/resource_lumber.gltf" id="70_lumber"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/wheelbarrow.gltf" id="71_wheelbarrow"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/sack.gltf" id="72_sack"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/barrel.gltf" id="73_barrel"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/crate_A_big.gltf" id="74_crate"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/bucket_water.gltf" id="75_bucket"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/weaponrack.gltf" id="76_rack"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/flag_red.gltf" id="77_flag"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/crate_long_A.gltf" id="78_crate_long"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/pallet.gltf" id="79_pallet"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_log_pile.tscn" id="70_lumber"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_wagon.tscn" id="71_wheelbarrow"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_sack.tscn" id="72_sack"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_barrel.tscn" id="73_barrel"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_crate.tscn" id="74_crate"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_bucket.tscn" id="75_bucket"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_crate_long.tscn" id="78_crate_long"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_pallet.tscn" id="79_pallet"]
 [ext_resource type="Script" path="res://world/terrain/sky_clouds.gd" id="77_clouds"]
+[ext_resource type="Script" path="res://world/terrain/far_mountains.gd" id="76_mountains"]
 [ext_resource type="Script" path="res://world/terrain/fence_run.gd" id="76_fence"]
 [sub_resource type="NavigationMesh" id="navmesh"]
 resource_local_to_scene = true
@@ -76,6 +83,12 @@ _data = {
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
 }
 point_count = 7
+[sub_resource type="Curve3D" id="c_village_street"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 1, 0, 44, 0, 0, 0, 0, 0, 0, 3, 0, 21, 0, 0, 0, 0, 0, 0, 1.5, 0, 13),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+
 [sub_resource type="Curve3D" id="c_road_east"]
 _data = {
 "points": PackedVector3Array(0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 8, 0, 1, 0, 0, 0, 0, 0, 0, 14, 0, 2, 0, 0, 0, 0, 0, 0, 18, 0, -2),
@@ -130,11 +143,13 @@ point_count = 3
 
 [sub_resource type="PlaneMesh" id="ground_mesh"]
 size = Vector2(160, 160)
-subdivide_width = 8
-subdivide_depth = 8
+subdivide_width = 159
+subdivide_depth = 159
 
 [sub_resource type="PlaneMesh" id="ground_far_mesh"]
 size = Vector2(700, 700)
+subdivide_width = 233
+subdivide_depth = 233
 
 [sub_resource type="BoxShape3D" id="border_x"]
 size = Vector3(160, 8, 1)
@@ -159,8 +174,8 @@ environment = ExtResource("2_env")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.64978, 0.44050, -0.61947, -0.00000, 0.81497, 0.57951, 0.76012, -0.37655, 0.52955, 0, 20, 0)
-light_color = Color(1, 0.86, 0.66, 1)
-light_energy = 1.65
+light_color = Color(1, 0.82, 0.58, 1)
+light_energy = 1.85
 shadow_enabled = true
 shadow_bias = 0.04
 shadow_blur = 1.5
@@ -182,7 +197,7 @@ shape = SubResource("ground_shape")
 [node name="GroundFar" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0)
 mesh = SubResource("ground_far_mesh")
-surface_material_override/0 = ExtResource("3_ground")
+surface_material_override/0 = ExtResource("3_groundfar")
 
 [node name="Border" type="StaticBody3D" parent="NavigationRegion3D"]
 collision_mask = 0
@@ -205,7 +220,7 @@ shape = SubResource("border_z")
 
 [node name="Hills" type="Node3D" parent="NavigationRegion3D"]
 script = ExtResource("80_hills")
-hills = Array[Vector4]([Vector4(-44, -34, 11, 3), Vector4(42, -38, 10, 2), Vector4(-47, 34, 10, 3), Vector4(46, 28, 12, 3), Vector4(-64, -44, 18, 3), Vector4(-72, 6, 15, 3), Vector4(-60, 50, 20, 4), Vector4(-30, 72, 16, 3), Vector4(36, 70, 18, 3), Vector4(68, 40, 17, 3), Vector4(74, -10, 19, 4), Vector4(60, -58, 18, 3), Vector4(22, -74, 20, 3), Vector4(-24, -72, 17, 3), Vector4(-125, -60, 38, 4), Vector4(115, -105, 42, 5), Vector4(135, 40, 34, 3), Vector4(-135, 95, 32, 4), Vector4(20, 150, 40, 3), Vector4(-40, -150, 44, 5)])
+hills = Array[Vector4]([Vector4(-44, -34, 11, 3), Vector4(52, -40, 10, 2), Vector4(-47, 34, 10, 3), Vector4(56, 26, 12, 3), Vector4(-64, -44, 18, 3), Vector4(-72, 6, 15, 3), Vector4(-60, 50, 20, 4), Vector4(-30, 72, 16, 3), Vector4(60, 74, 18, 3), Vector4(68, 40, 17, 3), Vector4(90, -8, 19, 4), Vector4(60, -58, 18, 3), Vector4(2, -78, 20, 3), Vector4(-24, -72, 17, 3), Vector4(-125, -60, 38, 4), Vector4(115, -105, 42, 5), Vector4(135, 40, 34, 3), Vector4(-135, 95, 32, 4), Vector4(20, 150, 40, 3), Vector4(-40, -150, 44, 5)])
 side_material = ExtResource("79_clay")
 top_material = ExtResource("3_ground")
 
@@ -238,12 +253,6 @@ transform = Transform3D(-0.146, 0, 4.998, 0, 5, 0, -4.998, 0, -0.146, -7.2, 0, 1
 [node name="Bucket" parent="CampDressing" instance=ExtResource("75_bucket")]
 transform = Transform3D(5.000, 0, 0.000, 0, 5, 0, -0.000, 0, 5.000, 0.4, 0, 4.6)
 
-[node name="Rack" parent="CampDressing" instance=ExtResource("76_rack")]
-transform = Transform3D(-5.000, 0, 0.008, 0, 5, 0, -0.008, 0, -5.000, -2.6, 0, 13.4)
-
-[node name="Flag" parent="CampDressing" instance=ExtResource("77_flag")]
-transform = Transform3D(4.388, 0, 2.397, 0, 5, 0, -2.397, 0, 4.388, 3.2, 0, 4.4)
-
 [node name="Pallet" parent="CampDressing" instance=ExtResource("79_pallet")]
 transform = Transform3D(4.900, 0, 0.993, 0, 5, 0, -0.993, 0, 4.900, 7.6, 0, 7.2)
 
@@ -256,6 +265,8 @@ random_seed = 1
 curve = SubResource("f_road_w")
 script = ExtResource("76_fence")
 random_seed = 2
+gap_every = 9
+style = 1
 
 [node name="FenceFarmRoad" type="Path3D" parent="."]
 curve = SubResource("f_farm")
@@ -276,7 +287,13 @@ ground = NodePath("../NavigationRegion3D/Ground/Mesh")
 curve = SubResource("c_road_main")
 script = ExtResource("81_stroke")
 kind = 0
-width = 3.4
+width = 3.6
+
+[node name="VillageStreet" type="Path3D" parent="TerrainPainter"]
+curve = SubResource("c_village_street")
+script = ExtResource("81_stroke")
+kind = 1
+width = 3.6
 
 [node name="RoadEast" type="Path3D" parent="TerrainPainter"]
 curve = SubResource("c_road_east")
@@ -349,6 +366,26 @@ definition = ExtResource("20_pine")
 transform = Transform3D(-0.5885, 0, 0.8085, 0, 1, 0, -0.8085, 0, -0.5885, -18, 0, 1)
 script = ExtResource("13_resnode")
 definition = ExtResource("21_fir")
+
+[node name="Oak1" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.9211, 0, 0.3894, 0, 1, 0, -0.3894, 0, 0.9211, 16, 0, -14)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Oak2" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.5048, 0, 0.8632, 0, 1, 0, -0.8632, 0, -0.5048, 13, 0, 8)
+script = ExtResource("13_resnode")
+definition = ExtResource("21_fir")
+
+[node name="Oak3" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(-0.6536, 0, -0.7568, 0, 1, 0, 0.7568, 0, -0.6536, 13, 0, -20)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
+
+[node name="Oak5" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
+transform = Transform3D(0.4685, 0, -0.8835, 0, 1, 0, 0.8835, 0, 0.4685, 24, 0, -9)
+script = ExtResource("13_resnode")
+definition = ExtResource("20_pine")
 
 [node name="Pine5" type="StaticBody3D" parent="NavigationRegion3D/ResourceNodes"]
 transform = Transform3D(0.1700, 0, 0.9854, 0, 1, 0, -0.9854, 0, 0.1700, -20, 0, 7)
@@ -459,7 +496,42 @@ transform = Transform3D(0.94, 0, 0.34, 0, 1, 0, -0.34, 0, 0.94, 3.6, 0, 2.2)
 transform = Transform3D(0.87, 0, -0.5, 0, 1, 0, 0.5, 0, 0.87, -2.8, 0, 3.0)
 
 [node name="Well" parent="NavigationRegion3D" instance=ExtResource("92_well")]
-transform = Transform3D(0.8, 0, 0.6, 0, 1, 0, -0.6, 0, 0.8, -4.5, 0, 14.5)
+transform = Transform3D(0.8, 0, 0.6, 0, 1, 0, -0.6, 0, 0.8, -6.5, 0, 16)
+
+[node name="FarMountains" type="MeshInstance3D" parent="."]
+script = ExtResource("76_mountains")
+
+[node name="River" type="Node3D" parent="NavigationRegion3D"]
+script = ExtResource("75_river")
+points = PackedVector2Array(36, -220, 30, -120, 34, -76, 29, -50, 33, -24, 30, 0, 33, 22, 29, 46, 34, 76, 30, 130, 36, 220)
+ground_materials = Array[ShaderMaterial]([ExtResource("3_ground"), ExtResource("3_groundfar")])
+
+[node name="Hamlet" type="Node3D" parent="."]
+script = ExtResource("73_hamlet")
+houses = PackedFloat32Array(51, -22, -90, 33, 21, 51, -3, -90, 34, 20, 52, 14, -90, 33, 22, 60, -21, 0, 32, 11, 62, -3, 180, 43, 21, 63, 14, 180, 33, 22, 70, -22, 0, 33, 20, 71, 1, 180, 32, 11, 46, -36, -90, 33, 21)
+lanes = PackedVector2Array(45, -44, 45.5, -20, 44.5, 0, 45.5, 22, nan, nan, 45, -12, 58, -12.5, 76, -12, nan, nan, 45, 6, 60, 6.5, 76, 6)
+piers = PackedFloat32Array(26.5, 2, 90, 7, 34.5, -8, 90, 6, 37, 18, 90, 5)
+wharves = PackedFloat32Array(40.5, -3, 180, 24, 6)
+boats = PackedFloat32Array(28.5, -1.5, 15, 33, -11.5, 95, 31.5, 10, 160, 34.5, 21.5, 80)
+props = PackedFloat32Array(0, 23.5, 3.6, 0, 0, 24.2, 4.4, 30, 6, 22.8, 0.2, 90, 1, 23.3, -0.6, 10, 5, 48, -30, 90, 4, 47, 9, 90, 0, 56.5, -14, 0, 6, 57.5, -9.5, 20, 1, 48, -6.5, 0, 0, 65, 9, 0, 0, 65.6, 9.7, 0)
+ships = PackedFloat32Array(32, 64, 4, 0.3)
+trees = PackedFloat32Array(56, -30, 0, 10, 67, -30, 1, 9, 75, -14, 0, 11, 58, 22, 2, 10, 75, 16, 1, 9, 48, 26, 0, 9, 19, -18, 2, 11, 21, -26, 0, 9, 18, -38, 1, 10, 20, -52, 2, 12, 22, 44, 0, 10, 19, 54, 2, 11, 23, 62, 1, 9, 40, -24, 2, 10, 42, 30, 0, 9, 40, 40, 2, 11)
+
+[node name="AmbientFolk" type="Node3D" parent="."]
+script = ExtResource("75_folk")
+spots = PackedFloat32Array(40, -8, 3, 0, 39.3, 2, 0, 1, 40.6, 2.6, 0, 1, 40.5, -13, 2, 0, 45, -20, 6, 0, 45, 10, 6, 0, 52, -12.5, 5, 0, 58, -12, 0, 1, 59, -11, 0, 1, 45.5, -2, 4, 0)
+
+[node name="Gulls" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34, 0, 4)
+script = ExtResource("74_gulls")
+
+[node name="RoadsideClutter" type="Node3D" parent="."]
+script = ExtResource("72_clutter")
+
+[node name="DriftingLeaves" type="GPUParticles3D" parent="." node_paths=PackedStringArray("target", "sun")]
+script = ExtResource("71_leaves")
+target = NodePath("../Player")
+sun = NodePath("../Sun")
 
 [node name="SpawnPoint" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 6)

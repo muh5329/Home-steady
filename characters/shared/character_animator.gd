@@ -43,7 +43,7 @@ var _flash_time := 0.0
 var _flash_material: ShaderMaterial
 var _meshes: Array[MeshInstance3D] = []
 
-const FLASH_SHADER := preload("res://art/VFX/hit_flash.gdshader")
+const FLASH_SHADER := preload("res://art/vfx/hit_flash.gdshader")
 
 
 func _ready() -> void:

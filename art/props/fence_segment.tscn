@@ -1,8 +1,16 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Texture2D" path="res://art/third_party/ambientcg/Wood060/Wood060_Color.jpg" id="1_tex"]
+[ext_resource type="Texture2D" path="res://art/third_party/ambientcg/Wood060/Wood060_NormalGL.jpg" id="2_nor"]
 
 [sub_resource type="StandardMaterial3D" id="wood"]
-albedo_color = Color(0.56, 0.37, 0.22, 1)
+albedo_color = Color(0.62, 0.55, 0.48, 1)
+albedo_texture = ExtResource("1_tex")
+normal_enabled = true
+normal_texture = ExtResource("2_nor")
 roughness = 0.9
+uv1_scale = Vector3(1.4, 1.4, 1.4)
+uv1_triplanar = true
 
 [sub_resource type="BoxMesh" id="post"]
 material = SubResource("wood")

@@ -2,9 +2,9 @@ class_name SkyClouds
 extends Node3D
 ## A few big soft storybook clouds drifting slowly around the horizon.
 
-@export var count := 14
-@export var radius := Vector2(160.0, 300.0)
-@export var height := Vector2(55.0, 95.0)
+@export var count := 24
+@export var radius := Vector2(110.0, 240.0)
+@export var height := Vector2(32.0, 64.0)
 @export var scale_range := Vector2(18.0, 34.0)
 @export var drift_speed := 0.6
 @export var random_seed := 21

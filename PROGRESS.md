@@ -1,6 +1,6 @@
 # Gauntlet Progress
 
-Current phase: **Phase 9 — Settlement economy** (next)
+Current phase: **Isometric realism overhaul** (then Phase 9 — Settlement economy)
 Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (134 passing)
 
 ## Scoreboard
@@ -17,6 +17,56 @@ Engine: Godot 4.7.2 · Tests: `tools/run_tests.sh` (134 passing)
 | 8 (Phase 8b) | 7 | 7 | 7 | 5 | 7 | 6 | 7 |
 
 Scores are 0–10 against the *final* target, so early rounds are low by design.
+
+---
+
+## Isometric realism overhaul (new art target: `docs/art_target/iso/`)
+
+The user replaced the Fabledom target with semi-realistic isometric ARPG references (Ottoman town,
+riverside, harbour, Norse beach, jungle ruin) plus a Cat Quest overworld map for the map screen,
+and asked for "a near exact match to the visuals and characters". Decisions (asked): isometric
+camera by default; Cat Quest style only for the world map.
+
+| Area | Change |
+|---|---|
+| Camera | High isometric follow camera by default (arm 18 m, pitch ≈ -50°, FOV 36); wheel zooms down to the old over-the-shoulder view (pitch follows zoom, shoulder offset and spring collision only when close) |
+| Characters | Realistic-proportion humans from Quaternius CC0 modular characters (Universal Base Characters + Fantasy outfits + Universal Animation Library). `tools/build_humans` (Node, gltf-transform) assembles outfit + head + hair per character, tints hair, adds `handslot.r/.l` grip joints, and bakes one shared animation library whose clips carry the game's existing clip names (time-warped so strikes land in the old attack windows). `HumanModel` attaches the library at runtime. Fighter / Ranger / Wizard / peasants / noble; settlers pick a body variant by name. Undead (warrior, archer, minion, champion, necromancer) are grave-pale humans in mouldering clothes with glowing eyes, a shambling walk and rusted gear |
+| Weapons & tools | Procedural full-size sword, round shield, axes, crossbow, staff, pickaxe, sickle, hammer (`WeaponModel`) with photo-textured wood |
+| Ground | `realistic_ground.gdshader`: photographic CC0 meadow/grass/dirt/cobble/soil/sand (ambientCG + Poly Haven) with anti-tiling, height-aware cobble joints, a 4th painter channel for sand; building yards are cobbled |
+| Water | `River`: sinks the ground (vertex displacement from a baked depth mask), paints sandy banks, lays a water surface (depth-tinted turquoise, refraction, fresnel sky, sun glints, shore foam), walls off deep water; far ground carved to match |
+| Buildings | `KitHouse` assembles Quaternius Medieval Village MegaKit pieces (plaster/timber/uneven-brick walls, doors, windows, shutters, round-tile roofs, brick gables, chimneys, upper floors) — used by house, storehouse and blacksmith; kit houses fade when they hide the hero |
+| Set dressing | A riverside `Hamlet` across the river (kit houses, cobbled lanes, piers, rowing boats, props, trees); `RoadsideClutter`; dry-stone walls; procedural barrels, crates, sacks, logs, pallets, buckets, benches, piers, boats (`PropModel`); stone well; canvas ridge tents; kit wagon; the crypt entrance rebuilt as a vine-covered stone mausoleum |
+| Foliage | `FoliageCards`: alpha-cut photographic cards (Poly Haven scans) — crossed grass, dry grass, ferns, flowers; deciduous trees and shrubs whose lobed crowns are leaf-cluster cards around bark-textured limbs; edge-on cards cut away; boulders in photographed rock |
+| HUD | Reference layout: parchment quest ribbons (objectives from the world state) with a scroll emblem, round minimap in an iron ring (paint-mask map, buildings, settlers, foes), time-of-day tag, key-hint column, bottom action bar with health and guard orbs, weapon/ability slots and a readiness bar; Cinzel + EB Garamond (OFL) |
+| World map (M) | Cat Quest–style illustrated map drawn from the live world: bright greens, turquoise river, tan roads, mountains, forest clumps, house/tent/crypt icons, labels, drifting clouds, player pin, wheel zoom |
+
+Critic review of the first full capture: 4/10 (characters 4, environment 3, lighting 5, HUD 5);
+its top items (camera too far, leftover cartoon assets, blotchy ground, orange timber, sparse
+dressing, flat HUD) were addressed in the second pass above.
+
+**Pass 3 — Poly Haven scans through Blender.** With Blender open on the user's Mac, CC0 Poly Haven
+models and textures were downloaded there (the Mac can reach polyhaven.com; the container can't),
+reduced in Blender (leaf islands thinned and grown so crowns stay full at ~80k tris; bushes cut to
+~25k) and staged across. `PHModels` loads them as shared parts (nodes, chunked MultiMeshes with
+LODs, or flattened meshes) and fixes leaf materials (alpha scissor, backlight, sunlit tint).
+Scanned broadleaf trees (choppable trees, hamlet, forest edge, hilltops, meadow), mossy boulders,
+stumps, fallen trunks, ferns, stone fire pit, oak barrels, crates, a modular pier, a moored
+pinnace; flagstone roads (grassy_cobblestone, worn patches), forest-floor dirt, coast sand, leafy
+meadow; weathered brown or faded red clay roofs; grassy river banks down to a milky water line;
+a cargo wharf, gulls, crypt ruin banked into a mossy outcrop; the map is a full-screen island in
+a bright sea with ribbon labels. Critic: 5.5/10 (env 3 → 5.5).
+
+**Pass 4 — density and polish.** Camera 18 m; smaller setts with dark joints; calmer meadow;
+denser roadside dressing and crypt rubble; scanned bushes; meadow oaks; small nameplates; health
+bars only while hurt; dark-glass orbs; coarser tent canvas.
+
+**Passes 5–7.** Golden sun and warm haze; fuller scanned bushes; red/brown roof mix with
+balconies, planters, barrels and lanterns at doors; camera pitch -43; the world map drawn into a
+SubViewport and tilted in perspective (horizon haze, lakes, river to the sea, ribbon labels);
+townsfolk (`AmbientFolk`) strolling and chatting on the quay and lanes; a soft ground ring under
+the hero; per-villager cloth dye; bleached quay planks with a cargo hoist; clearer jade water; the
+HUD no longer gets the lens fringe; dirt main road with a cobbled village street. Critic after
+pass 6: 6.5/10 (characters 5, environment 6.5, lighting 7, HUD 7, map 5). Captures: `i14_*`.
 
 ---
 
@@ -83,6 +133,19 @@ Captures: `docs/rounds/visual_04/`.
 | Pines hiding the hero; stipple on flowers | Occlusion dissolve widened (1.8–3.4 m from the view line) but only for foliage above chest height or in the near half of the view; near-lens fade 0.8–1.8 m; nameplate activity within 4 m |
 
 Captures: `docs/rounds/visual_05/` (`pass6_vs_pass8.jpg` is a before/after).
+
+### Visual gauntlet — pass 9 (visual critic re-score: pass 8 = 8/10)
+
+| Largest discrepancies | Fix |
+|---|---|
+| Hero unreadable in shade; loud plastic cape | Hero fill light on its own visual layer (lights only the player); character textures regraded with soft brick reds (`StorybookPalette.apply(…, cloth = true)`) |
+| Dissolving bushes looked hollow | Closed foliage (bushes, boulders) uses a solid-interior material: inside faces render as deep shade |
+| Village one warm beige | Palette reworked in sRGB: roofs saturated orange (#D4602A), doors/shutters teal (#3F8C8A), per-building plaster (ochre / cream / pale pink, stable per spot), stone slightly darker so chimneys recede |
+| Well cluttering spawn; faceted tent with black door | Well moved west of the camp; bell tent 32-sided with paired stripes, dark-brown doorway |
+| Cheddar cliffs, empty sky | Rustier strata with a darker foot per tier; 24 lower clouds; a ring of distant blue mountains (`FarMountains`); sky less fogged |
+| Hard-faceted pines | Bough normals point up at the tip and out at the rim (smooth cones), slightly warmer greens |
+
+Captures: `docs/rounds/visual_06/` (`overhaul_summary.jpg`: Fabledom reference vs ours, and the start of the overhaul vs now).
 
 The visual capture test takes `VISUAL_VIEWS` (e.g. `56`) to render a subset, and adds a sixth
 view close on the farm.

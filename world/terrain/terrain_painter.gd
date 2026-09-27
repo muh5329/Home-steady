@@ -31,14 +31,14 @@ func bake() -> void:
 	_w = int(rect.size.x * pixels_per_metre)
 	_h = int(rect.size.y * pixels_per_metre)
 	_channels = []
-	for i in 3:
+	for i in 4:
 		var c := PackedFloat32Array()
 		c.resize(_w * _h)
 		_channels.append(c)
 	for child in get_children():
 		if child is PaintStroke:
 			_rasterize(child)
-	_image = Image.create(_w, _h, false, Image.FORMAT_RGB8)
+	_image = Image.create(_w, _h, false, Image.FORMAT_RGBA8)
 	_write_pixels(Rect2i(0, 0, _w, _h))
 	_texture = ImageTexture.create_from_image(_image)
 	if ground and ground.material_override is ShaderMaterial:
@@ -93,7 +93,7 @@ func _write_pixels(r: Rect2i) -> void:
 	for y in range(r.position.y, r.end.y):
 		for x in range(r.position.x, r.end.x):
 			var i := y * _w + x
-			_image.set_pixel(x, y, Color(_channels[0][i], _channels[1][i], _channels[2][i]))
+			_image.set_pixel(x, y, Color(_channels[0][i], _channels[1][i], _channels[2][i], _channels[3][i]))
 
 
 ## 0..1 coverage of paths/plazas/fields at a world position (max channel).
@@ -103,21 +103,45 @@ func coverage(pos: Vector3) -> float:
 	if x < 0 or y < 0 or x >= _w or y >= _h:
 		return 0.0
 	var i := y * _w + x
-	return maxf(_channels[0][i], maxf(_channels[1][i], _channels[2][i]))
+	return maxf(maxf(_channels[0][i], _channels[3][i]), maxf(_channels[1][i], _channels[2][i]))
 
 
 func _rasterize(stroke: PaintStroke) -> void:
-	var points := stroke.curve.get_baked_points()
+	var baked := stroke.curve.get_baked_points()
+	var pts := PackedVector2Array()
+	for p in baked:
+		var g := stroke.to_global(p)
+		pts.append(Vector2(g.x, g.z))
+	_raster_polyline(pts, stroke.width * 0.5, _channels[int(stroke.kind)])
+
+
+## Paints a band `width` wide along world-space (x, z) points and updates
+## the ground right away (rivers paint their sandy banks this way).
+func paint_polyline(points: PackedVector2Array, width: float, kind := PaintStroke.Kind.SAND) -> void:
+	if _image == null:
+		return
+	_raster_polyline(points, width * 0.5, _channels[int(kind)])
+	var lo := Vector2(INF, INF)
+	var hi := Vector2(-INF, -INF)
+	for p in points:
+		lo = lo.min(p)
+		hi = hi.max(p)
+	var reach := width * 0.5 + 2.0
+	var x0 := clampi(int((lo.x - reach - rect.position.x) * pixels_per_metre), 0, _w - 1)
+	var x1 := clampi(int((hi.x + reach - rect.position.x) * pixels_per_metre), 0, _w - 1)
+	var y0 := clampi(int((lo.y - reach - rect.position.y) * pixels_per_metre), 0, _h - 1)
+	var y1 := clampi(int((hi.y + reach - rect.position.y) * pixels_per_metre), 0, _h - 1)
+	_write_pixels(Rect2i(x0, y0, x1 - x0 + 1, y1 - y0 + 1))
+	_texture.update(_image)
+
+
+func _raster_polyline(points: PackedVector2Array, half: float, channel: PackedFloat32Array) -> void:
 	if points.size() < 2:
 		return
-	var channel := _channels[int(stroke.kind)]
-	var half := stroke.width * 0.5
 	var reach := half + 1.5
 	for s in points.size() - 1:
-		var a := stroke.to_global(points[s])
-		var b := stroke.to_global(points[s + 1])
-		var a2 := Vector2(a.x, a.z)
-		var b2 := Vector2(b.x, b.z)
+		var a2 := points[s]
+		var b2 := points[s + 1]
 		var lo := Vector2(minf(a2.x, b2.x), minf(a2.y, b2.y)) - Vector2(reach, reach)
 		var hi := Vector2(maxf(a2.x, b2.x), maxf(a2.y, b2.y)) + Vector2(reach, reach)
 		var x0 := maxi(int((lo.x - rect.position.x) * pixels_per_metre), 0)

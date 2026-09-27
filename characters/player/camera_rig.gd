@@ -1,19 +1,27 @@
 class_name CameraRig
 extends Node3D
-## Third-person orbit camera: follows a target with light smoothing,
-## yaw/pitch from mouse or right stick, spring-arm collision, zoom and
-## trauma-based screen shake.
+## Follow camera: a high isometric view by default (like classic ARPGs),
+## zooming in toward an over-the-shoulder third-person view. Yaw from mouse
+## or right stick, pitch follows the zoom level (and can be nudged with
+## the stick), spring-arm collision close in, trauma-based screen shake.
 
 @export var target: Node3D
-@export var height := 1.55
+@export var height := 1.2
 @export var follow_sharpness := 14.0
 @export var mouse_sensitivity := 0.0025
 @export var stick_sensitivity := 2.6
 @export var min_pitch := -70.0
 @export var max_pitch := 35.0
-@export var min_distance := 2.5
-@export var max_distance := 8.0
-@export var distance := 5.6
+@export var min_distance := 3.5
+@export var max_distance := 45.0
+@export var distance := 18.0
+## Pitch at the far and near ends of the zoom range: far = isometric
+## overview, near = third person.
+@export var far_pitch := -43.0
+@export var near_pitch := -22.0
+## Beyond this arm length the view is "isometric": no over-the-shoulder
+## offset and no spring collision (it would snap in under every roof).
+@export var isometric_distance := 9.0
 ## Added to `distance` by gameplay (e.g. carrying a big load).
 var extra_distance := 0.0
 ## Interiors lower the highest allowed pitch (look down more) so the arm
@@ -23,7 +31,7 @@ var max_pitch_override := INF
 var aiming := false
 @export var aim_distance := 2.3
 @export var aim_shoulder_offset := 0.95
-@export var aim_fov := 48.0
+@export var aim_fov := 36.0
 var _base_fov := 62.0
 ## Over-the-shoulder offset keeps the target visible past the character.
 @export var shoulder_offset := 0.6
@@ -36,7 +44,7 @@ var _base_fov := 62.0
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
 
 var yaw := 0.0
-var pitch := -24.0
+var pitch := -43.0
 var _trauma := 0.0
 var _noise := FastNoiseLite.new()
 var _noise_t := 0.0
@@ -62,12 +70,25 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	if event is InputEventMouseMotion:
 		yaw -= rad_to_deg(event.relative.x * mouse_sensitivity)
-		pitch -= rad_to_deg(event.relative.y * mouse_sensitivity)
+		# High up the pitch is set by the zoom; close in, the mouse tilts too.
+		if not is_isometric() or aiming:
+			pitch -= rad_to_deg(event.relative.y * mouse_sensitivity)
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			distance = maxf(distance - 0.4, min_distance)
+			zoom_to(distance - 1.0)
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-			distance = minf(distance + 0.4, max_distance)
+			zoom_to(distance + 1.0)
+
+
+## Sets the arm length and the pitch that goes with it.
+func zoom_to(d: float) -> void:
+	distance = clampf(d, min_distance, max_distance)
+	var t := inverse_lerp(min_distance, 18.0, distance)
+	pitch = lerpf(near_pitch, far_pitch, clampf(t, 0.0, 1.0)) - maxf(distance - 18.0, 0.0) * 0.15
+
+
+func is_isometric() -> bool:
+	return not aiming and distance + extra_distance >= isometric_distance
 
 
 ## Screen shake. Amount accumulates and decays; 1.0 is a big hit.
@@ -102,7 +123,9 @@ func _process(delta: float) -> void:
 	var goal_length := aim_distance if aiming else distance + extra_distance
 	spring_arm.spring_length = lerpf(spring_arm.spring_length, goal_length, 1.0 - exp(-8.0 * delta))
 	camera.fov = lerpf(camera.fov, aim_fov if aiming else _base_fov, 1.0 - exp(-10.0 * delta))
-	_shoulder = lerpf(_shoulder, aim_shoulder_offset if aiming else shoulder_offset, 1.0 - exp(-10.0 * delta))
+	var shoulder_goal := aim_shoulder_offset if aiming else (0.0 if is_isometric() else shoulder_offset)
+	_shoulder = lerpf(_shoulder, shoulder_goal, 1.0 - exp(-10.0 * delta))
+	spring_arm.collision_mask = 0 if is_isometric() else 1
 	_apply_rotation()
 	_apply_shake(delta)
 	_update_body_fade()

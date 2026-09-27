@@ -1,0 +1,76 @@
+{
+  "slug": "wooden_crate_01",
+  "name": "Wooden Crate 01",
+  "intended_use": "Shop/garage storage and cover prop.",
+  "source_page": "https://polyhaven.com/a/wooden_crate_01",
+  "provider": "Poly Haven",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "authors": {
+    "James Ray Cock": "All"
+  },
+  "category": "Containers & Storage/Boxes & Crates/Wooden Crates",
+  "tags": [
+    "vintage",
+    "wood",
+    "old",
+    "wooden",
+    "fancy",
+    "colonial",
+    "chest",
+    "box",
+    "prop",
+    "antique",
+    "farmhouse",
+    "crate",
+    "maritime",
+    "commercial",
+    "container"
+  ],
+  "dimensions_mm": [
+    825.2729177474976,
+    408.9537411928177,
+    349.6182831004262
+  ],
+  "files_hash": "1ac5d053ce4c72e3fbb4c3065e7979522bf1908e",
+  "format": "fbx",
+  "resolution": "1k",
+  "primary_path": "SourceAssets/Models/PolyHaven/wooden_crate_01/wooden_crate_01_1k.fbx",
+  "files": [
+    {
+      "path": "SourceAssets/Models/PolyHaven/wooden_crate_01/wooden_crate_01_1k.fbx",
+      "bytes": 199452,
+      "md5": "dc7dbd40057984947887bdb2d85a511f",
+      "sha256": "ec345cfafc1cbea85a4a181b259c8f62975b527e3b604d53dcaa9f6373744216",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/1k/wooden_crate_01/wooden_crate_01_1k.fbx"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/wooden_crate_01/textures/wooden_crate_01_diff_1k.jpg",
+      "bytes": 711292,
+      "md5": "266e0462d06e77c5745f66e89820544f",
+      "sha256": "16653f4abaf4c1d9bca94bde3bd8c54d0ea9a5298d1648abcf57de1f7ecc34cc",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/wooden_crate_01/wooden_crate_01_diff_1k.jpg"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/wooden_crate_01/textures/wooden_crate_01_metal_1k.exr",
+      "bytes": 55934,
+      "md5": "3af06f4aaa67aedfb83bbacbf10da52c",
+      "sha256": "6e67cbd6c307d27e7093fc2025784d9ade22c25dfffff35e440af6532b10ed43",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/wooden_crate_01/wooden_crate_01_metal_1k.exr"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/wooden_crate_01/textures/wooden_crate_01_nor_gl_1k.exr",
+      "bytes": 1340062,
+      "md5": "efdaa82c290404c056522985d104fc90",
+      "sha256": "838e29688700e86a8aee8eb1253f55860e7603e8181ca76447fd5fcd39969395",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/wooden_crate_01/wooden_crate_01_nor_gl_1k.exr"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/wooden_crate_01/textures/wooden_crate_01_rough_1k.exr",
+      "bytes": 689186,
+      "md5": "c0ef08246cb948880e0b3eade3423f91",
+      "sha256": "66626b45b5c8ec24aad55f36da5b82443508a93ddef774a134bc52e76a87de17",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/wooden_crate_01/wooden_crate_01_rough_1k.exr"
+    }
+  ]
+}

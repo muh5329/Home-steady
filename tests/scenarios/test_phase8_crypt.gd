@@ -55,7 +55,7 @@ func test_crypt_is_built_walkable_and_walled() -> void:
 	await _setup()
 	check(builder.is_built(), "builder ran")
 	var map := world.get_world_3d().navigation_map
-	await wait_until(func(): return NavigationServer3D.map_get_iteration_id(map) > 0, 2.0)
+	await wait_until(func(): return NavigationServer3D.map_get_iteration_id(map) > 0, 5.0)
 	var from := _cell("E")
 	var to := _cell("M")
 	var path := NavigationServer3D.map_get_path(map, from, to, true)

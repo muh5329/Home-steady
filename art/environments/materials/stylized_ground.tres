@@ -1,6 +1,19 @@
-[gd_resource type="ShaderMaterial" load_steps=6 format=3]
+[gd_resource type="ShaderMaterial" load_steps=20 format=3]
 
-[ext_resource type="Shader" path="res://art/environments/materials/stylized_ground.gdshader" id="1_shader"]
+[ext_resource type="Shader" path="res://art/environments/materials/realistic_ground.gdshader" id="1_shader"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/leafy_grass_diff.jpg" id="2_mc"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/leafy_grass_nor_gl.jpg" id="3_mn"]
+[ext_resource type="Texture2D" path="res://art/third_party/ambientcg/Grass001/Grass001_Color.jpg" id="4_gc"]
+[ext_resource type="Texture2D" path="res://art/third_party/ambientcg/Grass001/Grass001_NormalGL.jpg" id="5_gn"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/forest_ground_04_diff.jpg" id="6_dc"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/forest_ground_04_nor_gl.jpg" id="7_dn"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/grassy_cobblestone_diff.jpg" id="8_cc"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/grassy_cobblestone_nor_gl.jpg" id="9_cn"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/grassy_cobblestone_ao.jpg" id="10_ca"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/mudfield_diff.jpg" id="11_sc"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/mudfield_nor.jpg" id="12_sn"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/coast_sand_01_diff.jpg" id="13_ac"]
+[ext_resource type="Texture2D" path="res://art/third_party/polyhaven/tex/coast_sand_01_nor_gl.jpg" id="14_an"]
 
 [sub_resource type="FastNoiseLite" id="noise_l"]
 frequency = 0.02
@@ -26,3 +39,16 @@ render_priority = 0
 shader = ExtResource("1_shader")
 shader_parameter/noise_large = SubResource("tex_l")
 shader_parameter/noise_small = SubResource("tex_s")
+shader_parameter/meadow_albedo = ExtResource("2_mc")
+shader_parameter/meadow_normal = ExtResource("3_mn")
+shader_parameter/grass_albedo = ExtResource("4_gc")
+shader_parameter/grass_normal = ExtResource("5_gn")
+shader_parameter/dirt_albedo = ExtResource("6_dc")
+shader_parameter/dirt_normal = ExtResource("7_dn")
+shader_parameter/cobble_albedo = ExtResource("8_cc")
+shader_parameter/cobble_normal = ExtResource("9_cn")
+shader_parameter/cobble_ao = ExtResource("10_ca")
+shader_parameter/soil_albedo = ExtResource("11_sc")
+shader_parameter/soil_normal = ExtResource("12_sn")
+shader_parameter/sand_albedo = ExtResource("13_ac")
+shader_parameter/sand_normal = ExtResource("14_an")

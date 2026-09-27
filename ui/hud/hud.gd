@@ -6,14 +6,15 @@ extends CanvasLayer
 
 @export var player: Player
 
-var _health_bar: ProgressBar
-var _health_label: Label
+var _action_bar: ActionBar
+var _minimap: Minimap
+var _quest_title: Label
+var _objectives: VBoxContainer
 var _prompt: Label
 var _controls: Label
 var _banner: Label
 var _resources: Label
 var _title: Label
-var _ability: Label
 var _reticle: Label
 var _party_box: VBoxContainer
 var _party_rows: Array[Dictionary] = []  # {member, bar, status}
@@ -24,8 +25,14 @@ var _boss_bar: ProgressBar
 var _boss: Node
 
 
+var world_map: WorldMap
+
+
 func _ready() -> void:
 	_build()
+	world_map = WorldMap.new()
+	world_map.name = "WorldMap"
+	add_child(world_map)
 	if player == null:
 		player = get_tree().get_first_node_in_group(Player.GROUP) as Player
 	if player:
@@ -73,14 +80,12 @@ func _refresh_resources() -> void:
 	if settlement == null:
 		return
 	var totals := settlement.totals()
-	var lines: PackedStringArray = ["Settlement",
-		"  Settlers  %d   Beds  %d" % [settlement.settler_count(), settlement.beds()],
-		"Stores"]
-	if totals.is_empty():
-		lines.append("  (nothing stored yet)")
+	var lines: PackedStringArray = ["Settlers %d   ·   Beds %d" % [settlement.settler_count(), settlement.beds()]]
+	var stock: PackedStringArray = []
 	for id in totals:
 		var data := DataRegistry.get_data(id) as ItemData
-		lines.append("  %s  %d" % [data.display_name if data else String(id), totals[id]])
+		stock.append("%s %d" % [data.display_name if data else String(id), totals[id]])
+	lines.append("   ·   ".join(stock) if not stock.is_empty() else "Stores empty")
 	_resources.text = "\n".join(lines)
 
 
@@ -89,6 +94,7 @@ func _process(delta: float) -> void:
 	if _resource_timer <= 0.0:
 		_resource_timer = 1.0
 		_refresh_resources()
+		_refresh_objectives()
 	_update_party()
 	_update_boss()
 	if player:
@@ -98,13 +104,65 @@ func _process(delta: float) -> void:
 			var locked := player.controller.has_assist_target()
 			_reticle.text = "( + )" if locked else "+"
 			_reticle.add_theme_color_override(&"font_color", Color(1, 0.45, 0.35) if locked else Color(1, 1, 1, 0.85))
-	if player == null or player.abilities.abilities.is_empty():
-		_ability.text = ""
+	_update_action_bar()
+
+
+## Weapon and ability slots, guard orb and the readiness bar.
+func _update_action_bar() -> void:
+	if player == null or _action_bar == null:
 		return
-	var a := player.abilities.abilities[0]
-	var cd := player.abilities.cooldown_left(0)
-	_ability.text = "[Q] %s   %s" % [a.display_name, "ready" if cd <= 0.0 else "%.0fs" % ceilf(cd)]
-	_ability.add_theme_color_override(&"font_color", Color(0.75, 1.0, 0.75) if cd <= 0.0 else Color(0.7, 0.7, 0.7))
+	var weapon := player.equipment.weapon if player.equipment else null
+	var wglyph := ""
+	if weapon:
+		var id := String(weapon.id)
+		wglyph = "bow" if id.contains("crossbow") or id.contains("bow") else ("staff" if id.contains("staff") else ("axe" if id.contains("axe") else "sword"))
+	var slots: Array[Dictionary] = [{"glyph": wglyph, "ready": true}, {}, {}, {}]
+	var readiness := 1.0
+	if not player.abilities.abilities.is_empty():
+		var a := player.abilities.abilities[0]
+		var cd := player.abilities.cooldown_left(0)
+		var total := maxf(a.cooldown, 0.01)
+		var aid := String(a.id)
+		var glyph := "shield" if aid.contains("bash") else ("volley" if aid.contains("volley") else ("nova" if aid.contains("nova") else a.display_name))
+		slots[1] = {"glyph": glyph, "ready": cd <= 0.0, "cooldown": clampf(cd / total, 0.0, 1.0)}
+		readiness = 1.0 - clampf(cd / total, 0.0, 1.0)
+	_action_bar.slots = slots
+	_action_bar.progress = readiness
+	var combat := player.combat
+	_action_bar.guard = combat.poise / maxf(combat.max_poise, 1.0)
+	_action_bar.guard_text = "%d" % ceili(combat.poise)
+
+
+## Objectives for the current chapter, from the state of the world.
+func _refresh_objectives() -> void:
+	if _objectives == null:
+		return
+	var goals: Array = []
+	var has_house := false
+	var has_smithy := false
+	for reg in get_tree().get_nodes_in_group(BuildingRegistry.GROUP):
+		for b in reg.get_children():
+			if b is Building and b.definition:
+				has_house = has_house or b.definition.id == &"building.house"
+				has_smithy = has_smithy or b.definition.id == &"building.blacksmith"
+	var crypt_cleared := Progression.is_unlocked(&"building.blacksmith")
+	if not has_house:
+		goals.append("Build a house for your settlers")
+	if not crypt_cleared:
+		goals.append("Clear the Abandoned Crypt to the north")
+	elif not has_smithy:
+		goals.append("Raise a Blacksmith with the Forge Rune")
+	if goals.is_empty():
+		goals.append("Grow the settlement")
+	var labels := _objectives.get_children()
+	for i in maxi(goals.size(), labels.size()):
+		if i >= goals.size():
+			labels[i].queue_free()
+			continue
+		if i < labels.size():
+			(labels[i].get_child(0) as Label).text = goals[i]
+		else:
+			_objectives.add_child(_ribbon(goals[i], 15, false))
 
 
 # --- boss bar & unlocks --------------------------------------------------------------
@@ -182,9 +240,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _on_health_changed(current: float, maximum: float) -> void:
-	_health_bar.max_value = maximum
-	_health_bar.value = current
-	_health_label.text = "%d / %d" % [ceili(current), maximum]
+	_action_bar.health = current / maxf(maximum, 1.0)
+	_action_bar.health_text = "%d" % ceili(current)
 
 
 func _on_focus_changed(_target: Interactable) -> void:
@@ -218,60 +275,125 @@ func _build() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
-	var panel := PanelContainer.new()
-	panel.position = Vector2(24, 24)
-	panel.add_theme_stylebox_override(&"panel", _box(Color(0.08, 0.07, 0.06, 0.55), 6))
-	root.add_child(panel)
-	var col := VBoxContainer.new()
-	panel.add_child(col)
-	_title = _label("Adventurer", 16, Color(0.95, 0.88, 0.7))
-	col.add_child(_title)
-	_health_bar = ProgressBar.new()
-	_health_bar.custom_minimum_size = Vector2(260, 18)
-	_health_bar.show_percentage = false
-	_health_bar.add_theme_stylebox_override(&"background", _box(Color(0.15, 0.05, 0.05, 0.9), 3))
-	_health_bar.add_theme_stylebox_override(&"fill", _box(Color(0.78, 0.16, 0.12), 3))
-	col.add_child(_health_bar)
-	_health_label = _label("", 13, Color(0.9, 0.9, 0.9))
-	col.add_child(_health_label)
-	_ability = _label("", 15, Color(0.75, 1.0, 0.75))
-	col.add_child(_ability)
+	# Quest tracker: a title ribbon and objective ribbons (top left).
+	var quest := VBoxContainer.new()
+	quest.position = Vector2(0, 26)
+	quest.add_theme_constant_override(&"separation", 6)
+	quest.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(quest)
+	var title_ribbon := _ribbon("A Home in the Valley", 19, true)
+	_quest_title = title_ribbon.get_child(0) as Label
+	var title_row := HBoxContainer.new()
+	title_row.add_theme_constant_override(&"separation", -18)
+	title_row.add_child(title_ribbon)
+	var scroll := _SunBadge.new()
+	scroll.custom_minimum_size = Vector2(36, 36)
+	scroll.set_script(load("res://ui/hud/scroll_badge.gd"))
+	title_row.add_child(scroll)
+	quest.add_child(title_row)
+	_objectives = VBoxContainer.new()
+	_objectives.add_theme_constant_override(&"separation", 5)
+	quest.add_child(_objectives)
 	_party_box = VBoxContainer.new()
 	_party_box.add_theme_constant_override(&"separation", 6)
 	_party_box.visible = false
-	col.add_child(_party_box)
+	var party_margin := MarginContainer.new()
+	party_margin.add_theme_constant_override(&"margin_left", 18)
+	party_margin.add_child(_party_box)
+	quest.add_child(party_margin)
+
+	# Minimap and settlement line (top right).
+	var right_top := VBoxContainer.new()
+	right_top.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	right_top.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	right_top.offset_left = -300
+	right_top.offset_right = -18
+	right_top.offset_top = 12
+	right_top.alignment = BoxContainer.ALIGNMENT_BEGIN
+	right_top.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(right_top)
+	var map_row := HBoxContainer.new()
+	map_row.alignment = BoxContainer.ALIGNMENT_END
+	map_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	right_top.add_child(map_row)
+	# Time of day, like the references' "Sunrise" tag.
+	var tod := PanelContainer.new()
+	var tsb := StyleBoxFlat.new()
+	tsb.bg_color = Color(0.94, 0.93, 0.9, 0.95)
+	tsb.content_margin_left = 8
+	tsb.content_margin_right = 26
+	tsb.content_margin_top = 1
+	tsb.content_margin_bottom = 1
+	tod.add_theme_stylebox_override(&"panel", tsb)
+	tod.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	tod.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var tod_label := Label.new()
+	tod_label.text = "Afternoon"
+	tod_label.add_theme_font_override(&"font", load("res://art/fonts/EBGaramond-SemiBold.woff2"))
+	tod_label.add_theme_font_size_override(&"font_size", 15)
+	tod_label.add_theme_color_override(&"font_color", Color(0.1, 0.09, 0.08))
+	tod.add_child(tod_label)
+	var sun := _SunBadge.new()
+	sun.custom_minimum_size = Vector2(34, 34)
+	sun.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+	var tod_box := HBoxContainer.new()
+	tod_box.add_theme_constant_override(&"separation", -14)
+	tod_box.add_child(tod)
+	tod_box.add_child(sun)
+	var tod_margin := MarginContainer.new()
+	tod_margin.add_theme_constant_override(&"margin_top", 62)
+	tod_margin.add_child(tod_box)
+	map_row.add_child(tod_margin)
+	_minimap = Minimap.new()
+	map_row.add_child(_minimap)
+	_resources = _label("", 14, Color(0.96, 0.94, 0.88))
+	_resources.add_theme_font_override(&"font", load("res://art/fonts/EBGaramond-SemiBold.woff2"))
+	_resources.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_resources.autowrap_mode = TextServer.AUTOWRAP_WORD
+	_resources.custom_minimum_size = Vector2(280, 0)
+	right_top.add_child(_resources)
+
+	# Key hints (right side), toggled with H.
+	_controls = _label("", 1, Color.WHITE)  # visibility flag holder
+	var hints := VBoxContainer.new()
+	hints.set_anchors_preset(Control.PRESET_CENTER_RIGHT)
+	hints.grow_horizontal = Control.GROW_DIRECTION_BEGIN
+	hints.offset_left = -260
+	hints.offset_right = -18
+	hints.offset_top = -40
+	hints.add_theme_constant_override(&"separation", 4)
+	hints.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	root.add_child(hints)
+	for pair in [["Attack", "LMB"], ["Heavy Attack", "F"], ["Block / Aim", "RMB"], ["Ability", "Q"],
+			["Interact", "E"], ["Dodge", "CTRL"], ["Sprint", "SHIFT"], ["Jump", "SPACE"],
+			["Build", "B"], ["Party Orders", "T"], ["Zoom", "WHEEL"], ["Hide Hints", "H"]]:
+		hints.add_child(_hint_row(pair[0], pair[1]))
+	hints.add_child(_controls)
+	_controls.visible = true
+	_controls.visibility_changed.connect(func(): hints.modulate.a = 1.0 if _controls.visible else 0.0)
+
+	# Action bar with orbs (bottom centre).
+	_action_bar = ActionBar.new()
+	root.add_child(_action_bar)
+	_action_bar.size = _action_bar.custom_minimum_size
+	_title = _label("Adventurer", 15, Color(0.95, 0.88, 0.7))
+	_title.add_theme_font_override(&"font", load("res://art/fonts/Cinzel-Bold.woff2"))
+	_title.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
+	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_title.position = Vector2(-150, -_action_bar.size.y - 22)
+	_title.size = Vector2(300, 22)
+	root.add_child(_title)
+	# The references carry no class caption over the bar; the name stays
+	# available (tests, tooltips) but is not drawn.
+	_title.visible = false
 
 	_prompt = _label("", 22, Color(1, 0.96, 0.85))
+	_prompt.add_theme_font_override(&"font", load("res://art/fonts/EBGaramond-SemiBold.woff2"))
 	_prompt.set_anchors_preset(Control.PRESET_CENTER_BOTTOM)
 	_prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_prompt.position = Vector2(-300, -150)
+	_prompt.position = Vector2(-300, -_action_bar.size.y - 64)
 	_prompt.size = Vector2(600, 40)
 	root.add_child(_prompt)
-
-	_controls = _label(
-		"WASD move   Shift sprint   Alt walk   Space jump   Ctrl/C dodge\n" +
-		"LMB attack/shoot   F heavy   RMB block (aim for ranged)   Q ability   E interact/talk   G drop   T party hold/follow\n" +
-		"B build   R rotate   X cancel site (in build mode)   F5 save   F9 load   F3 debug   H hide help", 14, Color(0.92, 0.92, 0.88, 0.85))
-	var help := PanelContainer.new()
-	help.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	help.grow_vertical = Control.GROW_DIRECTION_BEGIN
-	help.offset_left = 16
-	help.offset_top = -16
-	help.offset_bottom = -16
-	help.add_theme_stylebox_override(&"panel", _box(Color(0.08, 0.07, 0.06, 0.55), 6))
-	help.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	help.add_child(_controls)
-	root.add_child(help)
-	_controls.visibility_changed.connect(func(): help.visible = _controls.visible)
-
-	var res_panel := PanelContainer.new()
-	res_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	res_panel.position = Vector2(-230, 24)
-	res_panel.custom_minimum_size = Vector2(206, 0)
-	res_panel.add_theme_stylebox_override(&"panel", _box(Color(0.08, 0.07, 0.06, 0.55), 6))
-	root.add_child(res_panel)
-	_resources = _label("", 15, Color(0.95, 0.9, 0.78))
-	res_panel.add_child(_resources)
 
 	_reticle = _label("+", 26, Color(1, 1, 1, 0.85))
 	_reticle.set_anchors_preset(Control.PRESET_CENTER)
@@ -289,6 +411,7 @@ func _build() -> void:
 	_boss_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_boss_panel.visible = false
 	_boss_name = _label("", 22, Color(0.9, 0.78, 1.0))
+	_boss_name.add_theme_font_override(&"font", load("res://art/fonts/Cinzel-Bold.woff2"))
 	_boss_name.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_boss_panel.add_child(_boss_name)
 	_boss_bar = ProgressBar.new()
@@ -299,13 +422,78 @@ func _build() -> void:
 	_boss_panel.add_child(_boss_bar)
 	root.add_child(_boss_panel)
 
-	_banner = _label("", 48, Color(0.95, 0.3, 0.2))
+	_banner = _label("", 44, Color(0.95, 0.3, 0.2))
+	_banner.add_theme_font_override(&"font", load("res://art/fonts/Cinzel-Bold.woff2"))
 	_banner.set_anchors_preset(Control.PRESET_CENTER)
 	_banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_banner.position = Vector2(-400, -60)
-	_banner.size = Vector2(800, 80)
+	_banner.position = Vector2(-500, -60)
+	_banner.size = Vector2(1000, 80)
 	_banner.visible = false
 	root.add_child(_banner)
+	_refresh_objectives.call_deferred()
+
+
+## A parchment ribbon with dark serif text (quest tracker).
+func _ribbon(text: String, font_size: int, title: bool) -> PanelContainer:
+	var p := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.95, 0.94, 0.9, 0.96) if title else Color(0.93, 0.92, 0.88, 0.92)
+	sb.skew = Vector2(-0.18, 0)
+	sb.border_width_bottom = 2
+	sb.border_color = Color(0.55, 0.5, 0.42, 0.9)
+	sb.content_margin_left = 30 if title else 16
+	sb.content_margin_right = 40 if title else 26
+	sb.content_margin_top = 4
+	sb.content_margin_bottom = 4
+	sb.shadow_color = Color(0, 0, 0, 0.35)
+	sb.shadow_size = 3
+	sb.shadow_offset = Vector2(2, 2)
+	p.add_theme_stylebox_override(&"panel", sb)
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	p.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	var l := Label.new()
+	l.text = text
+	l.add_theme_font_override(&"font", load("res://art/fonts/Cinzel-Bold.woff2" if title else "res://art/fonts/EBGaramond-SemiBold.woff2"))
+	l.add_theme_font_size_override(&"font_size", font_size)
+	l.add_theme_color_override(&"font_color", Color(0.1, 0.09, 0.08))
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	p.add_child(l)
+	return p
+
+
+## "Attack  [LMB]": a white label and a key cap, right aligned.
+func _hint_row(text: String, key: String) -> HBoxContainer:
+	var row := HBoxContainer.new()
+	row.alignment = BoxContainer.ALIGNMENT_END
+	row.add_theme_constant_override(&"separation", 8)
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var l := _label(text, 17, Color(0.97, 0.96, 0.93))
+	l.add_theme_font_override(&"font", load("res://art/fonts/EBGaramond-SemiBold.woff2"))
+	l.add_theme_constant_override(&"outline_size", 6)
+	row.add_child(l)
+	var cap := PanelContainer.new()
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color(0.94, 0.93, 0.91)
+	sb.set_corner_radius_all(3)
+	sb.set_border_width_all(1)
+	sb.border_color = Color(0.15, 0.15, 0.15)
+	sb.content_margin_left = 5
+	sb.content_margin_right = 5
+	sb.content_margin_top = 0
+	sb.content_margin_bottom = 0
+	cap.add_theme_stylebox_override(&"panel", sb)
+	cap.custom_minimum_size = Vector2(26, 24)
+	cap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var k := Label.new()
+	k.text = key
+	k.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	k.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	k.add_theme_font_override(&"font", load("res://art/fonts/Cinzel-Bold.woff2"))
+	k.add_theme_font_size_override(&"font_size", 11 if key.length() > 2 else 14)
+	k.add_theme_color_override(&"font_color", Color(0.08, 0.08, 0.08))
+	cap.add_child(k)
+	row.add_child(cap)
+	return row
 
 
 func _label(text: String, font_size: int, color: Color) -> Label:
@@ -329,9 +517,19 @@ func _box(color: Color, radius: int) -> StyleBoxFlat:
 	b.content_margin_bottom = 7
 	# Panels (translucent dark fills) get the gold storybook trim.
 	if color.a < 0.8 and color.v < 0.2:
-		b.bg_color = Color(0.1, 0.12, 0.2, 0.84)
+		b.bg_color = Color(0.08, 0.075, 0.07, 0.86)
 		b.set_border_width_all(2)
-		b.border_color = Color(0.78, 0.62, 0.33, 0.95)
+		b.border_color = Color(0.5, 0.45, 0.38, 0.95)
 		b.shadow_color = Color(0, 0, 0, 0.3)
 		b.shadow_size = 4
 	return b
+
+
+## A little sun disc for the time-of-day tag.
+class _SunBadge extends Control:
+	func _draw() -> void:
+		var c := size * 0.5
+		draw_circle(c, 16, Color(0.12, 0.1, 0.08))
+		draw_circle(c, 13, Color(0.95, 0.55, 0.15))
+		draw_circle(c, 9, Color(1.0, 0.78, 0.3))
+		draw_circle(c + Vector2(-3, -3), 3, Color(1, 0.95, 0.7))

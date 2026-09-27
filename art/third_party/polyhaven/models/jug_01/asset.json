@@ -1,0 +1,69 @@
+{
+  "slug": "jug_01",
+  "name": "Jug 01",
+  "intended_use": "Apartment kitchen/tableware prop.",
+  "source_page": "https://polyhaven.com/a/jug_01",
+  "provider": "Poly Haven",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "authors": {
+    "Kuutti Siitonen": "All"
+  },
+  "category": "Food & Kitchen/Tableware/Jugs & Pitchers",
+  "tags": [
+    "ceramic",
+    "milk",
+    "white",
+    "antique",
+    "vintage",
+    "old",
+    "fancy",
+    "decorative"
+  ],
+  "dimensions_mm": [
+    275.3216624259949,
+    167.5262302160263,
+    211.31345149478875
+  ],
+  "files_hash": "c9c08b43eee157b95f9f8d0102a7a88259bbccfe",
+  "format": "fbx",
+  "resolution": "1k",
+  "primary_path": "SourceAssets/Models/PolyHaven/jug_01/jug_01_1k.fbx",
+  "files": [
+    {
+      "path": "SourceAssets/Models/PolyHaven/jug_01/jug_01_1k.fbx",
+      "bytes": 206748,
+      "md5": "1819e5e8acf7b81a59a9c514ab6ac9c4",
+      "sha256": "2fe73d87b8f96b69ca23ed3dcb1c9e64778e41eff46ed2da24f8776decbe2f5d",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/1k/jug_01/jug_01_1k.fbx"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/jug_01/textures/jug_01_diff_1k.jpg",
+      "bytes": 423757,
+      "md5": "ffe6e4999d473e6969c1432fa1ea5e21",
+      "sha256": "c716b455f46c1fa06745383f4237bb587a196c919e0af8b19fe207db192b74e4",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/jug_01/jug_01_diff_1k.jpg"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/jug_01/textures/jug_01_metal_1k.exr",
+      "bytes": 200257,
+      "md5": "90a9acdbb70fc4958df96a528b1e6a89",
+      "sha256": "240e55aae24b8df0dc5fd097b1556bd8b237c1a3652b4a002940cd1429e14607",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/jug_01/jug_01_metal_1k.exr"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/jug_01/textures/jug_01_nor_gl_1k.exr",
+      "bytes": 203789,
+      "md5": "15f28f9c4416fe91d33f328ae27a22a3",
+      "sha256": "ee015e4e32be6f8a3401bd9b9921af736a5e908a236a0b125915059e8f16a380",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/jug_01/jug_01_nor_gl_1k.exr"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/jug_01/textures/jug_01_rough_1k.exr",
+      "bytes": 1339146,
+      "md5": "99a5aec892a99f0e9b38d7be972e0005",
+      "sha256": "387f2492b5b8d67d7b9f8a7cabd5d142604137efd8fc091e1879eb21ff903d7a",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/jug_01/jug_01_rough_1k.exr"
+    }
+  ]
+}

@@ -132,7 +132,7 @@ func test_join_party_through_talk_and_follow() -> void:
 	check_eq(s.mode, Settler.Mode.COMPANION, "is a companion")
 	check(party.has(s), "in the party")
 	check(not panel.is_open(), "panel closed after joining")
-	check(s.equipment.model_root.find_child("1H_Axe", true, false).visible, "weapon in hand")
+	check(_held(s.equipment.model_root, "HandAxe"), "weapon in hand")
 	# Walk away; the companion keeps up.
 	player.controller.input_enabled = true
 	await hold(&"move_forward", 4.0)
@@ -280,7 +280,7 @@ func test_sent_home_goes_back_to_work() -> void:
 	await wait_seconds(0.3)
 	check_eq(s.mode, Settler.Mode.WORKER, "is a worker again")
 	check(not party.has(s), "left the party")
-	check(not s.equipment.model_root.find_child("2H_Crossbow", true, false).visible, "crossbow put away")
+	check(not _held(s.equipment.model_root, "Crossbow"), "crossbow put away")
 	var delivered := await wait_until(func(): return pile.inventory.count(&"item.log") >= 1, 90.0)
 	check(delivered, "walked home, chopped and hauled a log")
 
@@ -309,7 +309,7 @@ func test_companion_survives_save_load() -> void:
 	if v:
 		check_eq(v.mode, Settler.Mode.COMPANION, "still a companion")
 		check_eq(v.character_class.id, &"class.ranger", "still a ranger")
-		check_eq(String(v.model_root.name), "Rogue_Hooded", "ranger body")
+		check_eq(String(v.model_root.name), "Ranger", "ranger body")
 		check_eq(v.worker.job.id, &"job.miner", "still a miner at heart")
 		check_eq(v.companion.order, CompanionController.Order.HOLD, "still holding")
 		check(party.has(v), "party rebuilt from the save")
@@ -441,3 +441,9 @@ func test_companions_do_not_block_the_player() -> void:
 	player.controller.input_enabled = true
 	await hold(&"move_forward", 1.5)
 	check(player.global_position.z < -3.0, "walked straight through the companion (z %.1f)" % player.global_position.z)
+
+
+## A hand-held item (attached scene) is in the hand and showing.
+func _held(model: Node, item_name: String) -> bool:
+	var item := model.find_child(item_name, true, false) as Node3D
+	return item != null and not item.is_queued_for_deletion() and not item.get_parent().is_queued_for_deletion() and item.is_visible_in_tree()

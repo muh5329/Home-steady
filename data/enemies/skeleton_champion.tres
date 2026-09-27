@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="EnemyDefinition" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_characters/Skeleton_Warrior.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://characters/humans/undead_champion.tscn" id="2_model"]
 [ext_resource type="Resource" path="res://data/items/movesets/skeleton_champion.tres" id="3_moveset"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Axe.gltf" id="4_axe"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Shield_Large_A.gltf" id="5_shield"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/hand_axe.tscn" id="4_axe"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/grave_shield.tscn" id="5_shield"]
 [ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="6_sounds"]
 
 [resource]
@@ -13,7 +13,7 @@ id = &"enemy.skeleton_champion"
 display_name = "Skeleton Champion"
 description = "A crypt's elite guard: huge, patient, and its axe breaks guards."
 model = ExtResource("2_model")
-model_scale = 1.0
+model_scale = 1.15
 faction = &"monsters"
 right_hand_item = ExtResource("4_axe")
 left_hand_item = ExtResource("5_shield")

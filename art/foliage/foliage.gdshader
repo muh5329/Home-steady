@@ -7,6 +7,9 @@ render_mode cull_disabled, diffuse_lambert_wrap, specular_disabled;
 
 uniform float wind_strength = 0.06;
 uniform float saturation = 1.0;
+// Closed shapes (bushes, boulders): when dithering opens them up, their
+// inside shows as deep shade instead of a lit hollow shell.
+uniform bool solid_interior = false;
 // Chest height of the player (CameraRig keeps it current): foliage between
 // the camera and the player dissolves so trees never hide the hero.
 global uniform vec3 player_position;
@@ -54,4 +57,9 @@ void fragment() {
 	ALBEDO = clamp(mix(vec3(l), c, saturation), vec3(0.0), vec3(1.0));
 	ROUGHNESS = 0.9;
 	BACKLIGHT = c * 0.25;
+	if (solid_interior && !FRONT_FACING) {
+		ALBEDO *= 0.25;
+		BACKLIGHT = vec3(0.0);
+		NORMAL = (VIEW_MATRIX * vec4(0.0, 1.0, 0.0, 0.0)).xyz;
+	}
 }

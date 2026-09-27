@@ -19,6 +19,12 @@ signal class_applied(character_class: CharacterClassData)
 var character_class: CharacterClassData
 var model_root: Node3D
 
+## When non-zero, the body also renders on this visual layer (1-20) so a
+## light that only affects that layer can lift the hero out of shade.
+@export_range(0, 20) var highlight_layer := 0
+## Picks among the class's body variants (settlers use their name).
+var appearance_seed := 0
+
 var _base_speeds := Vector3.ZERO  # walk, run, sprint before class multipliers
 
 
@@ -33,10 +39,14 @@ func apply(c: CharacterClassData) -> void:
 	if model_root:
 		model_holder.remove_child(model_root)
 		model_root.queue_free()
-	model_root = c.model.instantiate()
+	model_root = c.model_for(appearance_seed).instantiate()
 	model_holder.add_child(model_root)
 	model_holder.scale = Vector3.ONE * c.model_scale
 	ModelUtils.set_parts_visible(model_root, c.hidden_parts, false)
+	StorybookPalette.apply(model_root, 0.0, 0, true)
+	if highlight_layer > 0:
+		for g: GeometryInstance3D in model_root.find_children("*", "GeometryInstance3D", true, false):
+			g.set_layer_mask_value(highlight_layer, true)
 	animator.set_model(model_root)
 	CarryPoseModifier.install(animator, carry)
 	if status_effects:

@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://items/resources/carryable.gd" id="1_carry"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/medieval/decoration/props/barrel.gltf" id="2_mesh"]
+[ext_resource type="PackedScene" path="res://art/props/world/deco_barrel.tscn" id="2_mesh"]
 [ext_resource type="Script" path="res://core/interaction/interactable.gd" id="3_interact"]
 
 [sub_resource type="CylinderShape3D" id="shape"]
@@ -20,7 +20,7 @@ item_id = &"item.barrel"
 hold_offset = Vector3(0, 0.1, 0)
 
 [node name="Mesh" parent="." instance=ExtResource("2_mesh")]
-transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, -0.42, 0)
+transform = Transform3D(4.6, 0, 0, 0, 4.6, 0, 0, 0, 4.6, 0, -0.42, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("shape")

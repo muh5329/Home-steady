@@ -8,7 +8,7 @@ extends Node3D
 
 @export var play_rect := Rect2(-76, -76, 152, 152)
 @export var chunk_size := 8.0
-@export var grass_per_m2 := 2.2
+@export var grass_per_m2 := 2.3
 @export var grass_view_distance := 48.0
 @export var flower_colors: PackedColorArray = [Color(1.0, 0.86, 0.3), Color(0.98, 0.96, 0.9), Color(0.5, 0.62, 1.0), Color(0.95, 0.55, 0.7)]
 @export var flower_patch_threshold := 0.62
@@ -21,8 +21,14 @@ extends Node3D
 @export var chunks_per_frame := 10
 @export var random_seed := 3
 
+## Belt trees this close to the play area are full scanned trees (PHModels);
+## the rest of the belt and the far forest stay light card trees.
+@export var scanned_band := 9.0
+
 ## Pines per summit of each terraced hill.
 @export var hilltop_trees := Vector2i(3, 7)
+
+const BUSHES := ["bush_01", "bush_03", "bush_03"]
 
 var _pending: Array[Vector2i] = []
 var _clumps := FastNoiseLite.new()
@@ -38,6 +44,10 @@ func _ready() -> void:
 
 
 func _start() -> void:
+	# Rivers and set dressing paint their banks and lanes deferred too.
+	await get_tree().process_frame
+	if not is_inside_tree():
+		return
 	_noise.seed = random_seed
 	_noise.frequency = 0.035
 	_clumps.seed = random_seed + 5
@@ -106,8 +116,8 @@ func _build_chunk(c: Vector2i) -> void:
 		var p := origin + Vector2(rng.randf(), rng.randf()) * chunk_size
 		var pos := Vector3(p.x, 0.0, p.y)
 		var cover := _painter.coverage(pos) if _painter else 0.0
-		if cover > 0.05:
-			continue  # roads and plazas stay clean
+		if cover > 0.05 or River.covered(self, pos):
+			continue  # roads, plazas, beaches and water stay clean
 		var edge := _painter != null and _near_path(pos)
 		var clump := _clumps.get_noise_2d(p.x, p.y) * 0.5 + 0.5
 		if rng.randf() > lerpf(0.25, 0.85, clump) and not edge:
@@ -116,15 +126,15 @@ func _build_chunk(c: Vector2i) -> void:
 		if not space.intersect_point(q, 1).is_empty():
 			continue
 		# Shrubs: along roads, in the densest drifts, and hugging buildings.
-		var bush_chance := 0.03 if edge else (0.012 if clump > 0.8 else 0.0)
-		if rng.randf() < 0.08 and _near_building(space, pos):
-			bush_chance = 0.5
+		var bush_chance := 0.014 if edge else (0.005 if clump > 0.8 else 0.0)
+		if rng.randf() < 0.05 and _near_building(space, pos):
+			bush_chance = 0.4
 		if rng.randf() < bush_chance:
-			var bs := rng.randf_range(0.8, 1.5)
+			var bs := rng.randf_range(0.4, 0.6)
 			bushes[rng.randi() % 3].append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(bs, bs * rng.randf_range(0.8, 1.1), bs)), pos))
 			continue
 		# Tall meadow tufts: thick along the ways, scattered in lush drifts.
-		if rng.randf() < (0.22 if edge else (0.08 if clump > 0.75 else 0.0)):
+		if rng.randf() < (0.35 if edge else (0.1 if clump > 0.7 else 0.0)):
 			var ts := rng.randf_range(0.8, 1.25)
 			tall.append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(ts, ts * rng.randf_range(0.85, 1.15), ts)), pos))
 			continue
@@ -135,12 +145,22 @@ func _build_chunk(c: Vector2i) -> void:
 		if (patch > flower_patch_threshold and rng.randf() < 0.28) or (edge and rng.randf() < 0.3):
 			var kind := int(absf(_noise.get_noise_2d(p.x * 0.3 + 100.0, p.y * 0.3)) * 7.0) % flower_colors.size()
 			flowers[kind].append(Transform3D(Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3.ONE * rng.randf_range(0.9, 1.5)), pos))
-	_emit(root, FoliageMeshes.grass_clump(), grass, grass_view_distance)
-	_emit(root, FoliageMeshes.tall_grass(), tall, grass_view_distance * 1.1)
+	_emit(root, FoliageCards.plant("grass_card.png", Vector2(0.75, 0.55), 3, Color(0.95, 1.0, 0.85)), grass, grass_view_distance)
+	_emit(root, FoliageCards.plant("grass_dry_card.png", Vector2(0.8, 0.85), 2, Color(1.05, 1.0, 0.85)), tall, grass_view_distance * 1.1)
+	# Bushes are small scanned broadleaf trees cut down to a leafy crown.
 	for v in 3:
-		_emit(root, FoliageMeshes.bush(v), bushes[v], grass_view_distance * 1.6)
+		for i in bushes[v].size():
+			var xf: Transform3D = bushes[v][i]
+			bushes[v][i] = Transform3D(xf.basis, xf.origin - Vector3.UP * 0.25 * xf.basis.get_scale().y)
+		PHModels.emit(root, BUSHES[v], bushes[v], grass_view_distance * 1.1, true)
 	for k in flower_colors.size():
-		_emit(root, FoliageMeshes.flower(flower_colors[k]), flowers[k], grass_view_distance * 0.8)
+		var flower_mesh: Mesh
+		match k % 4:
+			0: flower_mesh = FoliageCards.plant("flower_card.png", Vector2(0.55, 0.5), 2)
+			1: flower_mesh = FoliageCards.plant("fern_card.png", Vector2(0.8, 0.65), 3)
+			2: flower_mesh = FoliageMeshes.flower(Color(0.97, 0.96, 0.92))
+			_: flower_mesh = FoliageMeshes.flower(Color(0.66, 0.55, 0.85))
+		_emit(root, flower_mesh, flowers[k], grass_view_distance * 0.8)
 
 
 ## Right beside a building's footprint (layer 6).
@@ -164,7 +184,7 @@ func _near_path(pos: Vector3) -> bool:
 	return false
 
 
-func _emit(parent: Node3D, mesh: Mesh, xforms: Array, view: float) -> void:
+func _emit(parent: Node3D, mesh: Mesh, xforms: Array, view: float, shadows := false) -> void:
 	if xforms.is_empty():
 		return
 	var mm := MultiMesh.new()
@@ -175,7 +195,7 @@ func _emit(parent: Node3D, mesh: Mesh, xforms: Array, view: float) -> void:
 		mm.set_instance_transform(i, xforms[i])
 	var mmi := MultiMeshInstance3D.new()
 	mmi.multimesh = mm
-	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON if shadows else GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	if view > 0.0:
 		mmi.visibility_range_end = view
 		mmi.visibility_range_end_margin = 8.0
@@ -201,6 +221,9 @@ func _build_forest() -> void:
 	trunk.radius = 0.5
 	trunk.height = 4.0
 	var inner := play_rect.grow(-belt_depth)
+	var scanned: Array = []
+	for t in PHModels.TREES:
+		scanned.append([])
 	var belt_bushes: Array = [[], [], []]
 	var placed := 0
 	var tries := 0
@@ -210,12 +233,16 @@ func _build_forest() -> void:
 		if inner.has_point(p):
 			continue
 		var pos := Vector3(p.x, 0, p.y)
-		if _painter and _painter.coverage(pos) > 0.05:
+		if (_painter and _painter.coverage(pos) > 0.05) or River.covered(self, pos, 2.0):
 			continue
 		q.position = pos + Vector3.UP * 0.5
 		if not space.intersect_point(q, 1).is_empty():
 			continue
-		variants[placed % 3].append(_tree_xform(rng, pos))
+		if _edge_distance(inner, p) < scanned_band:
+			var v := rng.randi() % scanned.size()
+			scanned[v].append(_scanned_xform(rng, pos, v))
+		else:
+			variants[placed % 3].append(_tree_xform(rng, pos))
 		if rng.randf() < 0.45:
 			var off := Vector3(rng.randf_range(-2.5, 2.5), 0, rng.randf_range(-2.5, 2.5))
 			var bs := rng.randf_range(1.0, 1.8)
@@ -229,8 +256,8 @@ func _build_forest() -> void:
 		var a := rng.randf() * TAU
 		var r := rng.randf_range(far_radius.x, far_radius.y)
 		var pos := Vector3(cos(a) * r, 0, sin(a) * r)
-		# Leave the southern approach open (the road in).
-		if pos.z > 60.0 and absf(pos.x) < 14.0:
+		# Leave the southern approach open (the road in), and the river.
+		if (pos.z > 60.0 and absf(pos.x) < 14.0) or River.covered(self, pos, 3.0):
 			continue
 		variants[i % 3].append(_tree_xform(rng, pos, 1.25))
 	for hills in get_tree().get_nodes_in_group(TerraceHills.GROUP):
@@ -239,13 +266,41 @@ func _build_forest() -> void:
 				var a := rng.randf() * TAU
 				var r := sqrt(rng.randf()) * top.w
 				var pos := Vector3(top.x + cos(a) * r, top.y, top.z + sin(a) * r)
-				variants[i % 3].append(_tree_xform(rng, pos, 0.9))
+				var v := rng.randi() % scanned.size()
+				scanned[v].append(_scanned_xform(rng, pos, v, 0.9))
+	for v in scanned.size():
+		_emit_chunked(PHModels.TREES[v], scanned[v])
 	for v in 3:
-		_emit(self, FoliageMeshes.pine(v), variants[v], 0.0)
-		_emit(self, FoliageMeshes.bush(v), belt_bushes[v], 90.0)
+		_emit(self, FoliageCards.tree(v), variants[v], 0.0, true)
+		_emit(self, FoliageCards.shrub(v), belt_bushes[v], 90.0)
 
 
 func _tree_xform(rng: RandomNumberGenerator, pos: Vector3, bigger := 1.0) -> Transform3D:
 	var s := rng.randf_range(tree_scale.x, tree_scale.y) * bigger
 	var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * rng.randf_range(0.9, 1.2), s))
 	return Transform3D(basis, pos)
+
+
+func _scanned_xform(rng: RandomNumberGenerator, pos: Vector3, v: int, bigger := 1.0) -> Transform3D:
+	var s: float = PHModels.TREE_SCALE[v] * rng.randf_range(0.85, 1.25) * bigger
+	var basis := Basis(Vector3.UP, rng.randf() * TAU).scaled(Vector3(s, s * rng.randf_range(0.9, 1.15), s))
+	return Transform3D(basis, pos - Vector3.UP * 0.06 * s)
+
+
+## Distance from a point outside `inner` to its edge.
+func _edge_distance(inner: Rect2, p: Vector2) -> float:
+	var c := p.clamp(inner.position, inner.end)
+	return c.distance_to(p)
+
+
+## Scanned trees are heavy, so they go out in 24 m cells: each cell is its own
+## MultiMesh and is culled and LOD'd on its own.
+func _emit_chunked(model: String, xforms: Array, cell := 24.0) -> void:
+	var cells := {}
+	for xf: Transform3D in xforms:
+		var k := Vector2i(floori(xf.origin.x / cell), floori(xf.origin.z / cell))
+		if not cells.has(k):
+			cells[k] = []
+		cells[k].append(xf)
+	for k in cells:
+		PHModels.emit(self, model, cells[k], 0.0, true)

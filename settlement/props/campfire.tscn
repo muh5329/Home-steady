@@ -1,8 +1,9 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://settlement/props/campfire.gd" id="1_fire"]
 
 [ext_resource type="PackedScene" path="res://art/vfx/smoke_plume.tscn" id="2_smoke"]
+[ext_resource type="Texture2D" path="res://art/third_party/ambientcg/Bark001/Bark001_Color.jpg" id="3_bark"]
 [sub_resource type="CylinderMesh" id="log_mesh"]
 top_radius = 0.09
 bottom_radius = 0.1
@@ -11,8 +12,11 @@ radial_segments = 7
 rings = 1
 
 [sub_resource type="StandardMaterial3D" id="bark"]
-albedo_color = Color(0.42, 0.27, 0.16, 1)
+albedo_color = Color(0.62, 0.52, 0.45, 1)
+albedo_texture = ExtResource("3_bark")
 roughness = 0.9
+uv1_triplanar = true
+uv1_scale = Vector3(2, 2, 2)
 
 [sub_resource type="SphereMesh" id="stone_mesh"]
 radius = 0.16
@@ -23,6 +27,18 @@ rings = 3
 [sub_resource type="StandardMaterial3D" id="stone_mat"]
 albedo_color = Color(0.55, 0.55, 0.58, 1)
 roughness = 1.0
+
+[sub_resource type="Gradient" id="soft_grad"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0.55, 1, 1, 1, 0)
+offsets = PackedFloat32Array(0, 0.4, 1)
+
+[sub_resource type="GradientTexture2D" id="soft_dot"]
+gradient = SubResource("soft_grad")
+width = 64
+height = 64
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
 
 [sub_resource type="Gradient" id="fire_grad"]
 colors = PackedColorArray(1, 0.9, 0.4, 1, 1, 0.45, 0.1, 0.9, 0.4, 0.1, 0.05, 0)
@@ -51,10 +67,11 @@ billboard_mode = 3
 particles_anim_h_frames = 1
 particles_anim_v_frames = 1
 albedo_color = Color(2.2, 1.6, 1.0, 1)
+albedo_texture = SubResource("soft_dot")
 
 [sub_resource type="QuadMesh" id="fire_quad"]
 material = SubResource("fire_mat")
-size = Vector2(0.45, 0.45)
+size = Vector2(0.4, 0.55)
 
 [sub_resource type="Gradient" id="smoke_grad"]
 colors = PackedColorArray(0.5, 0.5, 0.5, 0.35, 0.6, 0.6, 0.6, 0)
@@ -81,6 +98,7 @@ vertex_color_use_as_albedo = true
 billboard_mode = 3
 particles_anim_h_frames = 1
 particles_anim_v_frames = 1
+albedo_texture = SubResource("soft_dot")
 
 [sub_resource type="QuadMesh" id="smoke_quad"]
 material = SubResource("smoke_mat")

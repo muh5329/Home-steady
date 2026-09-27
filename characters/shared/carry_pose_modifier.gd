@@ -10,6 +10,9 @@ extends SkeletonModifier3D
 @export var bones: PackedStringArray = [
 	"upperarm.l", "lowerarm.l", "wrist.l", "hand.l",
 	"upperarm.r", "lowerarm.r", "wrist.r", "hand.r",
+	# Humanoid (UE-mannequin) rigs.
+	"clavicle_l", "upperarm_l", "lowerarm_l", "hand_l",
+	"clavicle_r", "upperarm_r", "lowerarm_r", "hand_r",
 ]
 @export var blend_speed := 8.0
 

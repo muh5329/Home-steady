@@ -4,6 +4,9 @@ extends GameData
 ## New classes (Paladin, Druid...) are new .tres files, no code.
 
 @export var model: PackedScene
+## Optional alternative bodies (same rig); each character picks one by its
+## CharacterLoadout.appearance_seed so a village isn't all twins.
+@export var model_variants: Array[PackedScene] = []
 @export var model_scale := 0.75
 ## Rig attachments hidden at start (weapons not in use, spare shields...).
 @export var hidden_parts: PackedStringArray = []
@@ -25,3 +28,12 @@ extends GameData
 @export var playable := true
 @export var role_summary := ""
 @export var ui_color := Color.WHITE
+
+
+## The body for a given appearance seed.
+func model_for(seed: int) -> PackedScene:
+	if model_variants.is_empty():
+		return model
+	var all: Array[PackedScene] = [model]
+	all.append_array(model_variants)
+	return all[posmod(seed, all.size())]

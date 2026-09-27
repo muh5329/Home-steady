@@ -32,6 +32,13 @@ func _enter_tree() -> void:
 	if d.left_hand_item:
 		ModelUtils.attach_to_bone(model, "handslot.l", d.left_hand_item)
 	$CharacterAnimator.model = model
+	if d.idle_animation != &"":
+		$CharacterAnimator.idle_animation = d.idle_animation
+	if d.walk_animation != &"":
+		$CharacterAnimator.walk_animation = d.walk_animation
+	if d.run_animation != &"":
+		$CharacterAnimator.run_animation = d.run_animation
+		$CharacterAnimator.sprint_animation = d.run_animation
 	_shape_body($CollisionShape3D, d.body_radius, d.body_height)
 	_shape_body($Hurtbox/CollisionShape3D, d.hurtbox_radius, d.hurtbox_height)
 	$HealthComponent.max_health = d.max_health

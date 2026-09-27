@@ -1,6 +1,7 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://items/equipment/weapon_data.gd" id="1"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/crossbow.tscn" id="h1"]
 [ext_resource type="Resource" path="res://data/items/movesets/crossbow.tres" id="2"]
 
 [resource]
@@ -11,5 +12,5 @@ description = "Fires bolts. Hold F for a power shot."
 storable = false
 moveset = ExtResource("2")
 damage_multiplier = 1.0
-rig_parts = PackedStringArray("2H_Crossbow")
+hand_scene = ExtResource("h1")
 aim_range = 22.0

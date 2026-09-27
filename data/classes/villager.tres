@@ -1,15 +1,20 @@
-[gd_resource type="Resource" script_class="CharacterClassData" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="CharacterClassData" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://characters/shared/character_class_data.gd" id="1"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_characters/Barbarian.glb" id="2"]
+[ext_resource type="PackedScene" path="res://characters/humans/peasant_m.tscn" id="2"]
 [ext_resource type="Resource" path="res://data/items/weapons/hand_axe.tres" id="3"]
+[ext_resource type="PackedScene" path="res://characters/humans/peasant_f.tscn" id="v1"]
+[ext_resource type="PackedScene" path="res://characters/humans/peasant_m2.tscn" id="v2"]
+[ext_resource type="PackedScene" path="res://characters/humans/noble_m.tscn" id="v3"]
 
 [resource]
 script = ExtResource("1")
 id = &"class.villager"
 display_name = "Villager"
 model = ExtResource("2")
-hidden_parts = PackedStringArray("1H_Axe_Offhand", "Barbarian_Round_Shield", "2H_Axe", "Mug", "1H_Axe")
+model_variants = Array[PackedScene]([ExtResource("v1"), ExtResource("v2"), ExtResource("v3")])
+hidden_parts = PackedStringArray()
+model_scale = 1.0
 max_health = 80.0
 max_poise = 25.0
 starting_weapon = ExtResource("3")

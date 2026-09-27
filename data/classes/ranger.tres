@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="CharacterClassData" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://characters/shared/character_class_data.gd" id="1"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/adventurers_characters/Rogue_Hooded.glb" id="2"]
+[ext_resource type="PackedScene" path="res://characters/humans/ranger.tscn" id="2"]
 [ext_resource type="Resource" path="res://data/items/weapons/hunting_crossbow.tres" id="3"]
 [ext_resource type="Script" path="res://combat/abilities/ability_data.gd" id="5"]
 [ext_resource type="Resource" path="res://data/abilities/volley.tres" id="4"]
@@ -11,7 +11,8 @@ script = ExtResource("1")
 id = &"class.ranger"
 display_name = "Ranger"
 model = ExtResource("2")
-hidden_parts = PackedStringArray("Knife_Offhand", "1H_Crossbow", "2H_Crossbow", "Knife", "Throwable")
+hidden_parts = PackedStringArray()
+model_scale = 1.0
 max_health = 95.0
 max_poise = 25.0
 move_speed_multiplier = 1.08

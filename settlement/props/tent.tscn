@@ -1,10 +1,10 @@
 [gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://settlement/buildings/housing_component.gd" id="1_housing"]
-[ext_resource type="Script" path="res://art/props/bell_tent_model.gd" id="2_tent"]
+[ext_resource type="Script" path="res://art/props/ridge_tent_model.gd" id="2_tent"]
 
 [sub_resource type="BoxShape3D" id="shape"]
-size = Vector3(2.8, 2.0, 2.8)
+size = Vector3(2.6, 2.0, 3.2)
 
 [node name="Tent" type="StaticBody3D"]
 

@@ -9,5 +9,7 @@ extends ItemData
 @export var rig_parts: PackedStringArray = []
 ## Or a scene attached to the right hand.
 @export var hand_scene: PackedScene
+## And one for the left hand (a shield).
+@export var offhand_scene: PackedScene
 ## Ranged/magic weapons aim further with auto-aim.
 @export var aim_range := 3.2

@@ -15,8 +15,17 @@ var uid := ""
 
 func _ready() -> void:
 	var model := get_node_or_null(^"Model")
+	var kit := get_node_or_null(^"Kit") as KitHouse
+	var smoke := get_node_or_null(^"ChimneySmoke") as Node3D
+	if kit and smoke:
+		if kit.chimney_top == null:
+			smoke.visible = false
+		else:
+			smoke.position = kit.transform * (kit.chimney_top as Vector3)
 	if model:
-		StorybookPalette.apply(model)
+		# Each spot gets its own plaster colour, stable across save/load.
+		var spot := Vector2i(roundi(global_position.x), roundi(global_position.z))
+		StorybookPalette.apply(model, 0.0, absi(hash(spot)) % StorybookPalette.WALLS.size())
 	if definition:
 		var fp := definition.footprint
 		add_child(Footprint.box(Vector3(fp.x, 2.0, fp.y),

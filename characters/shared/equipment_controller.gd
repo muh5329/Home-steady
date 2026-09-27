@@ -14,6 +14,7 @@ var base_damage_multiplier := 1.0
 
 var _shown_parts: PackedStringArray = []
 var _attached: Node3D
+var _attached_off: Node3D
 
 
 func equip(new_weapon: WeaponData) -> void:
@@ -26,6 +27,8 @@ func equip(new_weapon: WeaponData) -> void:
 		ModelUtils.set_parts_visible(model_root, _shown_parts, true)
 		if weapon.hand_scene:
 			_attached = ModelUtils.attach_to_bone(model_root, "handslot.r", weapon.hand_scene)
+		if weapon.offhand_scene:
+			_attached_off = ModelUtils.attach_to_bone(model_root, "handslot.l", weapon.offhand_scene)
 	equipment_changed.emit(weapon)
 
 
@@ -34,6 +37,7 @@ func set_model(root: Node3D) -> void:
 	model_root = root
 	_shown_parts = []
 	_attached = null
+	_attached_off = null
 
 
 ## Stow/unstow weapon meshes (e.g. while carrying).
@@ -41,6 +45,8 @@ func set_weapon_visible(is_visible: bool) -> void:
 	ModelUtils.set_parts_visible(model_root, _shown_parts, is_visible)
 	if _attached:
 		_attached.visible = is_visible
+	if _attached_off:
+		_attached_off.visible = is_visible
 
 
 func _hide_current() -> void:
@@ -49,3 +55,6 @@ func _hide_current() -> void:
 	if _attached:
 		_attached.get_parent().queue_free()
 		_attached = null
+	if _attached_off:
+		_attached_off.get_parent().queue_free()
+		_attached_off = null

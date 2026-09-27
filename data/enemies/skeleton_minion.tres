@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="EnemyDefinition" load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_characters/Skeleton_Minion.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://characters/humans/undead_minion.tscn" id="2_model"]
 [ext_resource type="Resource" path="res://data/items/movesets/skeleton_warrior.tres" id="3_moveset"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Blade.gltf" id="4_blade"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/grave_sword.tscn" id="4_blade"]
 [ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="5_sounds"]
 
 [resource]
@@ -12,7 +12,7 @@ id = &"enemy.skeleton_minion"
 display_name = "Risen Minion"
 description = "Raised in a heartbeat, broken in two."
 model = ExtResource("2_model")
-model_scale = 0.75
+model_scale = 0.95
 faction = &"monsters"
 right_hand_item = ExtResource("4_blade")
 sounds = ExtResource("5_sounds")
@@ -28,3 +28,5 @@ leash_range = 40.0
 attack_cooldown = Vector2(0.9, 1.8)
 max_combo = 1
 spawn_animation = &"Spawn_Ground_Skeletons"
+idle_animation = &"Zombie_Idle"
+walk_animation = &"Zombie_Walk"

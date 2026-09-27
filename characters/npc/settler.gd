@@ -62,6 +62,7 @@ func _process(delta: float) -> void:
 
 func _ready() -> void:
 	add_to_group(GROUP)
+	loadout.appearance_seed = hash(settler_name)
 	loadout.apply(character_class)
 	carry.carrying_changed.connect(func(_item): _apply_look())
 	worker.activity_changed.connect(func(_a): _update_nameplate())
@@ -166,7 +167,9 @@ func _enter_mode(new_mode: Mode) -> void:
 	mode = new_mode
 	var party := Party.of(self)
 	_set_party_collision(mode == Mode.COMPANION)
-	health_bar.visible = mode != Mode.STRANGER
+	# The bar shows itself while hurt; strangers never show one.
+	if mode == Mode.STRANGER:
+		health_bar.visible = false
 	match mode:
 		Mode.STRANGER:
 			worker.deactivate()

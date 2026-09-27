@@ -1,10 +1,10 @@
 [gd_resource type="Resource" script_class="EnemyDefinition" load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://characters/npc/enemy_definition.gd" id="1_def"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_characters/Skeleton_Warrior.glb" id="2_model"]
+[ext_resource type="PackedScene" path="res://characters/humans/undead_warrior.tscn" id="2_model"]
 [ext_resource type="Resource" path="res://data/items/movesets/skeleton_warrior.tres" id="3_moveset"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Blade.gltf" id="4_blade"]
-[ext_resource type="PackedScene" path="res://art/third_party/kaykit/skeletons_items/Skeleton_Shield_Small_A.gltf" id="5_shield"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/grave_sword.tscn" id="4_blade"]
+[ext_resource type="PackedScene" path="res://art/props/weapons/grave_shield.tscn" id="5_shield"]
 [ext_resource type="Resource" path="res://data/combat/sounds_skeleton.tres" id="6_sounds"]
 
 [resource]
@@ -13,7 +13,7 @@ id = &"enemy.skeleton_warrior"
 display_name = "Skeleton Warrior"
 description = "Restless dead that guard old crypts. Slow, but hits hard."
 model = ExtResource("2_model")
-model_scale = 0.75
+model_scale = 1.0
 faction = &"monsters"
 right_hand_item = ExtResource("4_blade")
 left_hand_item = ExtResource("5_shield")
@@ -26,3 +26,5 @@ moveset = ExtResource("3_moveset")
 aggro_range = 11.0
 attack_range = 1.9
 spawn_animation = &"Skeletons_Awaken_Floor"
+idle_animation = &"Zombie_Idle"
+walk_animation = &"Zombie_Walk"

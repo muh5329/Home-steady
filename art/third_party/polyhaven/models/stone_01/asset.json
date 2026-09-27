@@ -1,0 +1,69 @@
+{
+  "slug": "stone_01",
+  "name": "Stone 01",
+  "intended_use": "Throwable stone pickup.",
+  "source_page": "https://polyhaven.com/a/stone_01",
+  "provider": "Poly Haven",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "authors": {
+    "Dario Barresi": "Photography",
+    "Rico Cilliers": "photography, processing"
+  },
+  "category": "Nature/Rocks & Stone/Boulders",
+  "tags": [
+    "rock",
+    "stone",
+    "pebbles",
+    "dirt",
+    "terrain",
+    "gravel",
+    "quartz"
+  ],
+  "dimensions_mm": [
+    147.15217798948288,
+    89.41811323165894,
+    71.89157977700233
+  ],
+  "files_hash": "3b541260ddde766b6bcfae56be426b81ce1a1e81",
+  "format": "fbx",
+  "resolution": "1k",
+  "primary_path": "SourceAssets/Models/PolyHaven/stone_01/stone_01_1k.fbx",
+  "files": [
+    {
+      "path": "SourceAssets/Models/PolyHaven/stone_01/stone_01_1k.fbx",
+      "bytes": 3138300,
+      "md5": "ab3d0474375f3cc26c142d25f6745b13",
+      "sha256": "744f5626202990afaafc54e1509afc83ef1912b3e72ff0e92fbe868f592e0897",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/1k/stone_01/stone_01_1k.fbx"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/stone_01/textures/stone_01_diff_1k.jpg",
+      "bytes": 649135,
+      "md5": "9a552588c7f547ae47724fa457d94839",
+      "sha256": "c3171a6108bf1b3656b4a3576b329065d7acf6e337506a9e1a15511300c8fc88",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/stone_01/stone_01_diff_1k.jpg"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/stone_01/textures/stone_01_mask_1k.png",
+      "bytes": 2146993,
+      "md5": "002c0c58e147264801162b9e9c24c302",
+      "sha256": "0f14e25947421285be729f9c50b428a252366b614353e6586117cb3a10c25801",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/stone_01/stone_01_mask_1k.png"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/stone_01/textures/stone_01_nor_gl_1k.exr",
+      "bytes": 2116707,
+      "md5": "f112e3e110f6fd7db5f326f08abb6856",
+      "sha256": "765728aac8594e616ec05f8a51e373df52fdbc1d1b07b2cfb5f49ba7eb6e773a",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/stone_01/stone_01_nor_gl_1k.exr"
+    },
+    {
+      "path": "SourceAssets/Models/PolyHaven/stone_01/textures/stone_01_rough_1k.exr",
+      "bytes": 677910,
+      "md5": "f29d725509a2ec75b1c5e0b84401ae97",
+      "sha256": "c8a869e62510efe9be7c07e83e14ddd67f4f128409d574beeefea8a5ad499567",
+      "source_url": "https://dl.polyhaven.org/file/ph-assets/Models/exr/1k/stone_01/stone_01_rough_1k.exr"
+    }
+  ]
+}

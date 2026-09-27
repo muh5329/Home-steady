@@ -3,10 +3,10 @@ extends MeshInstance3D
 ## sag, a scalloped valance, a dark doorway on +Z (under the eave) and a pennant on top.
 ## About 3 m across and 3 m tall at scale 1.
 
-const SEGMENTS := 16
-const CANVAS := Color(0.95, 0.88, 0.72)
-const STRIPE := Color(0.8, 0.43, 0.28)
-const DOOR := Color(0.2, 0.13, 0.1)
+const SEGMENTS := 32
+const CANVAS := Color(0.9, 0.86, 0.76)
+const STRIPE := Color(0.6, 0.27, 0.19)
+const DOOR := Color(0.23, 0.14, 0.09)
 const POLE := Color(0.45, 0.3, 0.2)
 
 ## Radius and height of the rings from the ground to the apex.
@@ -35,7 +35,7 @@ static func _build() -> ArrayMesh:
 	for i in SEGMENTS:
 		var a0 := TAU * i / SEGMENTS
 		var a1 := TAU * (i + 1) / SEGMENTS
-		var stripe := i % 2 == 1
+		var stripe := (i >> 1) % 2 == 1
 		for r in rings.size() - 1:
 			if r == 1:
 				continue  # wall top to eave is a tiny step hidden by the valance
@@ -74,6 +74,10 @@ static func _build() -> ArrayMesh:
 	mat.vertex_color_use_as_albedo = true
 	mat.vertex_color_is_srgb = true
 	mat.roughness = 0.92
+	# Woven canvas, weathered.
+	mat.albedo_texture = load("res://art/third_party/polyhaven/cloth2_diff.jpg")
+	mat.uv1_triplanar = true
+	mat.uv1_scale = Vector3.ONE * 1.6
 	mesh.surface_set_material(0, mat)
 	return mesh
 

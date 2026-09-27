@@ -54,4 +54,8 @@ extends GameData
 @export var attack_state: StringName = &"Attack"
 ## Played when raised by an EnemySpawn (e.g. clawing out of the floor).
 @export var spawn_animation: StringName = &""
+## Locomotion overrides (e.g. a shambling walk for the risen dead).
+@export var idle_animation: StringName = &""
+@export var walk_animation: StringName = &""
+@export var run_animation: StringName = &""
 @export var spawn_animation_speed := 1.0

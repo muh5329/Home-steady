@@ -1,10 +1,19 @@
 shader_type spatial;
 // Re-grades the KayKit palette texture toward Fabledom's village colours:
-// saturated reds become terracotta, pale blue walls become warm plaster,
-// deeper blues a muted slate teal, whites a warm cream. Everything else passes through.
+// reds become saturated orange roofs, pale blue walls become the building's
+// plaster colour, deeper blues teal doors and shutters, whites warm cream,
+// greys warm stone. Everything else passes through.
 
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap;
-uniform vec3 cream = vec3(1.0, 0.93, 0.8);
+uniform vec3 cream = vec3(1.0, 0.95, 0.86);
+// Wall plaster (HSV, sRGB): ochre #E6C06A by default; buildings vary it
+// (cream, pale pink) so a street isn't one colour.
+uniform vec3 wall_hsv = vec3(0.114, 0.54, 0.90);
+// Buildings: white plaster takes the wall colour too.
+uniform bool whites_are_plaster = false;
+// Target for saturated reds (HSV, sRGB): orange roofs #D4602A; characters
+// use a softer brick #B8433A so capes don't shout.
+uniform vec3 red_hsv = vec3(0.054, 0.78, 0.83);
 // 0 = village (bright plaster), 1 = old ruin (whites become weathered,
 // mossy grey-ochre stone).
 uniform float weathered = 0.0;
@@ -24,36 +33,34 @@ vec3 hsv2rgb(vec3 c) {
 }
 
 void fragment() {
-	vec3 c = texture(albedo_tex, UV).rgb;
+	vec3 lin = texture(albedo_tex, UV).rgb;
+	// Classify and remap in sRGB, where the target colours are picked.
+	vec3 c = pow(lin, vec3(1.0 / 2.2));
 	vec3 hsv = rgb2hsv(c);
-	float red = (step(hsv.x, 0.05) + step(0.93, hsv.x)) * step(0.35, hsv.y);
+	float red = (step(hsv.x, 0.05) + step(0.93, hsv.x)) * step(0.45, hsv.y);
 	float blue_hue = step(0.5, hsv.x) * step(hsv.x, 0.72);
-	// Pale plaster can be barely blue; darker greys with a blue cast are stone.
-	float blue = blue_hue * (hsv.z > 0.62 ? step(0.1, hsv.y) : step(0.25, hsv.y));
-	float white = step(hsv.y, 0.18) * step(0.7, hsv.z);
+	bool pale_blue = blue_hue > 0.5 && hsv.z > 0.8 && hsv.y > 0.08;
+	bool deep_blue = blue_hue > 0.5 && !pale_blue && hsv.y > 0.3;
+	bool white = hsv.y < 0.12 && hsv.z > 0.85;
+	bool grey = !white && hsv.z > 0.25 && (hsv.y < 0.1 || (blue_hue > 0.5 && hsv.y <= 0.3));
 	if (red > 0.5) {
-		hsv.x = 0.035;
-		hsv.y *= 0.82;
-		hsv.z = min(hsv.z * 1.05, 1.0);
-		c = hsv2rgb(hsv);
-	} else if (blue > 0.5) {
-		if (hsv.z > 0.62) {
-			// Pale blue plaster -> bright sun-warmed ochre plaster (#EACB8A).
-			hsv = vec3(0.11, 0.41, min(hsv.z * 1.04, 0.93));
-		} else {
-			// Shutters, doors, trim: a muted storybook teal.
-			hsv.x = 0.48;
-			hsv.y = min(hsv.y * 0.6, 0.45);
-			hsv.z = min(hsv.z * 1.1, 0.7);
-		}
-		c = hsv2rgb(hsv);
-	} else if (white > 0.5) {
+		// Roofs and awnings: saturated storybook orange (#D4602A).
+		c = hsv2rgb(vec3(red_hsv.x, red_hsv.y, clamp(red_hsv.z * hsv.z / 0.85, 0.3, 0.92)));
+	} else if (pale_blue || (white && whites_are_plaster)) {
+		// Plaster walls take the building's wall colour, keeping the
+		// texture's light and shade.
+		c = hsv2rgb(vec3(wall_hsv.x, wall_hsv.y, clamp(wall_hsv.z * hsv.z / 0.9, 0.3, 0.97)));
+	} else if (deep_blue) {
+		// Doors, shutters, trim: saturated teal (#3F8C8A), big enough to read.
+		c = hsv2rgb(vec3(0.496, 0.55, clamp(hsv.z * 0.9, 0.35, 0.62)));
+	} else if (white) {
 		c *= cream;
-	} else if ((hsv.y < 0.12 || (blue_hue > 0.5 && hsv.y < 0.25)) && hsv.z > 0.2) {
-		// Grey stone: lighter and sun-warmed, never a cold lump.
+	} else if (grey) {
+		// Stone: warm, and a touch darker so chimneys and forges recede.
 		float g = dot(c, vec3(0.299, 0.587, 0.114));
-		c = min(vec3(g) * vec3(1.2, 1.12, 0.98), vec3(1.0));
+		c = clamp(vec3(g) * vec3(1.02, 0.96, 0.86), vec3(0.0), vec3(1.0));
 	}
+	c = pow(c, vec3(2.2));
 	if (weathered > 0.0) {
 		float l = dot(c, vec3(0.299, 0.587, 0.114));
 		vec3 stone = vec3(0.4, 0.39, 0.35) * (0.6 + l * 0.4);
@@ -63,6 +70,6 @@ void fragment() {
 		c = mix(c, stone, weathered * (1.0 - red * 0.6));
 	}
 	ALBEDO = c;
-	ROUGHNESS = 0.85;
+	ROUGHNESS = red_hsv.z < 0.8 ? 1.0 : 0.85;
 	SPECULAR = 0.25;
 }

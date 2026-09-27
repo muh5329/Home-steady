@@ -27,6 +27,47 @@ static func foliage_material() -> ShaderMaterial:
 	return _cache["foliage_mat"]
 
 
+## Foliage material for closed shapes (bushes, boulders): shaded inside.
+static func solid_material() -> ShaderMaterial:
+	if not _cache.has("solid_mat"):
+		var m := ShaderMaterial.new()
+		m.shader = FOLIAGE_SHADER
+		m.set_shader_parameter(&"solid_interior", true)
+		_cache["solid_mat"] = m
+	return _cache["solid_mat"]
+
+
+## Tilled earth: photographed mud, shaded by the ridge vertex colours.
+static func soil_material() -> StandardMaterial3D:
+	if not _cache.has("soil_mat"):
+		var m := StandardMaterial3D.new()
+		m.albedo_texture = load("res://art/third_party/polyhaven/mudfield_diff.jpg")
+		m.normal_enabled = true
+		m.normal_texture = load("res://art/third_party/polyhaven/mudfield_nor.jpg")
+		m.vertex_color_use_as_albedo = true
+		m.albedo_color = Color(2.2, 2.3, 2.5)
+		m.uv1_triplanar = true
+		m.uv1_scale = Vector3.ONE * 0.6
+		m.roughness = 0.95
+		_cache["soil_mat"] = m
+	return _cache["soil_mat"]
+
+
+## Photographed rock (ambientCG Rock030), wrapped with triplanar mapping.
+static func rock_material() -> StandardMaterial3D:
+	if not _cache.has("rock_mat"):
+		var m := StandardMaterial3D.new()
+		m.albedo_texture = load("res://art/third_party/ambientcg/Rock030/Rock030_Color.jpg")
+		m.normal_enabled = true
+		m.normal_texture = load("res://art/third_party/ambientcg/Rock030/Rock030_NormalGL.jpg")
+		m.roughness_texture = load("res://art/third_party/ambientcg/Rock030/Rock030_Roughness.jpg")
+		m.albedo_color = Color(1.45, 1.38, 1.25)
+		m.uv1_triplanar = true
+		m.uv1_scale = Vector3.ONE * 0.7
+		_cache["rock_mat"] = m
+	return _cache["rock_mat"]
+
+
 ## A tuft of curved, tapered blades (~0.5 m tall).
 static func grass_clump() -> ArrayMesh:
 	if _cache.has("grass"):
@@ -165,8 +206,8 @@ static func wheat_bed() -> ArrayMesh:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 23
 	var root_col := Color(0.42, 0.5, 0.18)
-	var tip_col := Color(0.98, 0.8, 0.36)
-	var ear_col := Color(1.0, 0.76, 0.3)
+	var tip_col := Color(0.86, 0.76, 0.46)
+	var ear_col := Color(0.88, 0.74, 0.42)
 	for row in 3:
 		for k in 5:
 			var centre := Vector3((row - 1) * 0.44 + rng.randf_range(-0.05, 0.05), 0, -0.7 + k * 0.35 + rng.randf_range(-0.06, 0.06))
@@ -245,7 +286,7 @@ static func furrows(size: Vector2, rows: int) -> ArrayMesh:
 				st.set_normal(q[idx][1])
 				st.add_vertex(q[idx][0])
 	var mesh := st.commit()
-	mesh.surface_set_material(0, foliage_material())
+	mesh.surface_set_material(0, soil_material())
 	_cache[key] = mesh
 	return mesh
 
@@ -263,8 +304,8 @@ static func pine(variant: int) -> ArrayMesh:
 	var trunk := Color(0.38, 0.24, 0.16, 0.0)
 	_cylinder(st, Vector3.ZERO, 0.035, 0.022, 0.3, 7, trunk, trunk.darkened(0.2))
 	var tiers := 5 + variant % 2
-	var dark := Color(0.08, 0.26, 0.2).lerp(Color(0.1, 0.3, 0.16), rng.randf())
-	var light := Color(0.24, 0.5, 0.3).lerp(Color(0.34, 0.55, 0.24), rng.randf())
+	var dark := Color(0.1, 0.27, 0.19).lerp(Color(0.12, 0.31, 0.16), rng.randf())
+	var light := Color(0.28, 0.52, 0.29).lerp(Color(0.38, 0.58, 0.26), rng.randf())
 	for t in tiers:
 		var f := float(t) / tiers
 		var y0 := 0.14 + f * 0.72
@@ -321,7 +362,7 @@ static func bush(variant: int) -> ArrayMesh:
 				st.set_normal(n)
 				st.add_vertex(v)
 	var mesh := st.commit()
-	mesh.surface_set_material(0, foliage_material())
+	mesh.surface_set_material(0, solid_material())
 	_cache[key] = mesh
 	return mesh
 
@@ -372,8 +413,11 @@ static func boulder(variant: int) -> ArrayMesh:
 				st.set_color(col)
 				st.set_normal(normal)
 				st.add_vertex(v)
+	# Smooth, rounded stone: merge vertices and average the normals.
+	st.index()
+	st.generate_normals()
 	var mesh := st.commit()
-	mesh.surface_set_material(0, foliage_material())
+	mesh.surface_set_material(0, rock_material())
 	_cache[key] = mesh
 	return mesh
 
@@ -397,10 +441,13 @@ static func _skirt(st: SurfaceTool, y: float, r: float, h: float, points: int,
 		var shade := 0.85 + 0.3 * (0.5 + 0.5 * cos(atan2(a.z, a.x) - 0.9))  # sun side lighter
 		var c_top := Color(top_col.r * shade, top_col.g * shade, top_col.b * shade, 0.4 + sway)
 		var c_rim := Color(under.r * 1.15 * shade, under.g * 1.15 * shade, under.b * 1.15 * shade, 0.4 + sway)
-		var n := (a + b).normalized() + Vector3.UP * 0.6
-		for v in [[apex, c_top], [a, c_rim], [b, c_rim]]:
+		# Smooth, cone-like shading: the apex faces up, each rim point faces
+		# out from the trunk, so tiers read as soft boughs, not flat slabs.
+		var na := (Vector3(a.x, 0, a.z).normalized() + Vector3.UP * 0.75).normalized()
+		var nb := (Vector3(b.x, 0, b.z).normalized() + Vector3.UP * 0.75).normalized()
+		for v in [[apex, c_top, Vector3.UP], [a, c_rim, na], [b, c_rim, nb]]:
 			st.set_color(v[1])
-			st.set_normal(n.normalized())
+			st.set_normal(v[2])
 			st.add_vertex(v[0])
 		var c_in := Color(under.r * 0.6, under.g * 0.6, under.b * 0.6, 0.4 + sway)
 		for v in [[inner, c_in], [b, c_rim.darkened(0.3)], [a, c_rim.darkened(0.3)]]:
